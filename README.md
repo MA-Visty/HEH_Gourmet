@@ -12,6 +12,8 @@ manque de produits, entraînant ainsi un remboursement.
 
 ## Détails du Projet
 ### analyse
+![C4 : System Context diagram](docs/System_Context_diagram.png)
+
 ### Fonctionnalité
 #### Utilisateur
 ##### Tout Utilisateur
