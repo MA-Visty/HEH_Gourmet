@@ -1,0 +1,631 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "HEH Gourmet",
+        "description": "API for the HEH cafeteria online project",
+        "version": "1.0.0",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "contact": {
+            "name": "HEH Gourmet Support"
+        }
+    },
+    "servers": [
+        {
+            "description": "localhost dev server",
+            "url": "https:localhost:8080"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Product",
+            "description": "It's a product"
+        },
+        {
+            "name": "Category",
+            "description": "It's a category"
+        },
+        {
+            "name": "Cart",
+            "description": "It's a cart"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "OAuth": {
+                "type": "oauth2",
+                "flows": {
+                    "password": {
+                        "tokenUrl": "/oauth/token",
+                        "scopes": {
+                            "write": "Grants write access"
+                        }
+                    }
+                }
+            }
+        },
+        "responses": {
+            "UnauthorizedError": {
+                "description": "Unauthorized access",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/GeneralError"
+                        },
+                        "example": {
+                            "message": "Unauthorized access",
+                            "code": 401
+                        }
+                    }
+                }
+            },
+            "InvalidParameters": {
+                "description": "Invalid parameter supplied",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/GeneralError"
+                        },
+                        "example": {
+                            "message": "Invalid parameter supplied",
+                            "code": 400
+                        }
+                    }
+                }
+            },
+            "ItemNotFound": {
+                "description": "Product not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/GeneralError"
+                        },
+                        "example": {
+                            "message": "Item not found",
+                            "code": 404
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "GeneralError": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "Product": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "category": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            },
+            "Category": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "paths": {
+        "/api/product": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get a product",
+                "description": "Get a product",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "id of the product to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                },
+                                "example": {
+                                    "id": 6576854156684,
+                                    "name": "foobar",
+                                    "description": "foobar",
+                                    "price": 12.5,
+                                    "category": 1
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Delete a product",
+                "description": "Delete a product",
+                "security": [
+                    {
+                        "OAuth": [
+                            "write"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "id of the product to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UnauthorizedError"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Add a product",
+                "description": "Add a product",
+                "security": [
+                    {
+                        "OAuth": [
+                            "admin"
+                        ]
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Product"
+                            },
+                            "example": {
+                                "name": "foobar5",
+                                "description": "foobar5",
+                                "price": 12.5,
+                                "category": 1
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                },
+                                "example": {
+                                    "id": 6576854153384,
+                                    "name": "foobar5",
+                                    "description": "foobar5",
+                                    "price": 12.5,
+                                    "category": 1
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get all products",
+                "description": "Get all products",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "category id of the products to return",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Product"
+                                    }
+                                },
+                                "example": [
+                                    {
+                                        "id": 6576854156684,
+                                        "name": "foobar",
+                                        "description": "foobar",
+                                        "price": 12.5,
+                                        "category": 1
+                                    },
+                                    {
+                                        "id": 6576856156684,
+                                        "name": "foo",
+                                        "description": "foo",
+                                        "price": 14.5,
+                                        "category": 1
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    }
+                }
+            }
+        },
+        "/api/category": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get a category",
+                "description": "Get a category",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "id of the category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Category"
+                                },
+                                "example": {
+                                    "id": 6576854156684,
+                                    "name": "foobar",
+                                    "description": "foobar"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Delete a category",
+                "description": "Delete a category",
+                "security": [
+                    {
+                        "OAuth": [
+                            "write"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "id of the category to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UnauthorizedError"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Add a category",
+                "description": "Add a category",
+                "security": [
+                    {
+                        "OAuth": [
+                            "admin"
+                        ]
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Category"
+                            },
+                            "example": {
+                                "name": "foobar5",
+                                "description": "foobar5"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Category"
+                                },
+                                "example": {
+                                    "id": 6576854153384,
+                                    "name": "foobar5",
+                                    "description": "foobar5"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    }
+                }
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get all categories",
+                "description": "Get all categories",
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Category"
+                                    }
+                                },
+                                "example": {
+                                    "id": 1,
+                                    "name": "foobar category",
+                                    "description": "foobar category"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    }
+                }
+            }
+        },
+        "/api/cart": {
+            "get": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Get a cart",
+                "description": "Get a cart",
+                "security": [
+                    {
+                        "OAuth": [
+                            "write"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Category"
+                                },
+                                "example": [
+                                    {
+                                        "id": 6576854156684,
+                                        "name": "foobar",
+                                        "description": "foobar"
+                                    },
+                                    {
+                                        "id": 6576854156684,
+                                        "name": "foobar",
+                                        "description": "foobar"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UnauthorizedError"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Delete a cart",
+                "description": "Delete a cart",
+                "security": [
+                    {
+                        "OAuth": [
+                            "write"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "successful operation"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UnauthorizedError"
+                    }
+                }
+            }
+        },
+        "/api/cart/{productID}": {
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Delete a cart",
+                "description": "Delete a cart",
+                "security": [
+                    {
+                        "OAuth": [
+                            "write"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "id of the product for delete of cart",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "quantities",
+                        "in": "query",
+                        "description": "quantities of the product for reduce of cart",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/InvalidParameters"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ItemNotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/UnauthorizedError"
+                    }
+                }
+            }
+        }
+    }
+}
