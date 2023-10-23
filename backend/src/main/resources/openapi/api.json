@@ -21,15 +21,15 @@
     "tags": [
         {
             "name": "Product",
-            "description": "It's a product"
+            "description": "Everything about a product"
         },
         {
             "name": "Category",
-            "description": "It's a category"
+            "description": "Everything about a category"
         },
         {
             "name": "Cart",
-            "description": "It's a cart"
+            "description": "Everything about a cart"
         }
     ],
     "components": {
@@ -528,14 +528,16 @@
                                 },
                                 "example": [
                                     {
-                                        "id": 6576854156684,
-                                        "name": "foobar",
-                                        "description": "foobar"
+                                        "id": 6576854156738,
+                                        "name": "foo",
+                                        "description": "foo",
+                                        "quantity": 4
                                     },
                                     {
                                         "id": 6576854156684,
-                                        "name": "foobar",
-                                        "description": "foobar"
+                                        "name": "bar",
+                                        "description": "bar",
+                                        "quantity": 1
                                     }
                                 ]
                             }
@@ -580,30 +582,23 @@
                 "tags": [
                     "Cart"
                 ],
-                "summary": "Delete a cart",
+                "summary": "Delete a cart by ID",
                 "description": "Delete a cart",
-                "security": [
-                    {
-                        "OAuth": [
-                            "write"
-                        ]
-                    }
-                ],
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "query",
-                        "description": "id of the product for delete of cart",
-                        "required": false,
+                        "name": "productID",
+                        "in": "path",
+                        "description": "Product id to delete",
+                        "required": true,
                         "schema": {
                             "type": "integer",
                             "format": "int64"
                         }
                     },
                     {
-                        "name": "quantities",
+                        "name": "quantity",
                         "in": "query",
-                        "description": "quantities of the product for reduce of cart",
+                        "description": "quantity of the product for reduce of cart",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -624,7 +619,14 @@
                     "401": {
                         "$ref": "#/components/responses/UnauthorizedError"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "OAuth": [
+                            "write"
+                        ]
+                    }
+                ]
             }
         }
     }
