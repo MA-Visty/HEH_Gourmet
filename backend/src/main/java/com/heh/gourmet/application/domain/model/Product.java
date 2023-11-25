@@ -2,12 +2,14 @@ package com.heh.gourmet.application.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
 /**
  * Product class
  */
 @Getter
 public class Product {
+    @Id
     private final int ID;
     @Setter
     int quantity;

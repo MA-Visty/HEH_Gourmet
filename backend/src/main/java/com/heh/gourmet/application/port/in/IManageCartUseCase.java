@@ -1,6 +1,7 @@
 package com.heh.gourmet.application.port.in;
 
 import com.heh.gourmet.application.domain.model.Product;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
  * it allows to create and remove products from the user's cart
  * it also allows to get the products in the user's cart and to clear it
  */
+@Service
 public interface IManageCartUseCase {
 
     /**

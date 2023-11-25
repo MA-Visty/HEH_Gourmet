@@ -3,11 +3,13 @@ package com.heh.gourmet.application.domain.model;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
 
 @Getter
 @NotNull
 public class Category {
+    @Id
     private final int ID;
     @Setter
     private String name;

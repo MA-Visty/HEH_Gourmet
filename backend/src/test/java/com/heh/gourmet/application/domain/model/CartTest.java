@@ -10,7 +10,7 @@ class CartTest {
     @BeforeEach
     void setUp() {
         // reset cart before each test
-        cart = new Cart();
+        cart = new Cart(1);
     }
 
     @Test

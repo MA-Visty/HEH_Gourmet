@@ -3,7 +3,7 @@ package com.heh.gourmet.application.domain.service;
 import com.heh.gourmet.application.domain.model.Cart;
 import com.heh.gourmet.application.domain.model.Product;
 import com.heh.gourmet.application.port.in.IManageCartUseCase;
-import com.heh.gourmet.application.port.out.ICart;
+import com.heh.gourmet.application.port.out.ICartRepository;
 import com.heh.gourmet.application.port.out.IProductRepository;
 import jakarta.validation.constraints.NotNull;
 
@@ -17,20 +17,24 @@ import java.util.Optional;
  */
 public class ManageCartImpl implements IManageCartUseCase {
     @NotNull Cart cart;
-    @NotNull ICart cartHandel;
+    @NotNull ICartRepository cartHandel;
     @NotNull IProductRepository productRepository;
 
     /**
      * Constructor
      *
-     * @param cart the user's cart to manage
+     * @param ID                the ID of the cart to manage
+     *                          if the cart doesn't exist, it will be created
+     *                          if the cart exists, it will be loaded
+     * @param cart              the cart repository to use
+     * @param productRepository the product repository to use
      */
-    ManageCartImpl(@NotNull ICart cart, @NotNull IProductRepository productRepository) {
+    public ManageCartImpl(@NotNull int ID, @NotNull ICartRepository cart, @NotNull IProductRepository productRepository) {
         this.productRepository = productRepository;
-        Optional<Cart> cartOptional = cart.load();
+        Optional<Cart> cartOptional = cart.load(ID);
         if (cartOptional.isEmpty()) {
             cartHandel = cart;
-            this.cart = new Cart();
+            this.cart = new Cart(ID);
         } else {
             this.cart = cartOptional.get();
             cartHandel = cart;
@@ -58,7 +62,7 @@ public class ManageCartImpl implements IManageCartUseCase {
     /**
      * Reduce the quantity of a product in the cart removing it if the resulting quantity is 0 or less
      *
-     * @param ID     the ID of the product to remove
+     * @param ID       the ID of the product to remove
      * @param quantity the quantity of the product to remove
      */
     @Override
@@ -93,6 +97,6 @@ public class ManageCartImpl implements IManageCartUseCase {
      */
     @Override
     public void clear() {
-        cartHandel.clear();
+        cartHandel.clear(cart.ID);
     }
 }

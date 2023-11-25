@@ -9,13 +9,13 @@ import java.util.Optional;
  * The Cart Handler
  * it allows to load, save and clear the cart
  */
-public interface ICart {
+public interface ICartRepository {
     /**
      * load the cart from the storage
      *
      * @return the cart if it exists
      */
-    Optional<Cart> load();
+    Optional<Cart> load(int ID);
 
     /**
      * save the cart in the storage
@@ -27,5 +27,5 @@ public interface ICart {
     /**
      * clear the cart from the storage
      */
-    void clear();
+    void clear(int ID);
 }

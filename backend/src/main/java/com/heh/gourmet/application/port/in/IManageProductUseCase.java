@@ -1,11 +1,13 @@
 package com.heh.gourmet.application.port.in;
 
 import com.heh.gourmet.application.domain.model.Product;
+import org.springframework.stereotype.Service;
 
 /**
  * The use case to manage products
  * it allows to create and remove products from the product repository
  */
+@Service
 public interface IManageProductUseCase {
 
     /**

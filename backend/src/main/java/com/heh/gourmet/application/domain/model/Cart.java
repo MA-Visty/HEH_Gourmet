@@ -1,6 +1,7 @@
 package com.heh.gourmet.application.domain.model;
 
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,11 @@ import java.util.HashMap;
  * Cart class
  */
 public class Cart {
+    /**
+     * user ID
+     */
+    @Id
+    public final int ID;
     /**
      * products in the cart identified by their ID
      */
@@ -19,15 +25,16 @@ public class Cart {
      *
      * @param products products in the cart
      */
-    public Cart(@NotNull HashMap<Integer, Product> products) {
+    public Cart(@NotNull int ID, @NotNull HashMap<Integer, Product> products) {
         this.products = products;
+        this.ID = ID;
     }
 
     /**
      * Constructor
      */
-    public Cart() {
-        products = new HashMap<>();
+    public Cart(@NotNull int ID) {
+        this(ID, new HashMap<>());
     }
 
     /**
