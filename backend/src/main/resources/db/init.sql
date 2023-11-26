@@ -15,13 +15,12 @@ create table heh.config
         primary key,
     name      varchar(255) not null
         unique,
-    value     time         not null
+    value     varchar(255) not null
 );
 
 -- set the config of the app
 insert into heh.config (name, value)
-values ('cancel_end', '11:00:00'),
-       ('order_end', '10:30:00');
+values ('cancel_end', '11:00:00');
 
 -- Table to store the users
 create table heh.users
@@ -131,11 +130,6 @@ begin
     delete
     from heh.products
     where heh.products.category_id = old.category_id;
-    delete
-    from heh.carts
-    where heh.carts.product_id in (select heh.products.product_id
-                                   from heh.products
-                                   where heh.products.category_id = old.category_id);
 end;
 
 -- Table to store the favorites products of each user
@@ -168,7 +162,7 @@ create table heh.orders
 ) engine = InnoDB
   default charset = utf8;
 
--- Trigger to set a event that set it as pending when it's 11 AM of the prepare_date and the status is 0
+-- Trigger to set a event that set it as pending when it's cancel_end of the prepare_date and the status is 0
 create trigger set_pending
     before insert
     on heh.orders
@@ -190,7 +184,7 @@ create trigger remove_pending
     on heh.orders
     for each row
 begin
-    if old.status = 1 and new.status = 0 then
+    if new.status = 0 then
         -- remove event
         set @event_name = concat('set_pending_', new.order_id);
         drop event @event_name;
@@ -203,7 +197,7 @@ create trigger update_pending
     on heh.orders
     for each row
 begin
-    if old.prepare_date != new.prepare_date then
+    if old.prepare_date != new.prepare_date and old.status = 1 then
         set @event_name = concat('set_pending_', new.order_id);
         set @cancel_end = (select value
                            from heh.config
