@@ -16,41 +16,26 @@ import java.util.Optional;
  * it also allows to get the products in the user's cart and to clear it
  */
 public class ManageCartImpl implements IManageCartUseCase {
-    @NotNull Cart cart;
+    Cart cart;
     @NotNull ICartRepository cartHandel;
     @NotNull IProductRepository productRepository;
 
-    /**
-     * Constructor
-     *
-     * @param ID                the ID of the cart to manage
-     *                          if the cart doesn't exist, it will be created
-     *                          if the cart exists, it will be loaded
-     * @param cart              the cart repository to use
-     * @param productRepository the product repository to use
-     */
-    public ManageCartImpl(@NotNull int ID, @NotNull ICartRepository cart, @NotNull IProductRepository productRepository) {
+    public ManageCartImpl(@NotNull ICartRepository cart, @NotNull IProductRepository productRepository) {
         this.productRepository = productRepository;
-        Optional<Cart> cartOptional = cart.load(ID);
-        if (cartOptional.isEmpty()) {
-            cartHandel = cart;
-            this.cart = new Cart(ID);
-        } else {
-            this.cart = cartOptional.get();
-            cartHandel = cart;
-        }
+        this.cartHandel = cart;
     }
 
-    /**
-     * Add a product to the cart
-     *
-     * @param ID       the ID of the product to add
-     * @param quantity the quantity of the product to add
-     *                 if the product is already in the cart, the quantity will be added to the existing quantity
-     * @throws IllegalArgumentException if the product doesn't exist
-     */
+    @Override
+    public void init(@NotNull int ID) {
+        Optional<Cart> cartOptional = this.cartHandel.load(ID);
+        this.cart = cartOptional.orElseGet(() -> new Cart(ID));
+    }
+
     @Override
     public void addProduct(int ID, int quantity) throws IllegalArgumentException {
+        if (this.cart == null) {
+            throw new NullPointerException("the cart has not been instanced yet");
+        }
         Optional<Product> optionalProduct = productRepository.load(ID);
         if (optionalProduct.isEmpty()) {
             throw new IllegalArgumentException("The product with the ID " + ID + " doesn't exist");
@@ -59,44 +44,37 @@ public class ManageCartImpl implements IManageCartUseCase {
         cartHandel.save(cart);
     }
 
-    /**
-     * Reduce the quantity of a product in the cart removing it if the resulting quantity is 0 or less
-     *
-     * @param ID       the ID of the product to remove
-     * @param quantity the quantity of the product to remove
-     */
     @Override
     public void removeProduct(int ID, int quantity) {
+        if (this.cart == null) {
+            throw new NullPointerException("the cart has not been instanced yet");
+        }
         cart.removeProduct(ID, quantity);
         cartHandel.save(cart);
     }
 
-    /**
-     * Delete a product from the cart
-     *
-     * @param ID the ID of the product to delete from the cart
-     */
     @Override
     public void deleteProduct(int ID) {
+        if (this.cart == null) {
+            throw new NullPointerException("the cart has not been instanced yet");
+        }
         cart.deleteProduct(ID);
         cartHandel.save(cart);
     }
 
-    /**
-     * Get a list of the products in the cart
-     *
-     * @return the products in the cart
-     */
     @Override
     public ArrayList<Product> getProducts() {
+        if (this.cart == null) {
+            throw new NullPointerException("the cart has not been instanced yet");
+        }
         return cart.getProducts();
     }
 
-    /**
-     * clear the cart
-     */
     @Override
     public void clear() {
+        if (this.cart == null) {
+            throw new NullPointerException("the cart has not been instanced yet");
+        }
         cartHandel.clear(cart.ID);
     }
 }

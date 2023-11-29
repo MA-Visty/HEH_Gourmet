@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public class ProfileRepository {
     private final JdbcTemplate jdbc;
 

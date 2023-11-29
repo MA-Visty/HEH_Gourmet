@@ -1,6 +1,7 @@
 package com.heh.gourmet.application.port.out;
 
 import com.heh.gourmet.application.domain.model.Product;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import java.util.Optional;
  * The repository to manage products
  * it allows to save and remove products from the product repository
  */
+@Repository
 public interface IProductRepository {
     /**
      * Load a product from the product repository

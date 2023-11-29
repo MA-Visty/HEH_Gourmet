@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
 public class UserDataAdapter implements IFetchUserData {
     @Override
     public Optional<Cart> getCart() {

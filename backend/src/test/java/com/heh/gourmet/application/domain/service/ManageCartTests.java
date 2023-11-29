@@ -25,7 +25,8 @@ public class ManageCartTests {
 
     @Test
     public void testAddProductToCart() {
-        ManageCartImpl manageCart = new ManageCartImpl(1, cartRepo, productRepository);
+        ManageCartImpl manageCart = new ManageCartImpl(cartRepo, productRepository);
+        manageCart.init(1);
         when(productRepository.load(1)).thenReturn(java.util.Optional.of(new Product(1, category, 2.3F)));
         manageCart.addProduct(1);
         assert (manageCart.cart.getProducts().size() == 1);
@@ -34,7 +35,8 @@ public class ManageCartTests {
 
     @Test
     public void testRemoveProductFromCart() {
-        ManageCartImpl manageCart = new ManageCartImpl(1, cartRepo, productRepository);
+        ManageCartImpl manageCart = new ManageCartImpl(cartRepo, productRepository);
+        manageCart.init(1);
         // Add a product to the cart bypassing the ManageCartImpl.addProduct method
         manageCart.cart.addProduct(new Product(1, category, 2.3F));
         manageCart.removeProduct(1, 1);
@@ -44,7 +46,8 @@ public class ManageCartTests {
 
     @Test
     public void testClearCart() {
-        ManageCartImpl manageCart = new ManageCartImpl(1, cartRepo, productRepository);
+        ManageCartImpl manageCart = new ManageCartImpl(cartRepo, productRepository);
+        manageCart.init(1);
         manageCart.clear();
         verify(cartRepo).clear(1);
     }

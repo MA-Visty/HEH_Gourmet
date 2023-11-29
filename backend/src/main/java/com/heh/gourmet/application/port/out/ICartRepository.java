@@ -2,6 +2,7 @@ package com.heh.gourmet.application.port.out;
 
 import com.heh.gourmet.application.domain.model.Cart;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import java.util.Optional;
  * The Cart Handler
  * it allows to load, save and clear the cart
  */
+@Repository
 public interface ICartRepository {
     /**
      * load the cart from the storage

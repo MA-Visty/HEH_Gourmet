@@ -1,6 +1,7 @@
 package com.heh.gourmet.application.port.in;
 
 import com.heh.gourmet.application.domain.model.Product;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
  */
 @Service
 public interface IManageCartUseCase {
+    public void init(@NotNull int ID);
 
     /**
      * Add a product to the cart

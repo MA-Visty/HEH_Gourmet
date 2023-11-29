@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public class ProductAdapter implements IProductRepository {
     @Override
     public Optional<Product> load(int ID) {
