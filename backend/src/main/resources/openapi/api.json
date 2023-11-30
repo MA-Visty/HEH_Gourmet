@@ -143,7 +143,7 @@
         }
     },
     "paths": {
-        "/api/product": {
+        "/api/product/{productID}": {
             "get": {
                 "tags": [
                     "Product"
@@ -153,7 +153,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "description": "id of the product to return",
                         "required": true,
                         "schema": {
@@ -204,7 +204,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "description": "id of the product to delete",
                         "required": true,
                         "schema": {
@@ -280,7 +280,7 @@
                 }
             }
         },
-        "/api/products": {
+        "/api/products/{categoryID}": {
             "get": {
                 "tags": [
                     "Product"
@@ -290,7 +290,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "description": "category id of the products to return",
                         "required": false,
                         "schema": {
@@ -338,7 +338,7 @@
                 }
             }
         },
-        "/api/category": {
+        "/api/category/{categoryID}": {
             "get": {
                 "tags": [
                     "Category"
@@ -348,7 +348,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "description": "id of the category to return",
                         "required": true,
                         "schema": {
@@ -397,7 +397,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "description": "id of the category to delete",
                         "required": true,
                         "schema": {
