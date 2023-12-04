@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
-import InputGroup from 'react-bootstrap/InputGroup';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import { Link } from "react-router-dom";
+import {Row, Col, Button} from 'react-bootstrap';
 //import useAppContext from '../../store/AppContext';
 
-function ProductItemForm({data, quantity}) {
+function ProductItemForm({id, quantity}) {
     /*
     const {addCartProduct} = useContext(useAppContext);
 
@@ -23,18 +22,20 @@ function ProductItemForm({data, quantity}) {
     };
      */
 
-	return (<></>);
-
-	/*
 	return (
-		<InputGroup className="mb-3">
-			<Form.Control type="number" min="0" max={quantity} aria-label="Recipient's username" aria-describedby="basic-addon2" />
-			<Button variant="primary" id="button-addon2" onClick={AddCart}>Add</Button>
-		</InputGroup>
-		
-	);
-
-	 */
+        <Row className="d-flex justify-content-center">
+            <Col>
+                <Button variant="secondary" as={Link} to={`/product/${id}`}>
+                    <img style={{objectFit:'cover', display:"flex", marginLeft:"auto", marginRight:"auto", height:"1.75rem", width:"auto"}} src="/menu.svg" alt="error" />
+                </Button>
+            </Col>
+            <Col>
+                <Button variant="primary" className="w-100">
+                    Add
+                </Button>
+            </Col>
+        </Row>
+    );
   }
   
   export default ProductItemForm;

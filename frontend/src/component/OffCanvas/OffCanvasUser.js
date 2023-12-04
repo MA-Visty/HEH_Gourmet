@@ -1,112 +1,127 @@
 import React, {useState} from 'react';
-import Offcanvas from 'react-bootstrap/Offcanvas';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Row from 'react-bootstrap/Row';
+import { Offcanvas, Button, Row, Col, Form, ImputGroup } from 'react-bootstrap';
 
-function OffCanvasUser({ show, onHide, ...props }) {
-    return userLogin({ show, onHide, ...props });
+function OffCanvasUser({ show, onHide, type, ...props }) {
+    return (
+        <Offcanvas show={show} onHide={onHide} placement={'end'} {...props}>
+            {type === "login" ? UserAccount()
+                : type === "register" ? UserRegister()
+                : UserLogin()
+            }
+        </Offcanvas>
+    )
 }
 
-function userLogin({ show, onHide, ...props }) {
+function UserLogin() {
     const [validated, setValidated] = useState(false);
 
     return (
-        <Offcanvas show={show} onHide={onHide} placement={'end'} {...props}>
+        <>
             <Offcanvas.Header closeButton>
                 <Offcanvas.Title>Login</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
                 <Form noValidate validated={validated}>
                     <Row className="mb-3">
-                        <Form.Group as={Col} md="4" controlId="validationCustom01">
-                            <Form.Label>First name</Form.Label>
+                        <Form.Group>
+                            <Form.Label>Login</Form.Label>
                             <Form.Control
                                 required
                                 type="text"
-                                placeholder="First name"
-                                defaultValue="Mark"
+                                placeholder="Entrer your login"
+                                defaultValue=""
                             />
                             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="validationCustom02">
-                            <Form.Label>Last name</Form.Label>
+                        <Form.Group>
+                            <Form.Label>Password</Form.Label>
                             <Form.Control
                                 required
-                                type="text"
-                                placeholder="Last name"
-                                defaultValue="Otto"
+                                type="password"
+                                placeholder="Entrer your password"
+                                aria-describedby="passwordHelpBlock"
                             />
-                            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group as={Col} md="4" controlId="validationCustomUsername">
-                            <Form.Label>Username</Form.Label>
-                            <InputGroup hasValidation>
-                                <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Username"
-                                    aria-describedby="inputGroupPrepend"
-                                    required
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    Please choose a username.
-                                </Form.Control.Feedback>
-                            </InputGroup>
+                            <Form.Text id="passwordHelpBlock" muted>
+                                Your password must be 8-20 characters long, contain letters and numbers,
+                                and must not contain spaces, special characters, or emoji.
+                            </Form.Text>
                         </Form.Group>
                     </Row>
-                    <Row className="mb-3">
-                        <Form.Group as={Col} md="6" controlId="validationCustom03">
-                            <Form.Label>City</Form.Label>
-                            <Form.Control type="text" placeholder="City" required />
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid city.
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group as={Col} md="3" controlId="validationCustom04">
-                            <Form.Label>State</Form.Label>
-                            <Form.Control type="text" placeholder="State" required />
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid state.
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group as={Col} md="3" controlId="validationCustom05">
-                            <Form.Label>Zip</Form.Label>
-                            <Form.Control type="text" placeholder="Zip" required />
-                            <Form.Control.Feedback type="invalid">
-                                Please provide a valid zip.
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                    </Row>
-                    <Form.Group className="mb-3">
-                        <Form.Check
-                            required
-                            label="Agree to terms and conditions"
-                            feedback="You must agree before submitting."
-                            feedbackType="invalid"
-                        />
-                    </Form.Group>
-                    <Button type="submit">Submit form</Button>
+
+                    <div className="d-grid gap-2">
+                        <Button variant="primary" size="lg">
+                            Login
+                        </Button>
+                        <Button variant="secondary" size="lg">
+                            Register
+                        </Button>
+                    </div>
                 </Form>
             </Offcanvas.Body>
-        </Offcanvas>
+        </>
     );
 }
 
-function userRegister({ show, onHide, ...props }) {
+function UserRegister() {
+    const [validated, setValidated] = useState(false);
+    const labelFormGroup = [
+        ["text", "Lastname", ""],
+        ["text", "Firstname", ""],
+        ["email", "Email", ""],
+        ["text", "Login", ""],
+        ["password", "Password", ""],
+        ["password", "Confirm password", "Your password must be 8-20 characters long, contain letters and numbers,\n" +
+        "                                    and must not contain spaces, special characters, or emoji."]
+    ]
+
     return (
-        <Offcanvas show={show} onHide={onHide} placement={'end'} {...props}>
+        <>
             <Offcanvas.Header closeButton>
-                <Offcanvas.Title>User</Offcanvas.Title>
+                <Offcanvas.Title>Register</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-                Some text as a placeholder. In real life, you can have the elements you have chosen, such as text, images, lists, etc.
+                <Form noValidate validated={validated}>
+                    <Row className="mb-3">
+                        {labelFormGroup.map(([type, label, describe]) => (
+                            <Form.Group key={label}>
+                                <Form.Label>{label}</Form.Label>
+                                <Form.Control
+                                    required
+                                    type={type}
+                                    placeholder={`Enter your ${label}`}
+                                    defaultValue=""
+                                    aria-describedby={describe !== "" ? `{$label}HelpBlock` : ""}
+                                />
+                                {describe !== "" ?
+                                    <Form.Text id={`${label}HelpBlock`} muted>{describe}</Form.Text> : ""}
+                            </Form.Group>
+                        ))}
+                    </Row>
+
+                    <div className="d-grid gap-2">
+                        <Button variant="primary" size="lg">
+                            Confirm
+                        </Button>
+                        <Button variant="secondary" size="lg">
+                            Cancel
+                        </Button>
+                    </div>
+                </Form>
             </Offcanvas.Body>
-        </Offcanvas>
+        </>
     );
 }
-function userAccount() {}
+
+function UserAccount() {
+    return (
+        <>
+            <Offcanvas.Header closeButton>
+                <Offcanvas.Title>Account</Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+            </Offcanvas.Body>
+        </>
+    );
+}
 
 export default OffCanvasUser;

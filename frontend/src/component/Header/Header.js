@@ -1,17 +1,20 @@
 import React, {useState} from "react";
-import { Container, Nav, Navbar } from "react-bootstrap";
+import { Container, Nav, Navbar, Badge, Row, Col } from "react-bootstrap";
 import { useAppContext } from "../../store/AppContext";
 import { LinkContainer } from "react-router-bootstrap";
 import OffCanvasUser from "../OffCanvas/OffCanvasUser";
 import OffCanvasCart from "../OffCanvas/OffCanvasCart";
 
-function Header(props) {
+function Header() {
     const [showUser, setShowUser] = useState(false);
     const [showCart, setShowCart] = useState(false);
     const handleUserClose = () => setShowUser(false);
     const handleCartClose = () => setShowCart(false);
     const handleUserShow = () => setShowUser(true);
     const handleCartShow = () => setShowCart(true);
+
+    const [userLog, setUserLog] = useState(false);
+    const [cartContain, setCartContain] = useState(false);
 
     return (
         <>
@@ -30,13 +33,22 @@ function Header(props) {
                                 <Nav.Link>Menu</Nav.Link>
                             </LinkContainer>
                         </Nav>
-                        <img src="/cart.svg" alt="error" width={25} onClick={handleCartShow}></img>
-                        <img src="/user.svg" alt="error" width={25} onClick={handleUserShow}></img>
+                        <Row>
+                            <Col xs="auto">
+                                <img src={cartContain ? "/cartComplet.svg" : "/cart.svg"} alt="error" width={25} onClick={handleCartShow} />
+                                <Badge bg="primary" pill>
+                                    14
+                                </Badge>
+                            </Col>
+                            <Col xs="auto">
+                                <img src={userLog ? "/userComplet.svg" : "/user.svg"} alt="error" width={25} onClick={handleUserShow} />
+                            </Col>
+                        </Row>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            <OffCanvasCart show={showCart} onHide={handleCartClose} />
-            <OffCanvasUser show={showUser} onHide={handleUserClose} />
+            <OffCanvasCart show={showCart} onHide={handleCartClose} type={cartContain}/>
+            <OffCanvasUser show={showUser} onHide={handleUserClose} type={""}/>
         </>
     );
 }

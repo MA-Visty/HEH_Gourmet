@@ -4,21 +4,17 @@ import {Route, Routes} from "react-router-dom";
 import Home from "./pages/Home";
 import Error from "./component/Error/Error";
 import Cart from "./component/Cart/Cart";
-import Menu from "./pages/Menu";
+import Products from "./component/Product/Products";
+import ProductDetail from "./component/Product/ProductDetail";
 
 function App() {
-    const [show, setShow] = useState(false);
-    const hideCart = () => setShow(false);
-    const showCart = () => setShow(true);
-
     return (
         <>
-            {show && <Cart hide={hideCart}></Cart>}
-            <Header show={showCart}/>
+            <Header />
             <Routes>
-                <Route index element={<Home/>}/>
-                <Route path="menu" element={<Menu/>}/>
-                <Route path="product/:id" element={<></>}/>
+                <Route index element={<Home />}/>
+                <Route path="menu" element={<Products />}/>
+                <Route path="product/:id" element={<ProductDetail />}/>
                 <Route path="*" element={<Error type={"notFound"} />}/>
             </Routes>
         </>
