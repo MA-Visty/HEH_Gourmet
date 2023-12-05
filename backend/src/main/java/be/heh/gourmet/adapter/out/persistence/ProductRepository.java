@@ -14,9 +14,9 @@ import java.util.List;
 
 @Repository
 public class ProductRepository {
-    private static final String addSql = "INSERT INTO products (product_id, name, description, price, stock, image, categoryID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String addSql = "INSERT INTO products (product_id, name, description, price, stock, image, category_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String removeSql = "DELETE FROM products WHERE product_id = ?";
-    private static final String updateSql = "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ?, categoryID = ? WHERE product_id = ?";
+    private static final String updateSql = "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, image = ?, category_id = ? WHERE product_id = ?";
 
     private JdbcTemplate jdbc;
 
