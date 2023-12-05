@@ -40,7 +40,7 @@ public class ProductController {
         return new ResponseEntity<>(product, null, 200);
     }
 
-    @PutMapping("/product")
+    @PostMapping ("/product")
     public ResponseEntity<Product> addProduct(@RequestBody InputProduct product) {
         try {
             Product response = productManager.add(product);
