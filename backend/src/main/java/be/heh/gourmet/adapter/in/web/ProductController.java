@@ -10,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.ServerRequest;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class ProductController {
     @Qualifier("getManageProductUseCase")
     IManageProductUseCase productManager;
 
-    @GetMapping("/product")
+    @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts() {
         List<Product> products = productManager.list();
         if (products == null) {
@@ -40,7 +39,7 @@ public class ProductController {
         return new ResponseEntity<>(product, null, 200);
     }
 
-    @PostMapping ("/product")
+    @PostMapping("/product")
     public ResponseEntity<Product> addProduct(@RequestBody InputProduct product) {
         try {
             Product response = productManager.add(product);
