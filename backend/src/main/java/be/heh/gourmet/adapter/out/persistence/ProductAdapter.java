@@ -1,5 +1,6 @@
 package be.heh.gourmet.adapter.out.persistence;
 
+import be.heh.gourmet.application.domain.InputProduct;
 import be.heh.gourmet.application.domain.Product;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,9 @@ public class ProductAdapter implements IManageProductUseCase {
     ProductRepository productRepository;
 
     @Override
-    public void add(Product product) throws IllegalArgumentException {
-        productRepository.add(product);
+    public Product add(InputProduct product) throws IllegalArgumentException {
+        int ID = productRepository.add(product);
+        return Product.of(ID, product.image(), product);
     }
 
     @Override

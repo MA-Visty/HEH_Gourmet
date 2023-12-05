@@ -1,13 +1,16 @@
 package be.heh.gourmet.adapter.in.web;
 
+import be.heh.gourmet.application.domain.InputProduct;
 import be.heh.gourmet.application.domain.Product;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.function.ServerRequest;
 
 import java.util.List;
 
@@ -37,11 +40,12 @@ public class ProductController {
         return new ResponseEntity<>(product, null, 200);
     }
 
-    @PutMapping("/product/{id}")
-    public ResponseEntity<Product> addProduct(@PathVariable int id, @RequestBody Product product) {
+    @PutMapping("/product")
+    public ResponseEntity<Product> addProduct(@RequestBody InputProduct product) {
         try {
-            productManager.add(product);
-            return new ResponseEntity<>(product, null, 201);
+            Product response = productManager.add(product);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            return new ResponseEntity<>(response, responseHeaders, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
 
             return new ResponseEntity<>(null, null, 400);
