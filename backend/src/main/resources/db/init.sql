@@ -1,62 +1,54 @@
--- ---- Database ---- --
-
--- Main production database
-create database if not exists heh
-    default character set utf8;
-
--- enable event scheduler
-set global event_scheduler = ON;
-
-use heh;
 -- ---- Tables ---- --
 
 -- Table to store the config of the app
-create table heh.config
+create table if not exists config
 (
     name  varchar(255) not null
         primary key,
     value varchar(255) not null
 );
 
+-- Insert the default config
+-- not cancelable after 11:00:00 and
+-- cannot order after 10:30:00
+insert into config (name, value)
+values ('prepare_time', '11:00:00'),
+       ('order_time', '10:30:00');
+
+
 -- Table to store the available categories
-create table heh.categories
+create table if not exists categories
 (
     category_id serial       not null
         primary key,
     name        varchar(255) not null
         unique,
-    description longtext     not null,
+    description text         not null,
     constraint category_name
         unique (name)
-)
-    engine = InnoDB
-    default charset = utf8;
+);
 
 -- Table to store available products
-create table heh.products
+create table if not exists products
 (
-    product_id  serial          not null
+    product_id  serial       not null
         primary key,
-    name        varchar(255)    not null
+    name        varchar(255) not null
         unique,
-    description longtext        not null,
-    price       decimal         not null,
-    stock       int unsigned    not null,
-    image       varchar(255)    not null,
-    category_id bigint unsigned not null,
+    description text         not null,
+    price       decimal      not null,
+    stock       int          not null,
+    image       varchar(255) not null,
+    category_id bigint       not null,
     constraint product_fk
-        foreign key (category_id) references heh.categories (category_id)
-)
-    engine = InnoDB
-    default charset = utf8;
+        foreign key (category_id) references categories (category_id)
+);
 
 -- Table to store the users
-create table heh.users
+create table if not exists users
 (
     user_id    serial       not null
         primary key,
-    -- virtual column to store the full name of the user
-    full_name  varchar(511) generated always as (concat(last_name, ' ', first_name)) virtual invisible,
     last_name  varchar(255) not null,
     first_name varchar(255) not null,
     email      varchar(255) not null
@@ -66,201 +58,155 @@ create table heh.users
     role       int          not null,
     constraint full_name
         unique (last_name, first_name)
-) engine = InnoDB
-  default charset = utf8;
+);
 
 -- Table to store the cart of each user
-create table heh.carts
+create table if not exists carts
 (
-    user_id    bigint unsigned not null,
-    product_id bigint unsigned not null,
-    quantity   int unsigned    not null default 1,
+    user_id    bigint not null,
+    product_id bigint not null,
+    quantity   int    not null default 1,
     constraint cart_pk
         primary key (user_id, product_id),
     constraint cart_product_fk
-        foreign key (product_id) references heh.products (product_id),
+        foreign key (product_id) references products (product_id),
     constraint cart_user_fk
-        foreign key (user_id) references heh.users (user_id)
-)
-    engine = InnoDB
-    default charset = utf8;
+        foreign key (user_id) references users (user_id)
+);
 
 -- Table to store the favorites products of each user
-create table heh.favorites
+create table if not exists favorites
 (
-    user_id    bigint unsigned not null,
-    product_id bigint unsigned not null,
+    user_id    bigint not null,
+    product_id bigint not null,
     constraint favorites_pk
         primary key (user_id, product_id),
     constraint favorites_product_fk
-        foreign key (product_id) references heh.products (product_id),
+        foreign key (product_id) references products (product_id),
     constraint favorites_user_fk
-        foreign key (user_id) references heh.users (user_id)
-)
-    engine = InnoDB
-    default charset = utf8;
+        foreign key (user_id) references users (user_id)
+);
 
 -- Table to store the orders
-create table heh.orders
+create table if not exists orders
 (
-    order_id     serial          not null
+    order_id     serial not null
         primary key,
-    user_id      bigint unsigned not null,
-    order_date   datetime        not null,
-    prepare_date date            not null,
+    user_id      bigint not null,
+    order_date   date   not null,
+    prepare_date date   not null,
     -- 0 = canceled, 1 = cancelable, 2 = pending, 3 = ready, 4 = delivered
-    status       int             not null default 1,
+    status       int    not null default 1,
     constraint order_user_fk
-        foreign key (user_id) references heh.users (user_id)
-) engine = InnoDB
-  default charset = utf8;
+        foreign key (user_id) references users (user_id)
+);
 
 -- Table to store the products of each order
 -- INFO : this doesn't depend on the product table because we want to keep the products even if they are deleted
-create table heh.orders_products
+create table if not exists orders_products
 (
-    order_id     bigint unsigned not null,
-    product_name varchar(255)    not null
+    order_id     bigint       not null,
+    product_name varchar(255) not null
         unique,
-    description  longtext        not null,
-    quantity     int             not null default 1,
-    price        decimal         not null,
+    description  text         not null,
+    quantity     int          not null default 1,
+    price        decimal      not null,
     constraint order_products_pk
         primary key (order_id, product_name),
     constraint order_products_order_fk
-        foreign key (order_id) references heh.orders (order_id)
-)
-    engine = InnoDB
-    default charset = utf8;
+        foreign key (order_id) references orders (order_id)
+);
 
 -- ---- Triggers ---- --
 
 -- Trigger to remove products when category is deleted
 -- WARN : this remove the category , the associated products and the associated cart
-create trigger remove_category
-    before delete
-    on heh.categories
-    for each row
-begin
-    delete
-    from heh.products
-    where heh.products.category_id = old.category_id;
-end;
+CREATE TRIGGER remove_category
+    BEFORE DELETE
+    ON categories
+    FOR EACH ROW
+EXECUTE PROCEDURE remove_product_trigger();
+
+CREATE OR REPLACE FUNCTION remove_product_trigger() RETURNS TRIGGER AS
+$$
+BEGIN
+    DELETE FROM products WHERE products.category_id = OLD.category_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Trigger to remove product when it's deleted
-create trigger remove_product
-    before delete
-    on heh.products
-    for each row
-begin
-    -- remove from cart
-    delete
-    from heh.carts
-    where heh.carts.product_id = old.product_id;
-    -- remove from favorites
-    delete
-    from heh.favorites
-    where heh.favorites.product_id = old.product_id;
-end;
+CREATE TRIGGER remove_product
+    BEFORE DELETE
+    ON products
+    FOR EACH ROW
+EXECUTE PROCEDURE remove_product_from_cart_and_favorites();
+
+CREATE OR REPLACE FUNCTION remove_product_from_cart_and_favorites() RETURNS TRIGGER AS
+$$
+BEGIN
+    DELETE FROM carts WHERE carts.product_id = OLD.product_id;
+    DELETE FROM favorites WHERE favorites.product_id = OLD.product_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Trigger to remove cart when user is deleted it also remove the orders history
-create trigger remove_user
-    before delete
-    on heh.users
-    for each row
-begin
-    delete
-    from heh.carts
-    where heh.carts.user_id = old.user_id;
-    delete
-    from heh.orders
-    where heh.orders.user_id = old.user_id;
-end;
+CREATE TRIGGER remove_user
+    BEFORE DELETE
+    ON users
+    FOR EACH ROW
+EXECUTE PROCEDURE remove_user_from_carts_and_orders();
 
+CREATE OR REPLACE FUNCTION remove_user_from_carts_and_orders() RETURNS TRIGGER AS
+$$
+BEGIN
+    DELETE FROM carts WHERE carts.user_id = OLD.user_id;
+    DELETE FROM orders WHERE orders.user_id = OLD.user_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Trigger to populate order_product when order is added and empty the cart
 -- INFO : this is triggered when the order is passed
-create trigger populate_orders_products
-    after insert
-    on heh.orders
-    for each row
-begin
-    -- populate order_products from cart
-    insert into heh.orders_products (order_id, product_name, description, price)
-    select new.order_id, heh.products.name, heh.products.description, heh.products.price
-    from heh.carts
-             inner join heh.products on heh.carts.product_id = heh.products.product_id
-    where heh.carts.user_id = new.user_id;
-    -- empty cart
-    delete
-    from heh.carts
-    where heh.carts.user_id = new.user_id;
-end;
+CREATE TRIGGER populate_orders_products
+    AFTER INSERT
+    ON orders
+    FOR EACH ROW
+EXECUTE PROCEDURE populate_orders_products_and_empty_cart();
 
-/*
-TODO : this need to be fixed
--- Trigger to set a event that set it as pending when it's cancel_end of the prepare_date and the status is 0
-create trigger set_pending
-    before insert
-    on heh.orders
-    for each row
-begin
-    -- set event to set status to pending
-    set @event_name = concat('set_pending_', new.order_id);
-    set @cancel_end = (select value
-                       from heh.config
-                       where heh.config.name = 'cancel_end');
-    create event @event_name
-        on schedule at date_add(new.prepare_date, interval @cancel_end HOUR_MINUTE) on completion not preserve
-        do update heh.orders set status = 1 where order_id = new.order_id and status = 0;
-end;
+CREATE OR REPLACE FUNCTION populate_orders_products_and_empty_cart() RETURNS TRIGGER AS
+$$
+BEGIN
+    INSERT INTO orders_products (order_id, product_name, description, price)
+    SELECT NEW.order_id, products.name, products.description, products.price
+    FROM carts
+             INNER JOIN products ON carts.product_id = products.product_id
+    WHERE carts.user_id = NEW.user_id;
 
--- Trigger to remove the set_pending event when the order is cancelled
-create trigger remove_pending
-    before update
-    on heh.orders
-    for each row
-begin
-    if new.status = 0 then
-        -- remove event
-        set @event_name = concat('set_pending_', new.order_id);
-        drop event @event_name;
-    end if;
-end;
+    DELETE FROM carts WHERE carts.user_id = NEW.user_id;
 
--- Trigger to update the set_pending event when the prepare_date is updated
-create trigger update_pending
-    before update
-    on heh.orders
-    for each row
-begin
-    if old.prepare_date != new.prepare_date and old.status = 1 then
-        set @event_name = concat('set_pending_', new.order_id);
-        set @cancel_end = (select value
-                           from heh.config
-                           where heh.config.name = 'cancel_end');
-        alter event @event_name
-            on schedule at date_add(new.prepare_date, interval @cancel_end HOUR_MINUTE);
-    end if;
-end;*/
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 -- ---- Views ---- --
 
 -- View to get the products of the cart of a user
-create view heh.carts_products
+create or replace view carts_products
 as
-select heh.carts.user_id,
-       heh.carts.product_id,
-       heh.carts.quantity,
-       heh.products.name,
-       heh.products.price,
-       heh.products.price * heh.carts.quantity as total_price
-from heh.carts
-         inner join heh.products on heh.carts.product_id = heh.products.product_id;
+select carts.user_id,
+       carts.product_id,
+       carts.quantity,
+       products.name,
+       products.price,
+       products.price * carts.quantity as total_price
+from carts
+         inner join products on carts.product_id = products.product_id;
 
 
 -- View to get the orders which are canceled using join
-create view heh.orders_canceled
+create or replace view orders_canceled
 as
 select orders.order_id,
        orders.user_id,
@@ -268,14 +214,14 @@ select orders.order_id,
        orders.prepare_date,
        -- virtual column to store the total price of the order
        (select sum(orders_products.price * orders_products.quantity)
-        from heh.orders_products
-        where heh.orders_products.order_id = orders.order_id) as total
-from heh.orders
+        from orders_products
+        where orders_products.order_id = orders.order_id) as total
+from orders
 where orders.status = 0;
 
 
 -- View to get the orders which are cancelable
-create view heh.orders_cancelable
+create or replace view orders_cancelable
 as
 select orders.order_id,
        orders.user_id,
@@ -283,13 +229,13 @@ select orders.order_id,
        orders.prepare_date,
        -- virtual column to store the total price of the order
        (select sum(orders_products.price * orders_products.quantity)
-        from heh.orders_products
-        where heh.orders_products.order_id = orders.order_id) as total
-from heh.orders
+        from orders_products
+        where orders_products.order_id = orders.order_id) as total
+from orders
 where orders.status = 1;
 
 -- View to get the orders waiting to be prepared
-create view heh.orders_pending
+create or replace view orders_pending
 as
 select orders.order_id,
        orders.user_id,
@@ -297,13 +243,13 @@ select orders.order_id,
        orders.prepare_date,
        -- virtual column to store the total price of the order
        (select sum(orders_products.price * orders_products.quantity)
-        from heh.orders_products
-        where heh.orders_products.order_id = orders.order_id) as total
-from heh.orders
+        from orders_products
+        where orders_products.order_id = orders.order_id) as total
+from orders
 where orders.status = 2;
 
 -- View to get the orders waiting to be delivered
-create view heh.orders_ready
+create or replace view orders_ready
 as
 select orders.order_id,
        orders.user_id,
@@ -311,13 +257,13 @@ select orders.order_id,
        orders.prepare_date,
        -- virtual column to store the total price of the order
        (select sum(orders_products.price * orders_products.quantity)
-        from heh.orders_products
-        where heh.orders_products.order_id = orders.order_id) as total
-from heh.orders
+        from orders_products
+        where orders_products.order_id = orders.order_id) as total
+from orders
 where orders.status = 3;
 
 -- View to get the orders delivered
-create view heh.orders_delivered
+create or replace view orders_delivered
 as
 select orders.order_id,
        orders.user_id,
@@ -325,7 +271,29 @@ select orders.order_id,
        orders.prepare_date,
        -- virtual column to store the total price of the order
        (select sum(orders_products.price * orders_products.quantity)
-        from heh.orders_products
-        where heh.orders_products.order_id = orders.order_id) as total
-from heh.orders
+        from orders_products
+        where orders_products.order_id = orders.order_id) as total
+from orders
 where orders.status = 4;
+
+-- ---- Procedure ---- --
+
+-- Procedure to update the status of orders if needed
+create or replace procedure update_orders_status()
+as
+$$
+begin
+    -- Update the status of orders if the prepare date is before the prepare date and before the time set in the config table
+    update orders
+    set status = 2
+    where orders.status = 1
+      AND orders.prepare_date::timestamp <
+          current_date + (SELECT value::interval FROM config WHERE name = 'prepare_time');
+
+    update orders
+    set status = 0
+    where orders.status = 2
+      AND orders.prepare_date < current_date;
+end;
+$$
+    LANGUAGE plpgsql;
