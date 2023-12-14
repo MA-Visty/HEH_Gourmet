@@ -20,6 +20,11 @@ public class ProductAdapter implements IManageProductUseCase {
     }
 
     @Override
+    public void batchAdd(List<InputProduct> products) throws IllegalArgumentException {
+        productRepository.batchAdd(products);
+    }
+
+    @Override
     public void update(int ID, InputProduct product) throws IllegalArgumentException {
         productRepository.update(ID, product);
     }
@@ -30,8 +35,18 @@ public class ProductAdapter implements IManageProductUseCase {
     }
 
     @Override
+    public void batchRemove(List<Integer> IDs) throws IllegalArgumentException {
+        productRepository.batchRemove(IDs);
+    }
+
+    @Override
     public Product get(int ID) throws IllegalArgumentException {
         return productRepository.get(ID);
+    }
+
+    @Override
+    public List<Product> batchGet(List<Integer> IDs) throws IllegalArgumentException {
+        return productRepository.batchGet(IDs);
     }
 
     @Override

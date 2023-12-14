@@ -45,12 +45,12 @@ public class ProductRepository {
         return Objects.requireNonNull(holder.getKey()).intValue();
     }
 
-    public void batchAdd(List<Product> products) {
+    public void batchAdd(List<InputProduct> products) {
         jdbc.batchUpdate(addSql, new BatchPreparedStatementSetter() {
 
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                Product product = products.get(i);
+                InputProduct product = products.get(i);
                 ps.setString(1, product.name());
                 ps.setString(2, product.description());
                 ps.setFloat(3, product.price());
