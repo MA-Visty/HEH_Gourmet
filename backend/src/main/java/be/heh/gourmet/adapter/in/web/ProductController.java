@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -23,7 +24,14 @@ public class ProductController {
     IManageProductUseCase productManager;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts() {
+    public ResponseEntity<List<Product>> getProducts(@RequestBody Optional<List<Integer>> ids) {
+        if (ids.isPresent()) {
+            List<Product> products = productManager.batchGet(ids.get());
+            if (products == null) {
+                return new ResponseEntity<>(null, null, 404);
+            }
+            return new ResponseEntity<>(products, null, 200);
+        }
         List<Product> products = productManager.list();
         if (products == null) {
             return new ResponseEntity<>(null, null, 404);
@@ -47,6 +55,12 @@ public class ProductController {
         return new ResponseEntity<>(response, responseHeaders, HttpStatus.CREATED);
     }
 
+    @PostMapping("/products")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void batchAddProducts(@RequestBody List<InputProduct> products) {
+        productManager.batchAdd(products);
+    }
+
     @GetMapping("/product/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable int id) {
         Product product = productManager.get(id);
@@ -66,5 +80,11 @@ public class ProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeProduct(@PathVariable int id) {
         productManager.remove(id);
+    }
+
+    @DeleteMapping("/products")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void batchRemoveProducts(@RequestBody List<Integer> ids) {
+        productManager.batchRemove(ids);
     }
 }
