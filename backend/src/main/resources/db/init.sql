@@ -11,9 +11,11 @@ create table if not exists config
 -- Insert the default config
 -- not cancelable after 11:00:00 and
 -- cannot order after 10:30:00
+-- schedule time is every 15 minutes
 insert into config (name, value)
 values ('prepare_time', '11:00:00'),
-       ('order_time', '10:30:00');
+       ('order_time', '10:30:00'),
+       ('schedule_time', (interval '15 minute')::text);
 
 
 -- Table to store the available categories
@@ -156,12 +158,13 @@ CREATE TRIGGER remove_user
     BEFORE DELETE
     ON users
     FOR EACH ROW
-EXECUTE PROCEDURE remove_user_from_carts_and_orders();
+EXECUTE PROCEDURE remove_user_from_carts_favorites_and_orders();
 
-CREATE OR REPLACE FUNCTION remove_user_from_carts_and_orders() RETURNS TRIGGER AS
+CREATE OR REPLACE FUNCTION remove_user_from_carts_favorites_and_orders() RETURNS TRIGGER AS
 $$
 BEGIN
     DELETE FROM carts WHERE carts.user_id = OLD.user_id;
+    DELETE FROM favorites WHERE favorites.user_id = OLD.user_id;
     DELETE FROM orders WHERE orders.user_id = OLD.user_id;
     RETURN OLD;
 END;
@@ -278,22 +281,251 @@ where orders.status = 4;
 
 -- ---- Procedure ---- --
 
+-- -- Chore procedures -- --
+
 -- Procedure to update the status of orders if needed
+-- this is intended to be called by a scheduled task every schedule_time ( see config table )
 create or replace procedure update_orders_status()
 as
 $$
 begin
-    -- Update the status of orders if the prepare date is before the prepare date and before the time set in the config table
+    -- update orders if the current time is greater than the prepare date at the prepare time
     update orders
     set status = 2
     where orders.status = 1
-      AND orders.prepare_date::timestamp <
-          current_date + (SELECT value::interval FROM config WHERE name = 'prepare_time');
+      AND orders.prepare_date + (SELECT value::interval FROM config WHERE name = 'prepare_time') >
+          now()::timestamp;
 
+    -- autocancel orders if the current time is greater than the prepare date at the cancel time
     update orders
     set status = 0
     where orders.status = 2
       AND orders.prepare_date < current_date;
 end;
+$$ LANGUAGE plpgsql;
+
+-- -- Users procedures -- --
+
+-- Procedure to add a user
+create or replace procedure add_user(
+    in p_last_name varchar(255),
+    in p_first_name varchar(255),
+    in p_email varchar(255),
+    in p_password varchar(255)
+) as
 $$
-    LANGUAGE plpgsql;
+begin
+    -- add user
+    insert into users (last_name, first_name, email, password, role)
+    values (p_last_name, p_first_name, p_email, p_password, 0);
+end;
+$$ language plpgsql;
+
+-- Procedure to add a vendor
+create or replace procedure add_vendor(
+    in p_last_name varchar(255),
+    in p_first_name varchar(255),
+    in p_email varchar(255),
+    in p_password varchar(255)
+) as
+$$
+begin
+    -- add vendor
+    insert into users (last_name, first_name, email, password, role)
+    values (p_last_name, p_first_name, p_email, p_password, 1);
+end;
+$$ language plpgsql;
+
+-- Procedure to add an admin
+
+create or replace procedure add_admin(
+    in p_last_name varchar(255),
+    in p_first_name varchar(255),
+    in p_email varchar(255),
+    in p_password varchar(255)
+) as
+$$
+begin
+    -- add admin
+    insert into users (last_name, first_name, email, password, role)
+    values (p_last_name, p_first_name, p_email, p_password, 100);
+end;
+$$ language plpgsql;
+
+-- Procedure to remove a user
+
+create or replace procedure remove_user(
+    in p_user_id bigint
+) as
+$$
+begin
+    -- remove user
+    delete from users where users.user_id = p_user_id;
+end;
+$$ language plpgsql;
+
+-- Procedure to edit a user , values which are null are not updated
+create or replace procedure edit_user(
+    in p_user_id bigint,
+    in p_last_name varchar(255),
+    in p_first_name varchar(255),
+    in p_email varchar(255),
+    in p_password varchar(255)
+) as
+$$
+begin
+    -- edit user
+    update users
+    set last_name  = coalesce(p_last_name, last_name),
+        first_name = coalesce(p_first_name, first_name),
+        email      = coalesce(p_email, email),
+        password   = coalesce(p_password, password)
+    where users.user_id = p_user_id;
+end;
+$$ language plpgsql;
+
+-- -- Category procedures -- --
+-- Procedure to add a category
+create or replace procedure add_category(
+    in p_name varchar(255),
+    in p_description text
+) as
+$$
+begin
+    insert into categories (name, description)
+    values (p_name, p_description);
+end;
+$$ language plpgsql;
+
+-- Procedure to remove a category
+create or replace procedure remove_category(
+    in p_category_id bigint
+) as
+$$
+begin
+    delete from categories where categories.category_id = p_category_id;
+end;
+$$ language plpgsql;
+
+-- Procedure to edit a category , values which are null are not updated
+create or replace procedure edit_category(
+    in p_category_id bigint,
+    in p_name varchar(255),
+    in p_description text
+) as
+$$
+begin
+    update categories
+    set name        = coalesce(p_name, name),
+        description = coalesce(p_description, description)
+    where categories.category_id = p_category_id;
+end;
+$$ language plpgsql;
+
+-- -- Product procedures -- --
+-- Procedure to add a product with a new category
+create or replace procedure add_product_with_new_category(
+    in p_name varchar(255),
+    in p_description text,
+    in p_price decimal,
+    in p_stock int,
+    in p_image varchar(255),
+    in p_category_name varchar(255),
+    in p_category_description text
+) as
+$$
+declare
+    category_id bigint;
+begin
+    -- add category
+    insert into categories (name, description)
+    values (p_category_name, p_category_description)
+    RETURNING category_id into category_id;
+    -- add product
+    call add_product(p_name, p_description, p_price, coalesce(p_stock, 1), p_image,
+                     category_id);
+end;
+$$ language plpgsql;
+
+-- Procedure to add a product with an existing category
+create or replace procedure add_product(
+    in p_name varchar(255),
+    in p_description text,
+    in p_price decimal,
+    in p_stock int,
+    in p_image varchar(255),
+    in p_category_id int
+) as
+$$
+begin
+    -- add product
+    insert into products (name, description, price, stock, image, category_id)
+    values (p_name, p_description, p_price, coalesce(p_stock, 1), p_image, p_category_id);
+end;
+$$ language plpgsql;
+
+-- Procedure to remove a product
+create or replace procedure remove_product(
+    in p_id int
+) as
+$$
+begin
+    -- remove product
+    delete from products where product_id = p_id;
+end;
+$$ language plpgsql;
+
+-- Procedure to edit a product , values which are null are not updated
+create or replace procedure edit_product(
+    in p_id int,
+    in p_name varchar(255),
+    in p_description text,
+    in p_price decimal,
+    in p_stock int,
+    in p_image varchar(255),
+    in p_category_id int
+) as
+$$
+begin
+    -- edit product
+    update products
+    set name        = coalesce(p_name, name),
+        description = coalesce(p_description, description),
+        price       = coalesce(p_price, price),
+        stock       = coalesce(p_stock, stock),
+        image       = coalesce(p_image, image),
+        category_id = coalesce(p_category_id, category_id)
+    where product_id = p_id;
+end;
+$$ language plpgsql;
+
+
+-- -- Cart procedures -- --
+-- Procedure to add a product to a cart
+create or replace procedure add_product_to_cart(
+    in p_user_id int,
+    in p_product_id int,
+    in p_quantity int
+) as
+$$
+begin
+    -- add product to cart
+    insert into carts (user_id, product_id, quantity)
+    values (p_user_id, p_product_id, coalesce(p_quantity, 1));
+end;
+$$ language plpgsql;
+
+-- Procedure to remove a product from a cart
+create or replace procedure remove_product_from_cart(
+    in p_user_id int,
+    in p_product_id int
+) as
+$$
+begin
+    -- remove product from cart
+    delete
+    from carts
+    where carts.user_id = p_user_id
+      and carts.product_id = p_product_id;
+end;
+$$ language plpgsql;
