@@ -1,3 +1,10 @@
+import java.io.BufferedReader
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
+
 plugins {
     java
     id("org.springframework.boot") version "3.2.0"
@@ -5,7 +12,7 @@ plugins {
 }
 
 group = "be.heh"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -35,4 +42,52 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+abstract class DockerBuild : DefaultTask() {
+    @Input
+    var dockerhubUser = ""
+
+    @Input
+    val imageName = project.name.lowercase()
+
+    @Input
+    val imageVersion = project.version
+
+    @TaskAction
+    fun dockerBuild() {
+        val name: String = if (this.dockerhubUser == "") {
+            this.imageName + ":" + this.imageVersion
+        } else {
+            this.dockerhubUser + "/" + this.imageName + ":" + this.imageVersion
+        }
+
+        val processBuilder = ProcessBuilder("docker", "build", "--build-arg", "JAR_FILE=build/libs/"
+                + project.name + "-" + project.version + ".jar", "--label", this.imageName, "-t", name, ".")
+        processBuilder.redirectErrorStream(true)
+        val process = processBuilder.start()
+        val future: Future<Int> = Executors.newSingleThreadExecutor().submit(Callable {
+            val inputStream: InputStream = process.inputStream
+            val inputStreamReader = InputStreamReader(inputStream)
+            val bufferedReader = BufferedReader(inputStreamReader)
+            var line: String?
+            while (bufferedReader.readLine().also { line = it } != null) {
+                println(line)
+            }
+            return@Callable 0
+        })
+        try {
+            future.get(5, TimeUnit.MINUTES)
+        } catch (e: Exception) {
+            println("Timeout")
+        }
+        process.waitFor()
+
+        ProcessBuilder("docker", "image", "prune", "--force").start().waitFor()
+    }
+}
+
+tasks.register<DockerBuild>("docker-build") {
+    dockerhubUser = System.getenv("DOCKERHUB_USER") ?: ""
+    dependsOn("assemble")
 }
