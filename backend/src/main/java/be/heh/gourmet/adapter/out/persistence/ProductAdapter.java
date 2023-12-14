@@ -1,7 +1,7 @@
 package be.heh.gourmet.adapter.out.persistence;
 
-import be.heh.gourmet.application.domain.InputProduct;
-import be.heh.gourmet.application.domain.Product;
+import be.heh.gourmet.application.port.in.InputProduct;
+import be.heh.gourmet.application.domain.model.Product;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,12 @@ public class ProductAdapter implements IManageProductUseCase {
     @Override
     public Product add(InputProduct product) throws IllegalArgumentException {
         int ID = productRepository.add(product);
-        return Product.of(ID, product.image(), product);
+        return product.asProduct(ID, product.image());
     }
 
     @Override
-    public void update(Product product) throws IllegalArgumentException {
-        productRepository.update(product);
+    public void update(int ID, InputProduct product) throws IllegalArgumentException {
+        productRepository.update(ID, product);
     }
 
     @Override
@@ -37,5 +37,10 @@ public class ProductAdapter implements IManageProductUseCase {
     @Override
     public List<Product> list() {
         return productRepository.getAll();
+    }
+
+    @Override
+    public List<Product> listByCategory(int categoryID) {
+        return productRepository.getFromCategory(categoryID);
     }
 }

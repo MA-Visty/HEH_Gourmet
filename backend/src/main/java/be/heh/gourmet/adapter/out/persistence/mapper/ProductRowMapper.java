@@ -1,6 +1,6 @@
 package be.heh.gourmet.adapter.out.persistence.mapper;
 
-import be.heh.gourmet.application.domain.Product;
+import be.heh.gourmet.application.domain.model.Product;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
