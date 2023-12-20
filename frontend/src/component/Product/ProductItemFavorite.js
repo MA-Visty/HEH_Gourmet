@@ -1,5 +1,7 @@
 import React, {useState} from "react";
-import { Badge } from 'react-bootstrap';
+import {Badge} from 'react-bootstrap';
+import StarImage from "../../assets/images/star.svg"
+import StarCompletImage from "../../assets/images/starComplet.svg"
 
 function ProductItemFavorite() {
     const [isFav, setFav] = useState(false);
@@ -16,7 +18,7 @@ function ProductItemFavorite() {
                 zIndex: 1
             }}>
             <img
-                src={isFav ? "/starComplet.svg" : "/star.svg"}
+                src={isFav ? StarCompletImage : StarImage}
                 alt="error"
                 width={35}
                 onClick={() => setFav((isFav ? false : true))}

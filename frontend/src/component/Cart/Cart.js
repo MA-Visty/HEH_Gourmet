@@ -1,6 +1,7 @@
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import TrashImage from '../../assets/images/trash.svg';
 
 import { useAppContext, useDispatchContext } from "../../store/AppContext";
 
@@ -15,7 +16,7 @@ const Cart = (props) => {
             <td>{element.product.price} €</td>
             <td>
                 <img
-                    src="/Trash.svg"
+                    src={TrashImage}
                     alt="error"
                     width={20}
                     onClick={() => dispatch({ type: "remove", id: element.product.id })}
