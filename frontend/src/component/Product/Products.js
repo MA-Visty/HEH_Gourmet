@@ -27,8 +27,8 @@ function Products() {
     }, []);
 
     return (
-        <Container style={{marginTop: 15}}>
-            <ProductItemFilter data={data} setDataFilter={setDataFilter}/>
+        <Container style={{paddingTop: 15, background: "#FFF", height: "100vh"}}>
+            <ProductItemFilter data={data} setDataFilter={setDataFilter} />
             <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
                 {isCrash ?
                     <Error />
@@ -38,7 +38,7 @@ function Products() {
                         <EmptyData/>
                     : dataFilter.map((item) => (
                         <Col sm>
-                            <ProductItem data={data} product={item}/>
+                            <ProductItem data={data} product={item} class="bg-primary"/>
                         </Col>
                     ))
                 }

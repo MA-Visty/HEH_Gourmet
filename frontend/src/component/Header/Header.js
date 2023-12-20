@@ -4,6 +4,9 @@ import { useAppContext } from "../../store/AppContext";
 import { LinkContainer } from "react-router-bootstrap";
 import OffCanvasUser from "../OffCanvas/OffCanvasUser";
 import OffCanvasCart from "../OffCanvas/OffCanvasCart";
+import CartImage from '../../assets/images/cart.svg';
+import UserImage from '../../assets/images/user.svg';
+import UserLogImage from '../../assets/images/userComplet.svg';
 
 function Header() {
     const [showUser, setShowUser] = useState(false);
@@ -18,7 +21,7 @@ function Header() {
 
     return (
         <>
-            <Navbar bg="light" expand="lg">
+            <Navbar bg="light" expand="lg" sticky={"top"}>
                 <Container>
                     <LinkContainer to="/">
                         <Navbar.Brand>HEH-Gourmet</Navbar.Brand>
@@ -35,13 +38,13 @@ function Header() {
                         </Nav>
                         <Row>
                             <Col xs="auto">
-                                <img src={cartContain ? "/cartComplet.svg" : "/cart.svg"} alt="error" width={25} onClick={handleCartShow} />
+                                <img src={CartImage} alt="error" width={30} onClick={handleCartShow} />
                                 <Badge bg="primary" pill>
                                     14
                                 </Badge>
                             </Col>
                             <Col xs="auto">
-                                <img src={userLog ? "/userComplet.svg" : "/user.svg"} alt="error" width={25} onClick={handleUserShow} />
+                                <img src={userLog ? UserLogImage : UserImage} alt="error" width={30} onClick={handleUserShow} />
                             </Col>
                         </Row>
                     </Navbar.Collapse>

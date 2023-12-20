@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import {Row, Col, Button} from 'react-bootstrap';
 //import useAppContext from '../../store/AppContext';
+import MenuImage from "../../assets/images/menu.svg";
 
 function ProductItemForm({id, quantity}) {
     /*
@@ -25,8 +26,8 @@ function ProductItemForm({id, quantity}) {
 	return (
         <Row className="d-flex justify-content-center">
             <Col>
-                <Button variant="secondary" as={Link} to={`/product/${id}`}>
-                    <img style={{objectFit:'cover', display:"flex", marginLeft:"auto", marginRight:"auto", height:"1.75rem", width:"auto"}} src="/menu.svg" alt="error" />
+                <Button variant="outline-secondary" as={Link} to={`/product/${id}`}>
+                    <img style={{objectFit:'cover', display:"flex", height:"1.6rem", width:"auto"}} src={MenuImage} alt="error" />
                 </Button>
             </Col>
             <Col>

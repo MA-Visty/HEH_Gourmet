@@ -10,6 +10,7 @@ import ProductDetail from "./component/Product/ProductDetail";
 function App() {
     return (
         <>
+            <div style={{zIndex: "-1", position: "fixed", left: "0", top: "0", right: "0", bottom: "0", background: "#062B16"}}></div>
             <Header />
             <Routes>
                 <Route index element={<Home />}/>

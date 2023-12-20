@@ -24,7 +24,7 @@ function Home() {
 
     return (
         <Stack>
-            <img style={{objectFit: 'cover', display:"flex", marginLeft:"auto", marginRight:"auto", height:350}} src="/bulb.svg" alt="error" />
+            <img style={{objectFit: 'cover', display:"flex", marginLeft:"auto", marginRight:"auto", height:350}} src="/src/assets/images/bulb.svg" alt="error" />
 
             <Carousel style={{background:"#242526"}}>
                 {data.map((item) => (
@@ -36,7 +36,7 @@ function Home() {
                             <Row className="d-flex justify-content-center">
                                 <Col xs="auto">
                                     <Button variant="secondary" as={Link} to={`/product/${item.id}`}>
-                                        <img style={{objectFit:'cover', display:"flex", marginLeft:"auto", marginRight:"auto", height:"1.75rem", width:"auto"}} src="/menu.svg" alt="error" />
+                                        <img style={{objectFit:'cover', display:"flex", marginLeft:"auto", marginRight:"auto", height:"1.75rem", width:"auto"}} src="/src/assets/images/menu.svg" alt="error" />
                                     </Button>
                                 </Col>
                                 <Col xs="auto">
