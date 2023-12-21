@@ -7,8 +7,10 @@ import ProductItemFavorite from "./ProductItemFavorite";
 import Error from "../../component/Error/Error";
 import Loader from "../../component/Loader/Loader";
 import EmptyData from "../../component/Loader/EmptyData";
+import {useAppContext} from "../../store/AppContext";
 
 function Products() {
+    const { state } = useAppContext();
     const [data, setData] = useState([]);
     const [isCrash, setCrash] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -61,7 +63,7 @@ function Products() {
 							</Table>
 						</Col>
 						<Col>
-							<ProductItemFavorite/>
+                            {state.user !== "" ? <ProductItemFavorite product={data} /> : <></> }
 						</Col>
 					</>
                 }
