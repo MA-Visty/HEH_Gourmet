@@ -17,8 +17,6 @@ function Header() {
     const handleUserShow = () => setShowUser(true);
     const handleCartShow = () => setShowCart(true);
 
-    const [userLog, setUserLog] = useState(false);
-
     return (
         <>
             <Navbar bg="light" expand="lg" sticky={"top"}>
@@ -35,9 +33,12 @@ function Header() {
                             <LinkContainer to="/menu">
                                 <Nav.Link>Menu</Nav.Link>
                             </LinkContainer>
-                            <LinkContainer to="/workspace">
-                                <Nav.Link>Workspace</Nav.Link>
-                            </LinkContainer>
+                            {state.user.role === "worker" ?
+                                <LinkContainer to="/workspace">
+                                    <Nav.Link>Workspace</Nav.Link>
+                                </LinkContainer>
+                                : <></>
+                            }
                         </Nav>
                         <Row>
                             <Col xs="auto" style={{ position: "relative"}}>
@@ -47,14 +48,14 @@ function Header() {
                                 </div>
                             </Col>
                             <Col xs="auto">
-                                <img src={userLog ? UserLogImage : UserImage} alt="error" width={30} onClick={handleUserShow} />
+                                <img src={state.user !== "" ? UserLogImage : UserImage} alt="error" width={30} onClick={handleUserShow} />
                             </Col>
                         </Row>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
             <OffCanvasCart show={showCart} onHide={handleCartClose} />
-            <OffCanvasUser show={showUser} onHide={handleUserClose} type={""}/>
+            <OffCanvasUser show={showUser} onHide={handleUserClose}/>
         </>
     );
 }
