@@ -6,6 +6,7 @@ import Error from "./component/Error/Error";
 import Cart from "./component/Cart/Cart";
 import Products from "./component/Product/Products";
 import ProductDetail from "./component/Product/ProductDetail";
+import WorkSpace from "./pages/WorkSpace";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 <Route index element={<Home />}/>
                 <Route path="menu" element={<Products />}/>
                 <Route path="product/:id" element={<ProductDetail />}/>
+                <Route path="workspace" element={<WorkSpace />} />
                 <Route path="*" element={<Error type={"notFound"} />}/>
             </Routes>
         </>
