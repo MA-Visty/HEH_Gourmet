@@ -1,10 +1,10 @@
 import React, {useRef, useState} from "react";
 import { Link } from "react-router-dom";
-import {Row, Col, Button, InputGroup, Form} from 'react-bootstrap';
+import {Row, Col, Button, InputGroup, Form, Stack} from 'react-bootstrap';
 import { useDispatchContext } from "../../store/AppContext";
 import MenuImage from "../../assets/images/menu.svg";
 
-function ProductItemForm(product) {
+function ProductItemForm({product}) {
     const { dispatch } = useDispatchContext();
     const quantity = useRef();
     const [invalid, setInvalid] = useState(false);
@@ -27,19 +27,15 @@ function ProductItemForm(product) {
     };
 
 	return (
-        <Row className="d-flex justify-content-center">
-            <Col>
-                <Button variant="outline-secondary" as={Link} to={`/product/${product.id}`}>
-                    <img style={{objectFit:'cover', display:"flex", height:"1.6rem", width:"auto"}} src={MenuImage} alt="error" />
-                </Button>
-            </Col>
-            <Col>
-                <InputGroup>
-                    <Form.Control ref={quantity} required isInvalid={invalid} type="number" min="0" max={product.quantity} aria-label="Recipient's username" aria-describedby="basic-addon2" />
-                    <Button style={{width: "auto"}} variant="primary" id="button-addon2" onClick={AddCart}>Add</Button>
-                </InputGroup>
-            </Col>
-        </Row>
+        <Stack direction="horizontal" gap={2}>
+            <Button variant="outline-secondary" as={Link} to={`/product/${product.id}`}>
+                <img style={{objectFit:'cover', display:"flex", height:"1.5rem", width:"auto"}} src={MenuImage} alt="error" />
+            </Button>
+            <InputGroup>
+                <Form.Control ref={quantity} required isInvalid={invalid} type="number" min="0" max={product.quantity} aria-label="Recipient's username" aria-describedby="basic-addon2" />
+                <Button style={{width: "50%"}} variant="primary" id="button-addon2" onClick={AddCart}>Add</Button>
+            </InputGroup>
+        </Stack>
     );
   }
   

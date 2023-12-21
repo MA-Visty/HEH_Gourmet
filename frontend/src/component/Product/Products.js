@@ -27,7 +27,7 @@ function Products() {
     }, []);
 
     return (
-        <Container style={{paddingTop: 15, background: "#FFF", minHeight: "100vh"}}>
+        <Container style={{paddingTop: 15, paddingBottom: 15, background: "#FFF", minHeight: "100vh"}}>
             <ProductItemFilter data={data} setDataFilter={setDataFilter} />
             <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
                 {isCrash ?
