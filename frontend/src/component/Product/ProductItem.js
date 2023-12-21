@@ -3,8 +3,10 @@ import React, {useState} from "react";
 import { Card, Row, Col } from 'react-bootstrap';
 import ProductItemForm from "./ProductItemForm";
 import ProductItemFavorite from "./ProductItemFavorite";
+import {useAppContext} from "../../store/AppContext";
 
 function ProductItem({product}) {
+	const { state } = useAppContext();
 	return (
 		<Card
 			style={{margin: 5}}
@@ -15,7 +17,7 @@ function ProductItem({product}) {
 				WebkitUserSelect: "none",
 				msUserSelect: "none"
 		}}>
-			<ProductItemFavorite />
+			{state.user !== "" ? <ProductItemFavorite product={product} /> : <></> }
 			<NavLink to={`/product/${product.id}`}>
 				<Card.Img style={{ objectFit: 'cover', height: '250px', borderBottom: '1px solid #dee2e6'}} variant="top" src={product.mainImage} />
 				<Card.Body>
