@@ -1,36 +1,14 @@
 import axios from "axios";
 
 export function login(state, action) {
-    const response = axios
-        .post("http://localhost:3000/api/auth/login", {
-            email: action.email,
-            password: action.password
-        })
-        .then((response) => {
-            if (response.status !== 200) {
-                throw new Error("login failed with status code: " + response.status);
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    let creditential = {
-        accessToken: response.data.tokens.accessToken,
-        refreshToken: response.data.tokens.refreshToken,
-    };
-    sessionStorage.setItem("creditential", JSON.stringify(creditential));
-    return { ...state };
+    //sessionStorage.setItem("creditential", JSON.stringify(creditential));
+    return { user: action.response.user, token: action.response.tokens, cart: state.cart, quantity: state.quantity, price: state.price, favorite: state.favorite };
 }
 
-export function register(state, action) {
-    return { ...state }
-}
-
-export function logout() {
+export function logout(state) {
     axios
         .post("http://localhost:3000/api/auth/logout", {
-            refreshToken: JSON.parse(sessionStorage.getItem("creditential"))
-                .refreshToken,
+            refreshToken: state.token.refreshToken,
         })
         .then((response) => {
             if (response.status !== 200) {
@@ -41,5 +19,5 @@ export function logout() {
             console.log(error);
         });
     sessionStorage.removeItem("creditential");
-    return { cart: [], quantity: 0, price: 0 };
+    return { user: "", token: "", cart: [], quantity: 0, price: 0, favorite: [] };
 }
