@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Header from "./component/Header/Header";
 import {Route, Routes} from "react-router-dom";
-import Home from "./pages/Home";
+import Home from "./component/Home/Home";
 import Error from "./component/Error/Error";
 import Products from "./component/Product/Products";
 import ProductDetail from "./component/Product/ProductDetail";
