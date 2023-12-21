@@ -32,8 +32,11 @@ function Header() {
                             <LinkContainer to="/">
                                 <Nav.Link>Home</Nav.Link>
                             </LinkContainer>
-                            <LinkContainer to="/Menu">
+                            <LinkContainer to="/menu">
                                 <Nav.Link>Menu</Nav.Link>
+                            </LinkContainer>
+                            <LinkContainer to="/workspace">
+                                <Nav.Link>Workspace</Nav.Link>
                             </LinkContainer>
                         </Nav>
                         <Row>

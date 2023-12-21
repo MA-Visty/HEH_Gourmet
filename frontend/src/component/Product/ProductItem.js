@@ -4,7 +4,7 @@ import { Card, Row, Col } from 'react-bootstrap';
 import ProductItemForm from "./ProductItemForm";
 import ProductItemFavorite from "./ProductItemFavorite";
 
-function ProductItem({data, product}) {
+function ProductItem({product}) {
 	return (
 		<Card
 			style={{margin: 5}}
@@ -30,7 +30,7 @@ function ProductItem({data, product}) {
 				</Card.Body>
 			</NavLink>
 			<Card.Footer className="text-muted">
-				<ProductItemForm id={product.id} quantity={product.quantity}/>
+				<ProductItemForm product={product}/>
 			</Card.Footer>
 		</Card>
 	);
