@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer } from "react";
-import {login, logout} from "./UserContext";
-import {add2cart, updatecart, remove2cart} from "./CartContext";
+import { login, logout } from "./UserContext";
+import { add2cart, updatecart, remove2cart, removecart } from "./CartContext";
 
 export const AppContext = createContext();
 export const dispatchContext = createContext();
@@ -15,6 +15,8 @@ function appContextReducer(state = initialState, action) {
             return updatecart(state, action);
         case "remove":
             return remove2cart(state, action);
+        case "removeAll":
+            return removecart(state, action);
         case "login":
             return login(state, action);
         case "logout":

@@ -9,6 +9,7 @@ import UserImage from '../../assets/images/user.svg';
 import UserLogImage from '../../assets/images/userComplet.svg';
 
 function Header() {
+    const { state } = useAppContext();
     const [showUser, setShowUser] = useState(false);
     const [showCart, setShowCart] = useState(false);
     const handleUserClose = () => setShowUser(false);
@@ -17,7 +18,6 @@ function Header() {
     const handleCartShow = () => setShowCart(true);
 
     const [userLog, setUserLog] = useState(false);
-    const [cartContain, setCartContain] = useState(false);
 
     return (
         <>
@@ -40,11 +40,11 @@ function Header() {
                             </LinkContainer>
                         </Nav>
                         <Row>
-                            <Col xs="auto">
+                            <Col xs="auto" style={{ position: "relative"}}>
                                 <img src={CartImage} alt="error" width={30} onClick={handleCartShow} />
-                                <Badge bg="primary" pill>
-                                    14
-                                </Badge>
+                                <div style={{ fontSize:"10px", position: "absolute", left: "50%", top: "40%", transform: "translateX(-50%)", pointerEvents: "none"}}>
+                                    {state.quantity}
+                                </div>
                             </Col>
                             <Col xs="auto">
                                 <img src={userLog ? UserLogImage : UserImage} alt="error" width={30} onClick={handleUserShow} />
@@ -53,7 +53,7 @@ function Header() {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            <OffCanvasCart show={showCart} onHide={handleCartClose} type={cartContain}/>
+            <OffCanvasCart show={showCart} onHide={handleCartClose} />
             <OffCanvasUser show={showUser} onHide={handleUserClose} type={""}/>
         </>
     );

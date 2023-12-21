@@ -3,7 +3,6 @@ import Header from "./component/Header/Header";
 import {Route, Routes} from "react-router-dom";
 import Home from "./pages/Home";
 import Error from "./component/Error/Error";
-import Cart from "./component/Cart/Cart";
 import Products from "./component/Product/Products";
 import ProductDetail from "./component/Product/ProductDetail";
 import WorkSpace from "./pages/WorkSpace";

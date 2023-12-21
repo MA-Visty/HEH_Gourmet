@@ -2,9 +2,9 @@ import axios from "axios";
 
 export function login(state, action) {
     const response = axios
-        .post("http://localhost:3000/api/login", {
+        .post("http://localhost:3000/api/auth/login", {
             email: action.email,
-            password: action.password,
+            password: action.password
         })
         .then((response) => {
             if (response.status !== 200) {
@@ -20,6 +20,10 @@ export function login(state, action) {
     };
     sessionStorage.setItem("creditential", JSON.stringify(creditential));
     return { ...state };
+}
+
+export function register(state, action) {
+    return { ...state }
 }
 
 export function logout() {
