@@ -12,8 +12,12 @@ function OffCanvasUser({ show, onHide, type, ...props }) {
         setTitle("Register");
     }
 
-    const changeCanvas = () => {
+    const switchLogRegist = () => {
         setTitle((title) => (title === 'Login' ? 'Register' : 'Login'));
+    };
+
+    const switchLogAccount = () => {
+        setTitle((title) => (title === 'Login' ? 'Account' : 'Login'));
     };
 
     return (
@@ -22,16 +26,16 @@ function OffCanvasUser({ show, onHide, type, ...props }) {
                 <Offcanvas.Title>{title}</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-            {title === "Account" ? <UserAccount/>
-                : title === "Register" ? <UserRegister changeCanvas={changeCanvas}/>
-                : <UserLogin changeCanvas={changeCanvas}/>
+            {title === "Account" ? <UserAccount switchLogAccount={switchLogAccount}/>
+                : title === "Register" ? <UserRegister switchLogRegist={switchLogRegist}/>
+                : <UserLogin switchLogRegist={switchLogRegist} switchLogAccount={switchLogAccount}/>
             }
             </Offcanvas.Body>
         </Offcanvas>
     )
 }
 
-function UserLogin({changeCanvas}) {
+function UserLogin({switchLogRegist, switchLogAccount}) {
     const { dispatch } = useDispatchContext();
     const [validated, setValidated] = useState(false);
     const email = useRef();
@@ -47,18 +51,17 @@ function UserLogin({changeCanvas}) {
             setValidated(true);
             return;
         } else {
-            /*
-            dispatch
-            */
-
             try {
                 const response = await axios
                     .post("http://localhost:3000/api/auth/login", {
                         email: emailCheck,
                         password: pwdCheck
                     });
-                //setUser("");
-                console.log(response);
+                dispatch({
+                    type: "login",
+                    response: response.data
+                });
+                switchLogAccount()
             } catch (except) {
                 alert('nop');
             }
@@ -105,13 +108,13 @@ function UserLogin({changeCanvas}) {
 
             <div className="d-grid gap-2">
                 <Button variant="primary" size="lg" onClick={handleLogin}>Login</Button>
-                <Button variant="secondary" size="lg" onClick={changeCanvas}>Register</Button>
+                <Button variant="secondary" size="lg" onClick={switchLogRegist}>Register</Button>
             </div>
         </Form>
     );
 }
 
-function UserRegister({changeCanvas}) {
+function UserRegister({switchLogRegist}) {
     const [validated, setValidated] = useState(false);
     const email = useRef();
     const password = useRef();
@@ -148,16 +151,25 @@ function UserRegister({changeCanvas}) {
                 <Button variant="primary" size="lg">
                     Confirm
                 </Button>
-                <Button variant="secondary" size="lg" onClick={changeCanvas}>Cancel</Button>
+                <Button variant="secondary" size="lg" onClick={switchLogRegist}>Cancel</Button>
             </div>
         </Form>
     );
 }
 
-function UserAccount() {
+function UserAccount({switchLogAccount}) {
+    const { dispatch } = useDispatchContext();
+    const handleLogout = (event) => {
+        dispatch({
+            type: "logout"
+        });
+        switchLogAccount()
+    }
+
     return (
-        <>
-        </>
+        <Button onClick={handleLogout}>
+            Logout
+        </Button>
     );
 }
 

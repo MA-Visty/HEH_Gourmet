@@ -38,11 +38,11 @@ export function add2cart(state, action) {
     const new_quantity = add_quantity + quantity;
     // update total price
     const new_price = add_price * add_quantity + price;
-    return { login: state.login, type: state.type, cart: cart, quantity: new_quantity, price: new_price };
+    return { user: state.user, token: state.token, cart: cart, quantity: new_quantity, price: new_price, favorite: state.favorite };
 }
 
 export function updatecart(state, action) {
-    return { login: state.login, type: state.type, cart: state.cart, quantity: state.quantity, price: state.price}
+    return { user: state.user, token: state.token, cart: state.cart, quantity: state.quantity, price: state.price, favorite: state.favorite };
 }
 
 export function remove2cart(state, action) {
@@ -64,9 +64,9 @@ export function remove2cart(state, action) {
         }
     });
 
-    return { login: state.login, type: state.type, cart: new_cart, quantity: new_quantity, price: new_price };
+    return { user: state.user, token: state.token, cart: new_cart, quantity: new_quantity, price: new_price, favorite: state.favorite };
 }
 
 export function removecart(state, action) {
-    return { login: state.login, type: state.type, cart: [], quantity: 0, price: 0}
+    return { user: state.user, token: state.token, cart: [], quantity: 0, price: 0, favorite: state.favorite}
 }

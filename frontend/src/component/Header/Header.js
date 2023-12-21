@@ -42,7 +42,7 @@ function Header() {
                         <Row>
                             <Col xs="auto" style={{ position: "relative"}}>
                                 <img src={CartImage} alt="error" width={30} onClick={handleCartShow} />
-                                <div style={{ fontSize:"10px", position: "absolute", left: "50%", top: "40%", transform: "translateX(-50%)", pointerEvents: "none"}}>
+                                <div style={{ fontSize:"10px", position: "absolute", left: "50%", top: "55%", transform: "translate(-50%, -50%)", pointerEvents: "none"}}>
                                     {state.quantity}
                                 </div>
                             </Col>
