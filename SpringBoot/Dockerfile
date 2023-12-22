@@ -1,5 +1,5 @@
 # Utilisez une image de base avec une JVM et un système d'exploitation minimal
-FROM openjdk:17-jre-slim
+FROM openjdk:17-jdk-slim
 LABEL authors="mahal"
 
 # Définissez le répertoire de travail
