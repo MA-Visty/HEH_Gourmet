@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  service_mysql_db:
+    container_name: container_mysql_db
+    image: mysql
+    environment:
+      - MYSQL_USER=mysqlUser
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DATABASE=gourmetdb
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - dbvol:/var/lib/mysql
+    networks:
+      - network_gourmet
+    restart: always
+
+  service_springboot_api:
+    container_name: container_springboot_api
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service_mysql_db
+    networks:
+      - network_gourmet
+    environment:
+      - MYSQL_HOST=service_mysql_db
+      - MYSQL_USERNAME=mysqlUser
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DATABASE=gourmetdb
+      - MYSQL_PORT=3306
+
+networks:
+  network_gourmet:
+    name: network_gourmet
+
+volumes:
+  dbvol:

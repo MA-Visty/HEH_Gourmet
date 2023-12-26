@@ -14,14 +14,10 @@ public class ManageUserImpl implements IManageUserUseCase {
 
     @Override
     public void createUser(User user) {
-        userRepository.saveUser(user);
+        userRepository.addUser(user);
     }
     @Override
-    public void updateUser(User user) {
-        userRepository.updateUser(user);
-    }
-    @Override
-    public void removeUser(int ID) {
-        userRepository.removeUser(ID);
+    public void removeUser(Long ID) {
+        userRepository.deleteById(ID);
     }
 }

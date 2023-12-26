@@ -7,6 +7,5 @@ import org.springframework.stereotype.Service;
 public interface IManageUserUseCase {
 
     void createUser(User user);
-    void updateUser(User user);
-    void removeUser(int ID);
+    void removeUser(Long ID);
 }

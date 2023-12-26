@@ -9,16 +9,12 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserAdapter implements IUserRepository {
     @PersistenceContext
     private EntityManager entityManager;
-    @Override
-    public User loadUser(String email, String password) {
-        return null;
-    }
-
     @Override
     public List<User> loadsUser() {
         TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u", User.class);
@@ -27,17 +23,16 @@ public class UserAdapter implements IUserRepository {
 
     @Override
     @Transactional
-    public void saveUser(User user) {
+    public void addUser(User user) {
         entityManager.persist(user);
     }
 
     @Override
-    public void updateUser(User user) {
-
+    public Optional<User> findById(Long id) {
+        return Optional.empty();
     }
 
     @Override
-    public void removeUser(int ID) {
-
+    public void deleteById(Long id) {
     }
 }

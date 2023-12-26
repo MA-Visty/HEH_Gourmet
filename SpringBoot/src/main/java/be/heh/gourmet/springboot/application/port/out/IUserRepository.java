@@ -4,13 +4,13 @@ import be.heh.gourmet.springboot.application.domain.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IUserRepository {
 
-    User loadUser(String email, String password);
+    void addUser(User user);
     List<User> loadsUser();
-    void saveUser(User user);
-    void updateUser(User user);
-    void removeUser(int ID);
+    Optional<User> findById(Long id);
+    void deleteById(Long id);
 }

@@ -3,7 +3,7 @@ FROM openjdk:17-jdk-slim
 LABEL authors="mahal"
 
 # Définissez le répertoire de travail
-WORKDIR /app
+WORKDIR app
 
 # Copiez le jar construit dans l'image
 COPY build/libs/SpringBoot-0.0.1-SNAPSHOT.jar app.jar
