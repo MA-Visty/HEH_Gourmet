@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CartRepository {
@@ -39,5 +40,9 @@ public class CartRepository {
 
     public List<CartRow> list(String userID) {
         return jdbc.query("select * from carts_products where user_id = ?; ", new CartRowMapper(), userID);
+    }
+
+    public Optional<CartRow> get(String userID, int productID) {
+        return Optional.ofNullable(jdbc.queryForObject("select * from carts_products where user_id = ? AND product_id = ?; ", new CartRowMapper(), userID, productID));
     }
 }

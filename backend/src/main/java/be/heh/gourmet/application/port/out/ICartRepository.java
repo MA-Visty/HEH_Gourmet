@@ -4,6 +4,7 @@ import be.heh.gourmet.application.domain.model.CartRow;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface ICartRepository {
     void add(String userID, int productID, int quantity);
@@ -19,4 +20,6 @@ public interface ICartRepository {
     void placeOrder(String userID, Date date);
 
     List<CartRow> list(String userID);
+
+    Optional<CartRow> get(String userID, int productID);
 }

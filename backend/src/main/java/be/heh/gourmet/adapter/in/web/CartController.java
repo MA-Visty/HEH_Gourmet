@@ -21,6 +21,7 @@ public class CartController {
     IManageCartUseCase cartManager;
 
     @GetMapping("/cart")
+    // TODO : userID should be retrieved from the oauth token
     public ResponseEntity<List<CartRow>> getCart(String userID) {
         List<CartRow> cart = cartManager.list(userID);
         if (cart == null) {

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class CartAdapter implements ICartRepository {
@@ -47,5 +48,10 @@ public class CartAdapter implements ICartRepository {
     @Override
     public List<CartRow> list(String userID) {
         return cartRepository.list(userID);
+    }
+
+    @Override
+    public Optional<CartRow> get(String userID, int productID) {
+        return cartRepository.get(userID, productID);
     }
 }

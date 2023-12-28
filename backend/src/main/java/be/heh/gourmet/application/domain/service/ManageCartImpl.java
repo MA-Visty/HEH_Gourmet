@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ManageCartImpl implements IManageCartUseCase {
@@ -18,31 +19,50 @@ public class ManageCartImpl implements IManageCartUseCase {
 
     @Override
     public void addProduct(String userID, Product product, int quantity) throws IllegalArgumentException {
-
+        Optional<CartRow> cartRow = cartRepository.get(userID, product.ID());
+        if (cartRow.isPresent()) {
+            cartRepository.update(userID, product.ID(), cartRow.get().quantity() + quantity);
+        } else {
+            cartRepository.add(userID, product.ID(), quantity);
+        }
     }
 
     @Override
     public void removeProduct(String userID, int productID, int quantity) throws IllegalArgumentException {
-
+        Optional<CartRow> cartRow = cartRepository.get(userID, productID);
+        if (cartRow.isPresent()) {
+            if (cartRow.get().quantity() <= quantity) {
+                cartRepository.remove(userID, productID);
+            } else {
+                cartRepository.update(userID, productID, cartRow.get().quantity() - quantity);
+            }
+        } else {
+            throw new IllegalArgumentException("Product not found in cart");
+        }
     }
 
     @Override
     public void editQuantity(String userID, int productID, int quantity) throws IllegalArgumentException {
-
+        Optional<CartRow> cartRow = cartRepository.get(userID, productID);
+        if (cartRow.isPresent()) {
+            cartRepository.update(userID, productID, quantity);
+        } else {
+            throw new IllegalArgumentException("Product not found in cart");
+        }
     }
 
     @Override
     public List<CartRow> list(String userID) {
-        return null;
+        return cartRepository.list(userID);
     }
 
     @Override
     public void clear(String userID) {
-
+        cartRepository.clear(userID);
     }
 
     @Override
     public void checkout(String userID) {
-
+        // TODO :  method signature is not final
     }
 }

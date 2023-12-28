@@ -4,8 +4,10 @@ import be.heh.gourmet.adapter.out.persistence.CartAdapter;
 import be.heh.gourmet.adapter.out.persistence.CategoryAdapter;
 import be.heh.gourmet.adapter.out.persistence.ProductAdapter;
 import be.heh.gourmet.application.domain.service.ManageCartImpl;
+import be.heh.gourmet.application.domain.service.ManagerOrderImpl;
 import be.heh.gourmet.application.port.in.IManageCartUseCase;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
+import be.heh.gourmet.application.port.in.IManageOrderUseCase;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
 import be.heh.gourmet.application.port.out.ICartRepository;
 import org.springframework.context.annotation.Bean;
@@ -37,5 +39,10 @@ public class GourmetApplicationConfiguration {
     @Bean
     public IManageCartUseCase getManageCartUseCase() {
         return new ManageCartImpl();
+    }
+
+    @Bean
+    IManageOrderUseCase getManageOrderUseCase() {
+        return new ManagerOrderImpl();
     }
 }
