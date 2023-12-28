@@ -40,15 +40,15 @@ public class CategoryController {
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<List<Category>> addCategories(@RequestBody List<InputCategory> categories) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void batchAddCategory(@RequestBody List<InputCategory> categories) {
         categoryManager.batchAdd(categories);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/categories")
     public ResponseEntity<List<Category>> removeCategories(@RequestBody List<Integer> ids) {
         categoryManager.batchRemove(ids);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/category")
