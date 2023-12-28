@@ -95,9 +95,8 @@ public class ProductRepository {
     }
 
     // TODO: 2021-05-04 use Optional instead of null
-    // TODO: 2021-05-04 implement batchGet
     public List<Product> batchGet(List<Integer> ID) {
-        throw new UnsupportedOperationException();
+        return jdbc.query("SELECT * FROM products WHERE product_id IN (?)", new ProductRowMapper(), ID);
     }
 
     public List<Product> getAll() {

@@ -27,5 +27,10 @@ public record InputProduct(
         return new Product(ID, product.name(), product.description(),
                 product.price(), product.stock(), image, product.categoryID());
     }
+
+    public InputProduct fromProduct(Product product) {
+        return new InputProduct(product.name(), product.description(),
+                product.price(), product.stock(), product.image(), product.categoryID());
+    }
 }
 

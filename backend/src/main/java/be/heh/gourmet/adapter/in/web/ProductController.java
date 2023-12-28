@@ -1,5 +1,7 @@
 package be.heh.gourmet.adapter.in.web;
 
+import be.heh.gourmet.application.domain.model.Category;
+import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
 import be.heh.gourmet.application.port.in.InputProduct;
 import be.heh.gourmet.application.domain.model.Product;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
@@ -22,30 +24,33 @@ public class ProductController {
     @Autowired
     @Qualifier("getManageProductUseCase")
     IManageProductUseCase productManager;
+    @Autowired
+    @Qualifier("getManageCategoryUseCase")
+    IManageCategoryUseCase categoryManager;
 
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(@RequestBody Optional<List<Integer>> ids) {
         if (ids.isPresent()) {
             List<Product> products = productManager.batchGet(ids.get());
             if (products == null) {
-                return new ResponseEntity<>(null, null, 404);
+                return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(products, null, 200);
+            return new ResponseEntity<>(products, null, HttpStatus.OK);
         }
         List<Product> products = productManager.list();
         if (products == null) {
-            return new ResponseEntity<>(null, null, 404);
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(products, null, 200);
+        return new ResponseEntity<>(products, null, HttpStatus.OK);
     }
 
     @GetMapping("/products/{category_id}")
     public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable int category_id) {
         List<Product> products = productManager.listByCategory(category_id);
         if (products == null) {
-            return new ResponseEntity<>(null, null, 404);
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(products, null, 200);
+        return new ResponseEntity<>(products, null, HttpStatus.OK);
     }
 
     @PostMapping("/product")
@@ -65,9 +70,18 @@ public class ProductController {
     public ResponseEntity<Product> getProduct(@PathVariable int id) {
         Product product = productManager.get(id);
         if (product == null) {
-            return new ResponseEntity<>(null, null, 404);
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(product, null, 200);
+        return new ResponseEntity<>(product, null, HttpStatus.OK);
+    }
+
+    @GetMapping("/product/{id}/category")
+    public ResponseEntity<Category> getProductCategory(@PathVariable int id) {
+        Category category = categoryManager.getByProduct(id);
+        if (category == null) {
+            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(category, null, HttpStatus.OK);
     }
 
     @PostMapping("/product/{id}")
