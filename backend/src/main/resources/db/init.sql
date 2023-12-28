@@ -17,7 +17,6 @@ values ('prepare_time', '11:00:00'),
        ('order_time', '10:30:00'),
        ('schedule_time', (interval '15 minute')::text);
 
-
 -- Table to store the available categories
 create table if not exists categories
 (
@@ -49,7 +48,7 @@ create table if not exists products
 -- Table to store the users
 create table if not exists users
 (
-    user_id    serial       not null
+    user_id    varchar(255) not null
         primary key,
     last_name  varchar(255) not null,
     first_name varchar(255) not null,
@@ -65,9 +64,9 @@ create table if not exists users
 -- Table to store the cart of each user
 create table if not exists carts
 (
-    user_id    bigint not null,
-    product_id bigint not null,
-    quantity   int    not null default 1,
+    user_id    varchar(255) not null,
+    product_id bigint       not null,
+    quantity   int          not null default 1,
     constraint cart_pk
         primary key (user_id, product_id),
     constraint cart_product_fk
@@ -79,8 +78,8 @@ create table if not exists carts
 -- Table to store the favorites products of each user
 create table if not exists favorites
 (
-    user_id    bigint not null,
-    product_id bigint not null,
+    user_id    varchar(255) not null,
+    product_id bigint       not null,
     constraint favorites_pk
         primary key (user_id, product_id),
     constraint favorites_product_fk
@@ -92,13 +91,13 @@ create table if not exists favorites
 -- Table to store the orders
 create table if not exists orders
 (
-    order_id     serial not null
+    order_id     serial       not null
         primary key,
-    user_id      bigint not null,
-    order_date   date   not null,
-    prepare_date date   not null,
+    user_id      varchar(255) not null,
+    order_date   date         not null,
+    prepare_date date         not null,
     -- 0 = canceled, 1 = cancelable, 2 = pending, 3 = ready, 4 = delivered
-    status       int    not null default 1,
+    status       int          not null default 1,
     constraint order_user_fk
         foreign key (user_id) references users (user_id)
 );
@@ -123,12 +122,6 @@ create table if not exists orders_products
 
 -- Trigger to remove products when category is deleted
 -- WARN : this remove the category , the associated products and the associated cart
-CREATE TRIGGER remove_category
-    BEFORE DELETE
-    ON categories
-    FOR EACH ROW
-EXECUTE PROCEDURE remove_product_trigger();
-
 CREATE OR REPLACE FUNCTION remove_product_trigger() RETURNS TRIGGER AS
 $$
 BEGIN
@@ -137,13 +130,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger to remove product when it's deleted
-CREATE TRIGGER remove_product
+CREATE OR REPLACE TRIGGER remove_category
     BEFORE DELETE
-    ON products
+    ON categories
     FOR EACH ROW
-EXECUTE PROCEDURE remove_product_from_cart_and_favorites();
+EXECUTE PROCEDURE remove_product_trigger();
 
+-- Trigger to remove product when it's deleted
 CREATE OR REPLACE FUNCTION remove_product_from_cart_and_favorites() RETURNS TRIGGER AS
 $$
 BEGIN
@@ -153,13 +146,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger to remove cart when user is deleted it also remove the orders history
-CREATE TRIGGER remove_user
+CREATE OR REPLACE TRIGGER remove_product
     BEFORE DELETE
-    ON users
+    ON products
     FOR EACH ROW
-EXECUTE PROCEDURE remove_user_from_carts_favorites_and_orders();
+EXECUTE PROCEDURE remove_product_from_cart_and_favorites();
 
+-- Trigger to remove cart when user is deleted it also remove the orders history
 CREATE OR REPLACE FUNCTION remove_user_from_carts_favorites_and_orders() RETURNS TRIGGER AS
 $$
 BEGIN
@@ -170,14 +163,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE TRIGGER remove_user
+    BEFORE DELETE
+    ON users
+    FOR EACH ROW
+EXECUTE PROCEDURE remove_user_from_carts_favorites_and_orders();
 -- Trigger to populate order_product when order is added and empty the cart
 -- INFO : this is triggered when the order is passed
-CREATE TRIGGER populate_orders_products
-    AFTER INSERT
-    ON orders
-    FOR EACH ROW
-EXECUTE PROCEDURE populate_orders_products_and_empty_cart();
-
 CREATE OR REPLACE FUNCTION populate_orders_products_and_empty_cart() RETURNS TRIGGER AS
 $$
 BEGIN
@@ -192,6 +184,12 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER populate_orders_products
+    AFTER INSERT
+    ON orders
+    FOR EACH ROW
+EXECUTE PROCEDURE populate_orders_products_and_empty_cart();
 
 -- ---- Views ---- --
 
@@ -304,65 +302,29 @@ begin
 end;
 $$ LANGUAGE plpgsql;
 
+create or replace procedure place_order(
+    in p_user_id varchar(255),
+    in p_prepare_date date
+) as
+$$
+begin
+    -- if user has a cart and contains at least one product place order else throw an error
+    if exists(select 1 from carts where carts.user_id = p_user_id) then
+        if p_prepare_date is null then
+            raise exception 'Prepare date cannot be null';
+        end if;
+    else
+        raise exception 'Cart is empty';
+    end if;
+
+    -- add order
+    insert into orders (user_id, order_date, prepare_date)
+    values (p_user_id, current_date, p_prepare_date);
+end;
+$$ language plpgsql;
+
+
 -- -- Users procedures -- --
-
--- Procedure to add a user
-create or replace procedure add_user(
-    in p_last_name varchar(255),
-    in p_first_name varchar(255),
-    in p_email varchar(255),
-    in p_password varchar(255)
-) as
-$$
-begin
-    -- add user
-    insert into users (last_name, first_name, email, password, role)
-    values (p_last_name, p_first_name, p_email, p_password, 0);
-end;
-$$ language plpgsql;
-
--- Procedure to add a vendor
-create or replace procedure add_vendor(
-    in p_last_name varchar(255),
-    in p_first_name varchar(255),
-    in p_email varchar(255),
-    in p_password varchar(255)
-) as
-$$
-begin
-    -- add vendor
-    insert into users (last_name, first_name, email, password, role)
-    values (p_last_name, p_first_name, p_email, p_password, 1);
-end;
-$$ language plpgsql;
-
--- Procedure to add an admin
-
-create or replace procedure add_admin(
-    in p_last_name varchar(255),
-    in p_first_name varchar(255),
-    in p_email varchar(255),
-    in p_password varchar(255)
-) as
-$$
-begin
-    -- add admin
-    insert into users (last_name, first_name, email, password, role)
-    values (p_last_name, p_first_name, p_email, p_password, 100);
-end;
-$$ language plpgsql;
-
--- Procedure to remove a user
-
-create or replace procedure remove_user(
-    in p_user_id bigint
-) as
-$$
-begin
-    -- remove user
-    delete from users where users.user_id = p_user_id;
-end;
-$$ language plpgsql;
 
 -- Procedure to edit a user , values which are null are not updated
 create or replace procedure edit_user(

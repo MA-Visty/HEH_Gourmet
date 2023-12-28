@@ -80,11 +80,17 @@ public class ProductController {
 
     @GetMapping("/product/{id}/category")
     public ResponseEntity<Category> getProductCategory(@PathVariable int id) {
-        Category category = categoryManager.getByProduct(id);
-        if (category == null) {
+        try {
+            Category category = categoryManager.getByProduct(id);
+            if (category == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(category);
+        } catch (IndexOutOfBoundsException e) {
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
-        return ResponseEntity.ok(category);
     }
 
     @PostMapping("/product/{id}")

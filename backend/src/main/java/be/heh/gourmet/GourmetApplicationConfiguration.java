@@ -1,9 +1,13 @@
 package be.heh.gourmet;
 
+import be.heh.gourmet.adapter.out.persistence.CartAdapter;
 import be.heh.gourmet.adapter.out.persistence.CategoryAdapter;
 import be.heh.gourmet.adapter.out.persistence.ProductAdapter;
+import be.heh.gourmet.application.domain.service.ManageCartImpl;
+import be.heh.gourmet.application.port.in.IManageCartUseCase;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
+import be.heh.gourmet.application.port.out.ICartRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
@@ -13,6 +17,10 @@ import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 @EnableJdbcRepositories
 public class GourmetApplicationConfiguration {
     // Repositories
+    @Bean
+    public ICartRepository getCartRepository() {
+        return new CartAdapter();
+    }
 
     // Crud only use cases
     @Bean
@@ -26,4 +34,8 @@ public class GourmetApplicationConfiguration {
     }
 
     // Use cases with business logic
+    @Bean
+    public IManageCartUseCase getManageCartUseCase() {
+        return new ManageCartImpl();
+    }
 }
