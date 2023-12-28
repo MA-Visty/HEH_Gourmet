@@ -17,7 +17,6 @@ public record InputProduct(
         float price,
         @Min(value = 0, message = "stock should not be less than 0")
         int stock,
-        @URL(message = "image should be an URL")
         java.net.URL image,
         @Min(value = 0, message = "categoryID should not be less than 0")
         int categoryID) {
