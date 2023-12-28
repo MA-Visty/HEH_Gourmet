@@ -86,12 +86,11 @@ class ProductControllerTest {
 
     @Test
     void batchAddProducts() throws Exception {
-        when(productManager.add(new InputProduct("Product 1", "Description 1", 10.0f, 1, new URL("https://localhost"), 1))).thenReturn(product1);
-
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/api/products")
                         .contentType("application/json")
-                        .content("[{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"stock\":1,\"image\":\"https://localhost\",\"categoryID\":1},{\"name\":\"Product 2\",\"description\":\"Description 2\",\"price\":20.0,\"stock\":2,\"image\":\"http://localhost\",\"categoryID\":2}]"))
+                        .content("[{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"stock\":1,\"image\":\"https://localhost\",\"categoryID\":1}," +
+                                "{\"name\":\"Product 2\",\"description\":\"Description 2\",\"price\":20.0,\"stock\":2,\"image\":\"http://localhost\",\"categoryID\":2}]"))
                 .andExpect(status().isCreated());
 
     }

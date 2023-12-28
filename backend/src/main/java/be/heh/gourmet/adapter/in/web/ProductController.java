@@ -33,29 +33,32 @@ public class ProductController {
         if (ids.isPresent()) {
             List<Product> products = productManager.batchGet(ids.get());
             if (products == null) {
-                return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+                return ResponseEntity.notFound().build();
             }
             return new ResponseEntity<>(products, null, HttpStatus.OK);
         }
         List<Product> products = productManager.list();
         if (products == null) {
-            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(products, null, HttpStatus.OK);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/products/{category_id}")
     public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable int category_id) {
         List<Product> products = productManager.listByCategory(category_id);
         if (products == null) {
-            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(products, null, HttpStatus.OK);
+        return ResponseEntity.ok(products);
     }
 
     @PostMapping("/product")
     public ResponseEntity<Product> addProduct(@Validated @RequestBody InputProduct product) {
         Product response = productManager.add(product);
+        if (response == null) {
+            return ResponseEntity.notFound().build();
+        }
         HttpHeaders responseHeaders = new HttpHeaders();
         return new ResponseEntity<>(response, responseHeaders, HttpStatus.CREATED);
     }
@@ -70,18 +73,18 @@ public class ProductController {
     public ResponseEntity<Product> getProduct(@PathVariable int id) {
         Product product = productManager.get(id);
         if (product == null) {
-            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(product, null, HttpStatus.OK);
+        return ResponseEntity.ok(product);
     }
 
     @GetMapping("/product/{id}/category")
     public ResponseEntity<Category> getProductCategory(@PathVariable int id) {
         Category category = categoryManager.getByProduct(id);
         if (category == null) {
-            return new ResponseEntity<>(null, null, HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(category, null, HttpStatus.OK);
+        return ResponseEntity.ok(category);
     }
 
     @PostMapping("/product/{id}")
