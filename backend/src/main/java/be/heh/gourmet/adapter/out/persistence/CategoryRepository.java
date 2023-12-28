@@ -1,7 +1,6 @@
 package be.heh.gourmet.adapter.out.persistence;
 
 import be.heh.gourmet.adapter.out.persistence.mapper.CategoryRowMapper;
-import be.heh.gourmet.adapter.out.persistence.mapper.ProductRowMapper;
 import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.port.in.InputCategory;
 import org.springframework.beans.factory.annotation.Autowired;

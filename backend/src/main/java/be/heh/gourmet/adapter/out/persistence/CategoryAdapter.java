@@ -4,9 +4,11 @@ import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
 import be.heh.gourmet.application.port.in.InputCategory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CategoryAdapter implements IManageCategoryUseCase {
     @Autowired
     CategoryRepository categoryRepository;
