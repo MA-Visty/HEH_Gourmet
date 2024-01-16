@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,6 +73,15 @@ class ProductControllerTest {
     }
 
     @Test
+    void getProductsByCategoryWithInvalidCategory() throws Exception {
+        when(productManager.listByCategory(1)).thenReturn(null);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/products/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void addProduct() throws Exception {
         when(productManager.add(new InputProduct("Product 1", "Description 1", 10.0f, 1, new URL("https://localhost"), 1))).thenReturn(product1);
 
@@ -85,7 +95,32 @@ class ProductControllerTest {
     }
 
     @Test
+    void addProductWithMissingCategory() throws Exception {
+        when(productManager.add(new InputProduct("Product 1", "Description 1", 10.0f, 1, new URL("https://localhost"), 1))).thenReturn(product1);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
+                        .contentType("application/json")
+                        .content("{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"stock\":1,\"image\":\"https://localhost\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void addExistingProduct() throws Exception {
+        when(productManager.add(new InputProduct("Product 1", "Description 1", 10.0f, 1, new URL("https://localhost"), 1))).thenReturn(null);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
+                        .contentType("application/json")
+                        .content("{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"stock\":1,\"image\":\"https://localhost\",\"categoryID\":1}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void batchAddProducts() throws Exception {
+        when(categoryManager.get(1)).thenReturn(Optional.of(category1));
+        when(categoryManager.get(2)).thenReturn(Optional.of(category1));
+
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/api/products")
                         .contentType("application/json")
@@ -93,6 +128,16 @@ class ProductControllerTest {
                                 "{\"name\":\"Product 2\",\"description\":\"Description 2\",\"price\":20.0,\"stock\":2,\"image\":\"http://localhost\",\"categoryID\":2}]"))
                 .andExpect(status().isCreated());
 
+    }
+
+    @Test
+    void batchAddProductWithMissingCategory() throws Exception {
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/products")
+                        .contentType("application/json")
+                        .content("[{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"stock\":1,\"image\":\"https://localhost\"}," +
+                                "{\"name\":\"Product 2\",\"description\":\"Description 2\",\"price\":20.0,\"stock\":2,\"image\":\"http://localhost\"}]"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

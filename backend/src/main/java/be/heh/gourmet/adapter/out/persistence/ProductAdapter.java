@@ -28,12 +28,6 @@ public class ProductAdapter implements IManageProductUseCase {
 
     @Override
     public void batchAdd(List<InputProduct> products) throws ProductException {
-        // check if categories exist
-        for (InputProduct product : products) {
-            if (categoryRepository.get(product.categoryID()).isEmpty()) {
-                throw new ProductException("Category does not exist", ProductException.Type.ASSOCIATED_CATEGORY_NOT_FOUND);
-            }
-        }
         productRepository.batchAdd(products);
     }
 

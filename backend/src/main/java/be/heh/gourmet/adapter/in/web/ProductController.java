@@ -74,7 +74,7 @@ public class ProductController {
             if (response == null) {
                 return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.created(URI.create("/api/product/" + response.ID())).build();
+            return ResponseEntity.created(URI.create("/api/product/" + response.ID())).body(response);
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
@@ -86,6 +86,11 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> batchAddProducts(@RequestBody List<InputProduct> products) {
         try {
+            for (InputProduct product : products) {
+                if (categoryManager.get(product.categoryID()).isEmpty()) {
+                    throw new ProductException("Category does not exist", ProductException.Type.ASSOCIATED_CATEGORY_NOT_FOUND);
+                }
+            }
             productManager.batchAdd(products);
             // return a list of URI
             return new ResponseEntity<>(null, null, HttpStatus.CREATED);
