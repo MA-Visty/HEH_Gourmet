@@ -104,11 +104,11 @@ public class ProductController {
     @GetMapping("/product/{id}")
     public ResponseEntity<Object> getProduct(@PathVariable int id) {
         try {
-            Product product = productManager.get(id);
-            if (product == null) {
-                return ResponseEntity.notFound().build();
+            Optional<Product> product = productManager.get(id);
+            if (product.isEmpty()) {
+                throw new ProductException("Product not found", ProductException.Type.PRODUCT_NOT_FOUND);
             }
-            return ResponseEntity.ok(product);
+            return ResponseEntity.ok(product.get());
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {

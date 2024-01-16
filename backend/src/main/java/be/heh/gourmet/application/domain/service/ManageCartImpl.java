@@ -19,6 +19,11 @@ public class ManageCartImpl implements IManageCartUseCase {
 
     @Override
     public void addProduct(String userID, Product product, int quantity) throws IllegalArgumentException {
+        Optional<Product> optionalProduct = productManager.get(productID);
+        if (optionalProduct.isEmpty()) {
+            throw new ProductException("Product not found", ProductException.Type.PRODUCT_NOT_FOUND);
+        }
+        Product product = optionalProduct.get();
         Optional<CartRow> cartRow = cartRepository.get(userID, product.ID());
         if (cartRow.isPresent()) {
             cartRepository.update(userID, product.ID(), cartRow.get().quantity() + quantity);

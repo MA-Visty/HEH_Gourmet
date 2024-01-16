@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class ProductRepository {
@@ -52,25 +53,28 @@ public class ProductRepository {
     }
 
     public void batchAdd(List<InputProduct> products) throws ProductException {
-        jdbc.batchUpdate(addSql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                InputProduct product = products.get(i);
-                ps.setString(1, product.name());
-                ps.setString(2, product.description());
-                ps.setFloat(3, product.price());
-                ps.setInt(4, product.stock());
-                ps.setString(5, product.image().toString());
-                // ps.setURL(5, product.image());
-                ps.setInt(6, product.categoryID());
-            }
+        try {
+            jdbc.batchUpdate(addSql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    InputProduct product = products.get(i);
+                    ps.setString(1, product.name());
+                    ps.setString(2, product.description());
+                    ps.setFloat(3, product.price());
+                    ps.setInt(4, product.stock());
+                    ps.setString(5, product.image().toString());
+                    // ps.setURL(5, product.image());
+                    ps.setInt(6, product.categoryID());
+                }
 
-            @Override
-            public int getBatchSize() {
-                return products.size();
-            }
-        });
-
+                @Override
+                public int getBatchSize() {
+                    return products.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new ProductException("Error while adding product", ProductException.Type.PRODUCT_NOT_CREATED, e);
+        }
     }
 
     public void remove(int ID) throws ProductException {
@@ -82,17 +86,21 @@ public class ProductRepository {
     }
 
     public void batchRemove(List<Integer> IDs) {
-        jdbc.batchUpdate(removeSql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setInt(1, IDs.get(i));
-            }
+        try {
+            jdbc.batchUpdate(removeSql, new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, IDs.get(i));
+                }
 
-            @Override
-            public int getBatchSize() {
-                return IDs.size();
-            }
-        });
+                @Override
+                public int getBatchSize() {
+                    return IDs.size();
+                }
+            });
+        } catch (Exception e) {
+            throw new ProductException("Error while removing product", ProductException.Type.PRODUCT_NOT_DELETED, e);
+        }
     }
 
     public void update(int ID, InputProduct product) {
@@ -103,8 +111,12 @@ public class ProductRepository {
     }
 
     // TODO: 2021-05-04 use Optional instead of null
-    public Product get(int ID) {
-        return jdbc.query("SELECT * FROM products WHERE product_id = ?", new ProductRowMapper(), ID).get(0);
+    public Optional<Product> get(int ID) {
+        List<Product> products = jdbc.query("SELECT * FROM products WHERE product_id = ? LIMIT 1", new ProductRowMapper(), ID);
+        if (products.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(products.get(0));
     }
 
     // TODO: 2021-05-04 use Optional instead of null

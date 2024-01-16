@@ -1,12 +1,10 @@
 package be.heh.gourmet.adapter.out.persistence.exception;
 
+import be.heh.gourmet.adapter.in.web.exeption.HttpException;
 import lombok.Getter;
 
-import java.util.Date;
-import java.util.HashMap;
-
 @Getter
-public class ProductException extends RuntimeException {
+public class ProductException extends RuntimeException implements HttpException {
     public enum Type {
         PRODUCT_NOT_FOUND,
         PRODUCT_ALREADY_EXIST,
@@ -28,14 +26,12 @@ public class ProductException extends RuntimeException {
         this.type = type;
     }
 
-    public HashMap<String, Object> toResponse() {
-        HashMap<String, Object> response = new HashMap<>();
-        response.put("timestamp", new Date(System.currentTimeMillis()));
-        response.put("error", getType().toString());
-        response.put("status", httpStatus());
-        return response;
+    @Override
+    public String getMessage() {
+        return type.toString();
     }
 
+    @Override
     public int httpStatus() {
         return switch (getType()) {
             case ASSOCIATED_CATEGORY_NOT_FOUND, PRODUCT_NOT_FOUND -> 404;

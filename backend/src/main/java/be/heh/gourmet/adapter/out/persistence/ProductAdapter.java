@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductAdapter implements IManageProductUseCase {
@@ -47,7 +48,7 @@ public class ProductAdapter implements IManageProductUseCase {
     }
 
     @Override
-    public Product get(int ID) throws ProductException {
+    public Optional<Product> get(int ID) throws ProductException {
         return productRepository.get(ID);
     }
 
