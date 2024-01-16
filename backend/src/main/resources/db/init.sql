@@ -48,8 +48,7 @@ create table if not exists products
 -- Table to store the users
 create table if not exists users
 (
-    user_id    varchar(255) not null
-        primary key,
+    user_id    serial       not null primary key,
     last_name  varchar(255) not null,
     first_name varchar(255) not null,
     email      varchar(255) not null
@@ -64,9 +63,9 @@ create table if not exists users
 -- Table to store the cart of each user
 create table if not exists carts
 (
-    user_id    varchar(255) not null,
-    product_id bigint       not null,
-    quantity   int          not null default 1,
+    user_id    serial not null,
+    product_id bigint not null,
+    quantity   int    not null default 1,
     constraint cart_pk
         primary key (user_id, product_id),
     constraint cart_product_fk
@@ -78,8 +77,8 @@ create table if not exists carts
 -- Table to store the favorites products of each user
 create table if not exists favorites
 (
-    user_id    varchar(255) not null,
-    product_id bigint       not null,
+    user_id    serial not null,
+    product_id bigint not null,
     constraint favorites_pk
         primary key (user_id, product_id),
     constraint favorites_product_fk
@@ -93,7 +92,7 @@ create table if not exists orders
 (
     order_id     serial       not null
         primary key,
-    user_id      varchar(255) not null,
+    user_id      serial not null,
     order_date   date         not null,
     prepare_date date         not null,
     -- 0 = canceled, 1 = cancelable, 2 = pending, 3 = ready, 4 = delivered

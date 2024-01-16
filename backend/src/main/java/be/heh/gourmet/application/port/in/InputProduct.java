@@ -2,13 +2,11 @@ package be.heh.gourmet.application.port.in;
 
 import be.heh.gourmet.application.domain.model.Product;
 import jakarta.validation.constraints.Min;
-
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.validator.constraints.URL;
+import lombok.NonNull;
 
+@NonNull
 public record InputProduct(
-        @NotNull(message = "name should not be null")
         @Size(min = 1, max = 255, message = "name should be between 1 and 255 characters")
         String name,
         @Size(min = 1, max = 2048, message = "description should be between 1 and 2048 characters")

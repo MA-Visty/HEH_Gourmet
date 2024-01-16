@@ -1,11 +1,11 @@
 package be.heh.gourmet.application.port.in;
 
 import be.heh.gourmet.application.domain.model.Category;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.NonNull;
 
+@NonNull
 public record InputCategory(
-        @NotNull(message = "name should not be null")
         @Size(min = 1, max = 255, message = "name should be between 1 and 255 characters")
         String name,
         @Size(min = 1, max = 2048, message = "description should be between 1 and 2048 characters")
