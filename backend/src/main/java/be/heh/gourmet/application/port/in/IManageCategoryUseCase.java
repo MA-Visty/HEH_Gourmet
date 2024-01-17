@@ -3,6 +3,7 @@ package be.heh.gourmet.application.port.in;
 import be.heh.gourmet.application.domain.model.Category;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IManageCategoryUseCase {
     Category add(InputCategory category) throws IllegalArgumentException;
@@ -15,7 +16,7 @@ public interface IManageCategoryUseCase {
 
     void batchRemove(List<Integer> IDs) throws IllegalArgumentException;
 
-    Category get(int ID) throws IllegalArgumentException;
+    Optional<Category> get(int ID) throws IllegalArgumentException;
 
     Category getByProduct(int productID) throws IllegalArgumentException;
 

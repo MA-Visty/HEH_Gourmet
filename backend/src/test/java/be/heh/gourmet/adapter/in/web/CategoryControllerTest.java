@@ -124,14 +124,14 @@ class CategoryControllerTest {
 
     @Test
     void updateMissingCategory() throws Exception {
-        doThrow(new CategoryException("Category not found", CategoryException.Type.CATEGORY_NOT_UPDATED))
+        doThrow(new CategoryException("Category not found", CategoryException.Type.CATEGORY_NOT_FOUND))
                 .when(categoryManager).update(1, new InputCategory("Category 1", "Description 1"));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.post("/api/category/1")
                         .contentType("application/json")
                         .content("{\"name\":\"Category 1\",\"description\":\"Description 1\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -141,14 +141,14 @@ class CategoryControllerTest {
                 .andExpect(status().isNoContent());
 
     }
-    
+
     @Test
     void removeMissingCategory() throws Exception {
-        doThrow(new CategoryException("Category not found", CategoryException.Type.CATEGORY_NOT_DELETED))
+        doThrow(new CategoryException("Category not found", CategoryException.Type.CATEGORY_NOT_FOUND))
                 .when(categoryManager).remove(1);
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/category/1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 }

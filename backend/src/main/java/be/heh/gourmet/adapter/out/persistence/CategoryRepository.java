@@ -71,7 +71,10 @@ public class CategoryRepository {
             if (affectedRow == 0) {
                 throw new CategoryException("Category does not exist", CategoryException.Type.CATEGORY_NOT_FOUND);
             }
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
+            if (e.getMessage() != null && e.getMessage().contains("No value present")) {
+                throw new CategoryException("Category does not exist", CategoryException.Type.CATEGORY_NOT_FOUND, e);
+            }
             throw new CategoryException("Error while updating category", CategoryException.Type.CATEGORY_NOT_UPDATED, e);
         }
     }
@@ -82,8 +85,11 @@ public class CategoryRepository {
             if (affectedRow == 0) {
                 throw new CategoryException("Category does not exist", CategoryException.Type.CATEGORY_NOT_FOUND);
             }
-        } catch (Exception e) {
-            throw new CategoryException("Error while removing category", CategoryException.Type.CATEGORY_NOT_DELETED, e);
+        } catch (DataAccessException e) {
+            if (e.getMessage() != null && e.getMessage().contains("No value present")) {
+                throw new CategoryException("Category does not exist", CategoryException.Type.CATEGORY_NOT_FOUND, e);
+            }
+            throw new CategoryException("Error while updating category", CategoryException.Type.CATEGORY_NOT_UPDATED, e);
         }
     }
 
