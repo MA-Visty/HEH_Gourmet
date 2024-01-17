@@ -1,5 +1,6 @@
 package be.heh.gourmet.adapter.in.web;
 
+import be.heh.gourmet.adapter.out.persistence.exception.CategoryException;
 import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
 import be.heh.gourmet.application.port.in.InputCategory;
@@ -13,7 +14,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,6 +67,19 @@ class CategoryControllerTest {
     }
 
     @Test
+    void removeMissingCategories() throws Exception {
+        doThrow(new CategoryException("Category not found", CategoryException.Type.CATEGORY_NOT_DELETED))
+                .when(categoryManager).batchRemove(List.of(1, 2));
+
+        // Act and Assert
+        mockMvc.perform(
+                        MockMvcRequestBuilders.delete("/api/categories")
+                                .contentType("application/json")
+                                .content("[1, 2]"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void addCategory() throws Exception {
         when(categoryManager.add(new InputCategory("Category 1", "Description 1"))).thenReturn(category1);
 
@@ -78,13 +94,22 @@ class CategoryControllerTest {
 
     @Test
     void getCategory() throws Exception {
-        when(categoryManager.get(1)).thenReturn(category1);
+        when(categoryManager.get(1)).thenReturn(Optional.of(category1));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/api/category/1"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.ID").value(category1.ID()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(category1.name()));
+    }
+
+    @Test
+    void getMissingCategory() throws Exception {
+        when(categoryManager.get(1)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/category/1"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -98,10 +123,32 @@ class CategoryControllerTest {
     }
 
     @Test
+    void updateMissingCategory() throws Exception {
+        doThrow(new CategoryException("Category not found", CategoryException.Type.CATEGORY_NOT_UPDATED))
+                .when(categoryManager).update(1, new InputCategory("Category 1", "Description 1"));
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/category/1")
+                        .contentType("application/json")
+                        .content("{\"name\":\"Category 1\",\"description\":\"Description 1\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void removeCategory() throws Exception {
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/category/1"))
                 .andExpect(status().isNoContent());
 
+    }
+    
+    @Test
+    void removeMissingCategory() throws Exception {
+        doThrow(new CategoryException("Category not found", CategoryException.Type.CATEGORY_NOT_DELETED))
+                .when(categoryManager).remove(1);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/category/1"))
+                .andExpect(status().isBadRequest());
     }
 }

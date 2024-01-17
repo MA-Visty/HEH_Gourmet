@@ -34,8 +34,9 @@ public class ProductException extends RuntimeException implements HttpException 
     @Override
     public int httpStatus() {
         return switch (getType()) {
+            case PRODUCT_ALREADY_EXIST -> 409;
             case ASSOCIATED_CATEGORY_NOT_FOUND, PRODUCT_NOT_FOUND -> 404;
-            case PRODUCT_NOT_CREATED, PRODUCT_NOT_DELETED, PRODUCT_NOT_UPDATED, PRODUCT_ALREADY_EXIST -> 400;
+            case PRODUCT_NOT_CREATED, PRODUCT_NOT_DELETED, PRODUCT_NOT_UPDATED -> 400;
         };
     }
 }

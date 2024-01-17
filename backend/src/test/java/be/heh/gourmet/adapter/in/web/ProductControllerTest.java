@@ -69,7 +69,6 @@ class ProductControllerTest {
                 // expect only one product
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1]").doesNotExist());
 
-
     }
 
     @Test
@@ -102,18 +101,7 @@ class ProductControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType("application/json")
                         .content("{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"stock\":1,\"image\":\"https://localhost\"}"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void addExistingProduct() throws Exception {
-        when(productManager.add(new InputProduct("Product 1", "Description 1", 10.0f, 1, new URL("https://localhost"), 1))).thenReturn(null);
-
-        // Act and Assert
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
-                        .contentType("application/json")
-                        .content("{\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":10.0,\"stock\":1,\"image\":\"https://localhost\",\"categoryID\":1}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -142,7 +130,7 @@ class ProductControllerTest {
 
     @Test
     void getProduct() throws Exception {
-        when(productManager.get(1)).thenReturn(product1);
+        when(productManager.get(1)).thenReturn(Optional.of(product1));
 
         // Act and Assert
         mockMvc.perform(MockMvcRequestBuilders.get("/api/product/1"))

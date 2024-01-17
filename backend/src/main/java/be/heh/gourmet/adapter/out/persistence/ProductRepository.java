@@ -2,9 +2,8 @@ package be.heh.gourmet.adapter.out.persistence;
 
 import be.heh.gourmet.adapter.out.persistence.exception.ProductException;
 import be.heh.gourmet.adapter.out.persistence.mapper.ProductRowMapper;
-import be.heh.gourmet.application.port.in.InputProduct;
 import be.heh.gourmet.application.domain.model.Product;
-
+import be.heh.gourmet.application.port.in.InputProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

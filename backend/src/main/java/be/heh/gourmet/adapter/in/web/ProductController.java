@@ -72,7 +72,7 @@ public class ProductController {
         try {
             Product response = productManager.add(product);
             if (response == null) {
-                return ResponseEntity.notFound().build();
+                throw new ProductException("Product not created", ProductException.Type.PRODUCT_NOT_CREATED);
             }
             return ResponseEntity.created(URI.create("/api/product/" + response.ID())).body(response);
         } catch (ProductException e) {
@@ -121,7 +121,7 @@ public class ProductController {
         try {
             Category category = categoryManager.getByProduct(id);
             if (category == null) {
-                return ResponseEntity.notFound().build();
+                throw new ProductException("Category does not exist", ProductException.Type.ASSOCIATED_CATEGORY_NOT_FOUND);
             }
             return ResponseEntity.ok(category);
         } catch (ProductException e) {
