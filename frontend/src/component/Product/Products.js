@@ -6,6 +6,7 @@ import Error from "../../component/Error/Error";
 import Loader from "../../component/Loader/Loader";
 import EmptyData from "../../component/Loader/EmptyData";
 import ProductItemFilter from "./ProductItemFilter";
+import API_URL from "../../apiConfig";
 
 function Products() {
     const [data, setData] = useState([]);
@@ -13,12 +14,11 @@ function Products() {
     const [isCrash, setCrash] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        axios
-            .get("http://localhost:3000/api/product")
+    useEffect(() => {axios
+            .get(`${API_URL}/api/products`)
             .then((response) => {
-                setData(response.data.products);
-                setDataFilter(response.data.products);
+                setData(response.data);
+                setDataFilter(response.data);
                 setLoading(false);
             })
             .catch((error) => {

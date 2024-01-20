@@ -8,6 +8,7 @@ import Error from "../../component/Error/Error";
 import Loader from "../../component/Loader/Loader";
 import EmptyData from "../../component/Loader/EmptyData";
 import {useAppContext} from "../../store/AppContext";
+import API_URL from "../../apiConfig";
 
 function Products() {
     const { state } = useAppContext();
@@ -17,9 +18,9 @@ function Products() {
     const itemID = useParams().id;
 
     useState(() =>
-        axios.get(`http://localhost:3000/api/product/${itemID}`)
+        axios.get(`${API_URL}/api/products/${itemID}`)
             .then(function (reponse) {
-                setData(reponse.data.product);
+                setData(reponse.data);
                 setLoading(false);
             })
             .catch(function (error) {
