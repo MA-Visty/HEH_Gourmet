@@ -13,5 +13,5 @@
 FROM openjdk:17-jdk-slim
 LABEL authors="mahal"
 WORKDIR app
-COPY build/libs/SpringBoot-0.0.1-SNAPSHOT.jar app.jar
+COPY build/libs/BackEnd-0.0.1-SNAPSHOT.jar app.jar
 CMD ["java", "-jar", "app.jar"]
