@@ -2,20 +2,26 @@ package be.heh.gourmet.application.port.in;
 
 import be.heh.gourmet.application.port.in.exception.CartException;
 import be.heh.gourmet.application.domain.model.CartRow;
-import be.heh.gourmet.application.domain.model.Product;
 
+import java.sql.Date;
 import java.util.List;
 
 public interface IManageCartUseCase {
-    void addProduct(String userID, Product product, int quantity) throws IllegalArgumentException;
+    void addProduct(int userID, int productID, int quantity) throws IllegalArgumentException, CartException;
 
-    void removeProduct(String userID, int productID, int quantity) throws IllegalArgumentException;
+    default void addProduct(int userID, int productID) throws CartException {
+        addProduct(userID, productID, 1);
+    }
 
-    void editQuantity(String userID, int productID, int quantity) throws IllegalArgumentException;
+    void removeProduct(int userID, int productID, int quantity) throws IllegalArgumentException, CartException;
 
-    List<CartRow> list(String userID);
+    void completelyRemoveProduct(int userID, int productID) throws IllegalArgumentException, CartException;
 
-    void clear(String userID);
+    void editQuantity(int userID, int productID, int quantity) throws IllegalArgumentException;
 
-    void checkout(String userID);
+    List<CartRow> get(int userID) throws CartException;
+
+    void clear(int userID);
+
+    void placeOrder(int userID, Date date);
 }

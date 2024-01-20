@@ -1,16 +1,31 @@
 package be.heh.gourmet.adapter.in.web;
 
+import be.heh.gourmet.adapter.in.web.exeption.CustomException;
+import be.heh.gourmet.adapter.in.web.exeption.InternalServerError;
+import be.heh.gourmet.adapter.out.payment.exception.PaymentException;
 import be.heh.gourmet.application.domain.model.CartRow;
 import be.heh.gourmet.application.port.in.IManageCartUseCase;
+import be.heh.gourmet.application.port.in.IPaymentUseCase;
+import be.heh.gourmet.application.port.in.exception.CartException;
+import be.heh.gourmet.application.port.in.exception.OrderException;
+import be.heh.gourmet.application.port.in.exception.ProductException;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+// TODO : use @PreAuthorize("@userAuthManager.ID(#userID) == principal.id") to check if the user is the owner of the cart
+// principal.id is the id given by the auth provider (here, keycloak)
+// userID is the id given by the application
+// userAuthManager make the link between the two
 
 @RestController
 @Slf4j
@@ -18,16 +33,104 @@ import java.util.List;
 public class CartController {
     @Autowired
     @Qualifier("getManageCartUseCase")
-    IManageCartUseCase cartManager;
+    private IManageCartUseCase cartManager;
 
-    @GetMapping("/cart")
-    // TODO : userID should be retrieved from the oauth token
-    public ResponseEntity<List<CartRow>> getCart(String userID) {
-        List<CartRow> cart = cartManager.list(userID);
-        if (cart == null) {
-            return ResponseEntity.notFound().build();
+    @Autowired
+    @Qualifier("getPaymentUseCase")
+    private IPaymentUseCase paymentManager;
+
+    @GetMapping("/cart/{userID}")
+    public ResponseEntity<Object> getCart(@PathVariable int userID) {
+        try {
+            List<CartRow> cart = cartManager.get(userID);
+            if (cart == null) {
+                cart = List.of();
+            }
+            return ResponseEntity.ok(cart);
+        } catch (CartException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
+        } catch (Exception e) {
+            log.error("Error while getting cart", e);
+            return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
+    }
 
-        return ResponseEntity.ok(cart);
+    @PostMapping("/cart/{userID}")
+    public ResponseEntity<Object> addToCart(@PathVariable int userID, @RequestParam @NotNull int productID, @RequestParam Optional<Integer> quantity) {
+        try {
+            if (quantity.isEmpty()) {
+                cartManager.addProduct(userID, productID);
+            } else {
+                int quantityValue = quantity.get();
+                if (quantityValue <= 0) {
+                    throw new CartException("Quantity must be positive", CartException.Type.INVALID_QUANTITY);
+                }
+                cartManager.addProduct(userID, productID, quantityValue);
+            }
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (CartException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
+        } catch (ProductException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
+        } catch (Exception e) {
+            log.error("Error while adding product to cart", e);
+            return ResponseEntity.internalServerError().body(InternalServerError.response());
+        }
+    }
+
+    @DeleteMapping("/cart/{userID}")
+    public ResponseEntity<Object> removeFromCart(@PathVariable int userID, @RequestParam int productID, @RequestParam Optional<Integer> quantity) {
+        try {
+            if (quantity.isEmpty()) {
+                cartManager.completelyRemoveProduct(userID, productID);
+            } else {
+                int quantityValue = quantity.get();
+                if (quantityValue <= 0) {
+                    throw new CartException("Quantity must be positive", CartException.Type.INVALID_QUANTITY);
+                }
+                cartManager.removeProduct(userID, productID, quantityValue);
+            }
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (CartException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
+        } catch (ProductException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
+        } catch (Exception e) {
+            log.error("Error while removing product from cart", e);
+            return ResponseEntity.internalServerError().body(InternalServerError.response());
+        }
+    }
+
+    @PostMapping("/cart/{userID}/checkout")
+    @CrossOrigin("*")
+    public ResponseEntity<Object> checkout(@PathVariable int userID, @RequestBody @NotNull Map<String, Object> params) {
+        try {
+            List<CartRow> cart = cartManager.get(userID);
+            if (cart == null || cart.isEmpty()) {
+                throw new OrderException("Cart is empty", OrderException.Type.CART_IS_EMPTY);
+            }
+
+            if (!params.containsKey("targetDate")) {
+                CustomException e = new CustomException("Missing targetDate parameter", HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
+            }
+            Date targetDate = Date.valueOf(params.get("targetDate").toString());
+            if (targetDate.before(new Date(System.currentTimeMillis()))) {
+                throw new OrderException("Target date must be in the future", OrderException.Type.PREPARE_DATE_CANNOT_BE_IN_THE_PAST);
+            }
+
+            // TODO : paymentManager.charge(userID, cart, params);
+            cartManager.placeOrder(userID, targetDate);
+            return ResponseEntity.ok().build();
+        } catch (PaymentException e) {
+            return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
+        } catch (CartException e) {
+            return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
+        } catch (OrderException e) {
+            return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
+        } catch (Exception e) {
+            log.error("Error while charging user", e);
+            return ResponseEntity.internalServerError().body(InternalServerError.response());
+        }
     }
 }

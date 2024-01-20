@@ -3,24 +3,24 @@ package be.heh.gourmet.application.port.out;
 import be.heh.gourmet.application.port.in.exception.CartException;
 import be.heh.gourmet.application.domain.model.CartRow;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
 public interface ICartRepository {
-    void add(String userID, int productID, int quantity);
+    void add(int userID, int productID, int quantity) throws CartException;
 
-    void remove(String userID, int productID);
+    void remove(int userID, int productID);
 
-    void update(String userID, int productID, int quantity);
+    void update(int userID, int productID, int quantity);
 
-    void clear(String userID);
+    void clear(int userID);
 
-    boolean exists(String userID, int productID);
+    boolean exists(int userID, int productID);
 
-    void placeOrder(String userID, Date date);
+    void placeOrder(int userID, Date date);
 
-    List<CartRow> list(String userID);
+    List<CartRow> get(int userID) throws CartException;
 
-    Optional<CartRow> get(String userID, int productID);
+    Optional<CartRow> get(int userID, int productID);
 }

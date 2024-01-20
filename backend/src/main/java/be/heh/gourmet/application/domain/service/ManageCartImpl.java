@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +20,15 @@ public class ManageCartImpl implements IManageCartUseCase {
     @Qualifier("getCartRepository")
     private ICartRepository cartRepository;
 
+    @Autowired
+    @Qualifier("getManageProductUseCase")
+    private IManageProductUseCase productManager;
+
     @Override
-    public void addProduct(String userID, Product product, int quantity) throws IllegalArgumentException {
+    public void addProduct(int userID, int productID, int quantity) throws IllegalArgumentException, CartException {
         Optional<Product> optionalProduct = productManager.get(productID);
         if (optionalProduct.isEmpty()) {
-            throw new ProductException("Product not found", ProductException.Type.PRODUCT_NOT_FOUND);
+            throw new CartException("Product not found", CartException.Type.ASSOCIATED_PRODUCT_NOT_FOUND);
         }
         Product product = optionalProduct.get();
         Optional<CartRow> cartRow = cartRepository.get(userID, product.ID());
@@ -35,7 +40,7 @@ public class ManageCartImpl implements IManageCartUseCase {
     }
 
     @Override
-    public void removeProduct(String userID, int productID, int quantity) throws IllegalArgumentException {
+    public void removeProduct(int userID, int productID, int quantity) throws CartException {
         Optional<CartRow> cartRow = cartRepository.get(userID, productID);
         if (cartRow.isPresent()) {
             if (cartRow.get().quantity() <= quantity) {
@@ -44,12 +49,22 @@ public class ManageCartImpl implements IManageCartUseCase {
                 cartRepository.update(userID, productID, cartRow.get().quantity() - quantity);
             }
         } else {
-            throw new IllegalArgumentException("Product not found in cart");
+            throw new CartException("Product not found in cart", CartException.Type.ASSOCIATED_PRODUCT_NOT_FOUND);
         }
     }
 
     @Override
-    public void editQuantity(String userID, int productID, int quantity) throws IllegalArgumentException {
+    public void completelyRemoveProduct(int userID, int productID) throws CartException {
+        Optional<CartRow> cartRow = cartRepository.get(userID, productID);
+        if (cartRow.isPresent()) {
+            cartRepository.remove(userID, productID);
+        } else {
+            throw new CartException("Product not found in cart", CartException.Type.ASSOCIATED_PRODUCT_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void editQuantity(int userID, int productID, int quantity) throws IllegalArgumentException {
         Optional<CartRow> cartRow = cartRepository.get(userID, productID);
         if (cartRow.isPresent()) {
             cartRepository.update(userID, productID, quantity);
@@ -59,17 +74,17 @@ public class ManageCartImpl implements IManageCartUseCase {
     }
 
     @Override
-    public List<CartRow> list(String userID) {
-        return cartRepository.list(userID);
+    public List<CartRow> get(int userID) throws CartException {
+        return cartRepository.get(userID);
     }
 
     @Override
-    public void clear(String userID) {
+    public void clear(int userID) {
         cartRepository.clear(userID);
     }
 
     @Override
-    public void checkout(String userID) {
-        // TODO :  method signature is not final
+    public void placeOrder(int userID, Date date) {
+        cartRepository.placeOrder(userID, date);
     }
 }
