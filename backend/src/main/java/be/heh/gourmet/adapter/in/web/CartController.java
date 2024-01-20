@@ -110,7 +110,7 @@ public class CartController {
                 throw new OrderException("Cart is empty", OrderException.Type.CART_IS_EMPTY);
             }
 
-            if (!params.containsKey("targetDate")) {
+            if (!params.containsKey("targetDate") || params.get("targetDate") == null) {
                 CustomException e = new CustomException("Missing targetDate parameter", HttpStatus.BAD_REQUEST);
                 return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
             }
@@ -122,6 +122,9 @@ public class CartController {
             // TODO : paymentManager.charge(userID, cart, params);
             cartManager.placeOrder(userID, targetDate);
             return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            OrderException err = new OrderException("Invalid targetDate format", OrderException.Type.INVALID_TARGET_DATE_FORMAT, e);
+            return ResponseEntity.status(err.httpStatus()).body(err.toResponse());
         } catch (PaymentException e) {
             return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
         } catch (CartException e) {
