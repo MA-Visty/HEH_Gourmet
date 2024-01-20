@@ -7,17 +7,23 @@ import be.heh.gourmet.application.port.in.IManageCartUseCase;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
 import be.heh.gourmet.application.port.in.IPaymentUseCase;
 import be.heh.gourmet.application.port.in.exception.CartException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.net.URL;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.Mockito.doNothing;
@@ -107,7 +113,79 @@ class CartControllerTest {
     }
 
     @Test
-    void checkout() throws Exception {
-        throw new RuntimeException("not yet implemented");
+    void checkout() throws Exception, CartException {
+        // targetDate = now + 1 year
+        Date targetDate = new Date(System.currentTimeMillis() + 31536000000L);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String targetDateStr = formatter.format(targetDate);
+        when(cartManager.get(1)).thenReturn(cart);
+        doNothing().when(cartManager).placeOrder(1, targetDate);
+        // TODO: Mock the behavior of paymentManager.charge() when implemented
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("targetDate", targetDateStr);
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/cart/1/checkout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(params)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void checkoutInvalidDate() throws Exception, CartException {
+        // prepare data
+        // targetDate = now + 1 year
+        Date targetDate = new Date(System.currentTimeMillis() + 31536000000L);
+        SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
+        String targetDateStr = formatter.format(targetDate);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("targetDate", targetDateStr);
+
+        // mock behavior
+        when(cartManager.get(1)).thenReturn(cart);
+        doNothing().when(cartManager).placeOrder(1, targetDate);
+        doNothing().when(paymentManager).charge(1, cart, Map.of("targetDate", targetDateStr));
+
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/cart/1/checkout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(params)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void checkoutEmptyCart() throws Exception, CartException {
+        // prepare data
+        // targetDate = now + 1 year
+        Date targetDate = new Date(System.currentTimeMillis() + 31536000000L);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String targetDateStr = formatter.format(targetDate);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("targetDate", targetDateStr);
+
+        // mock behavior
+        when(cartManager.get(1)).thenReturn(List.of());
+        doNothing().when(cartManager).placeOrder(1, targetDate);
+        doNothing().when(paymentManager).charge(1, List.of(), Map.of("targetDate", targetDateStr));
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/cart/1/checkout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(params)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void checkoutMissingDate() throws Exception, CartException {
+        when(cartManager.get(1)).thenReturn(cart);
+        doNothing().when(paymentManager).charge(1, cart, Map.of());
+
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/cart/1/checkout"))
+                .andExpect(status().isBadRequest());
     }
 }
