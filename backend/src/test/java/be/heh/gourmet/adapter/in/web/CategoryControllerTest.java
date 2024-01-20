@@ -1,6 +1,6 @@
 package be.heh.gourmet.adapter.in.web;
 
-import be.heh.gourmet.adapter.out.persistence.exception.CategoryException;
+import be.heh.gourmet.application.port.in.exception.CategoryException;
 import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
 import be.heh.gourmet.application.port.in.InputCategory;

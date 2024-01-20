@@ -1,6 +1,6 @@
 package be.heh.gourmet.adapter.out.persistence;
 
-import be.heh.gourmet.adapter.out.persistence.exception.CategoryException;
+import be.heh.gourmet.application.port.in.exception.CategoryException;
 import be.heh.gourmet.adapter.out.persistence.mapper.CategoryRowMapper;
 import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.port.in.InputCategory;

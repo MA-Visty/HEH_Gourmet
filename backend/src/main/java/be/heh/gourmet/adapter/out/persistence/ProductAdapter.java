@@ -1,6 +1,6 @@
 package be.heh.gourmet.adapter.out.persistence;
 
-import be.heh.gourmet.adapter.out.persistence.exception.ProductException;
+import be.heh.gourmet.application.port.in.exception.ProductException;
 import be.heh.gourmet.application.port.in.InputProduct;
 import be.heh.gourmet.application.domain.model.Product;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;

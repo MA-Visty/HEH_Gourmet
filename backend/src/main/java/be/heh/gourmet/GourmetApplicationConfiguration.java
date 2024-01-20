@@ -6,11 +6,7 @@ import be.heh.gourmet.adapter.out.persistence.ProductAdapter;
 import be.heh.gourmet.adapter.out.persistence.UserAdapter;
 import be.heh.gourmet.application.domain.service.ManageCartImpl;
 import be.heh.gourmet.application.domain.service.ManagerOrderImpl;
-import be.heh.gourmet.application.port.in.IManageCartUseCase;
-import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
-import be.heh.gourmet.application.port.in.IManageOrderUseCase;
-import be.heh.gourmet.application.port.in.IManageProductUseCase;
-import be.heh.gourmet.application.port.out.ICartRepository;
+import be.heh.gourmet.application.domain.service.PaymentImpl;
 import be.heh.gourmet.application.port.in.*;
 import be.heh.gourmet.application.port.out.*;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +26,12 @@ public class GourmetApplicationConfiguration {
     @Bean
     public IUserRepository getUserRepository() {
         return new UserAdapter();
+    }
+
+    // Client
+    @Bean
+    public PaymentClient getPaymentClient() {
+        return new StripePaymentAdapter();
     }
 
     // Crud only use cases

@@ -1,4 +1,4 @@
-package be.heh.gourmet.adapter.in.web.exeption;
+package be.heh.gourmet.application.port.in.exception;
 
 import java.util.Date;
 import java.util.HashMap;

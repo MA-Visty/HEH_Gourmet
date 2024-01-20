@@ -1,6 +1,8 @@
 package be.heh.gourmet.adapter.out.persistence;
 
+import be.heh.gourmet.application.port.in.exception.CartException;
 import be.heh.gourmet.application.domain.model.CartRow;
+import be.heh.gourmet.application.port.in.exception.OrderException;
 import be.heh.gourmet.application.port.out.ICartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

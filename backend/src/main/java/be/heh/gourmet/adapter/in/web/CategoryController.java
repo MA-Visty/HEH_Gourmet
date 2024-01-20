@@ -1,7 +1,7 @@
 package be.heh.gourmet.adapter.in.web;
 
 import be.heh.gourmet.adapter.in.web.exeption.InternalServerError;
-import be.heh.gourmet.adapter.out.persistence.exception.CategoryException;
+import be.heh.gourmet.application.port.in.exception.CategoryException;
 import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
 import be.heh.gourmet.application.port.in.InputCategory;
@@ -43,6 +43,7 @@ public class CategoryController {
         } catch (CategoryException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while getting categories", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -61,6 +62,7 @@ public class CategoryController {
         } catch (CategoryException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while removing categories", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -77,6 +79,7 @@ public class CategoryController {
         } catch (CategoryException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while adding category", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -92,6 +95,7 @@ public class CategoryController {
         } catch (CategoryException e) {
             return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
         } catch (Exception e) {
+            log.error("Error while getting category", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -104,6 +108,7 @@ public class CategoryController {
         } catch (CategoryException e) {
             return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
         } catch (Exception e) {
+            log.error("Error while updating category", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -116,6 +121,7 @@ public class CategoryController {
         } catch (CategoryException e) {
             return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
         } catch (Exception e) {
+            log.error("Error while removing category", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }

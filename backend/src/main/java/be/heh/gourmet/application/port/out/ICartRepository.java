@@ -1,5 +1,6 @@
 package be.heh.gourmet.application.port.out;
 
+import be.heh.gourmet.application.port.in.exception.CartException;
 import be.heh.gourmet.application.domain.model.CartRow;
 
 import java.util.Date;

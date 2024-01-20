@@ -2,6 +2,7 @@ package be.heh.gourmet.adapter.out.persistence;
 
 import be.heh.gourmet.adapter.out.persistence.mapper.CartRowMapper;
 import be.heh.gourmet.application.domain.model.CartRow;
+import be.heh.gourmet.application.port.in.exception.CartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

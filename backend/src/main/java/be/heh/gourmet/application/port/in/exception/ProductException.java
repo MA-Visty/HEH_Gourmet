@@ -1,6 +1,5 @@
-package be.heh.gourmet.adapter.out.persistence.exception;
+package be.heh.gourmet.application.port.in.exception;
 
-import be.heh.gourmet.adapter.in.web.exeption.HttpException;
 import lombok.Getter;
 
 @Getter

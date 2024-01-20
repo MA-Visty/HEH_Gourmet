@@ -1,7 +1,7 @@
 package be.heh.gourmet.adapter.in.web;
 
 import be.heh.gourmet.adapter.in.web.exeption.InternalServerError;
-import be.heh.gourmet.adapter.out.persistence.exception.ProductException;
+import be.heh.gourmet.application.port.in.exception.ProductException;
 import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.domain.model.Product;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
@@ -48,6 +48,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while getting products", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -63,6 +64,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while getting products", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -78,6 +80,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while adding product", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -97,6 +100,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while adding products", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -112,6 +116,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while getting product", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -127,6 +132,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while getting product category", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -140,6 +146,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while updating product", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -153,6 +160,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while removing product", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }
@@ -166,6 +174,7 @@ public class ProductController {
         } catch (ProductException e) {
             return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
+            log.error("Error while removing products", e);
             return ResponseEntity.internalServerError().body(InternalServerError.response());
         }
     }

@@ -1,8 +1,10 @@
 package be.heh.gourmet.application.domain.service;
 
+import be.heh.gourmet.application.port.in.exception.CartException;
 import be.heh.gourmet.application.domain.model.CartRow;
 import be.heh.gourmet.application.domain.model.Product;
 import be.heh.gourmet.application.port.in.IManageCartUseCase;
+import be.heh.gourmet.application.port.in.IManageProductUseCase;
 import be.heh.gourmet.application.port.out.ICartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
