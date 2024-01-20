@@ -53,7 +53,6 @@ create table if not exists users
     first_name varchar(255) not null,
     email      varchar(255) not null
         unique,
-    password   varchar(255) not null,
     -- 0 = user, 1 = vendor, 100 = admin
     role       int          not null,
     constraint full_name
@@ -90,13 +89,13 @@ create table if not exists favorites
 -- Table to store the orders
 create table if not exists orders
 (
-    order_id     serial       not null
+    order_id     serial not null
         primary key,
     user_id      serial not null,
-    order_date   date         not null,
-    prepare_date date         not null,
+    order_date   date   not null,
+    prepare_date date   not null,
     -- 0 = canceled, 1 = cancelable, 2 = pending, 3 = ready, 4 = delivered
-    status       int          not null default 1,
+    status       int    not null default 1,
     constraint order_user_fk
         foreign key (user_id) references users (user_id)
 );
@@ -330,8 +329,7 @@ create or replace procedure edit_user(
     in p_user_id bigint,
     in p_last_name varchar(255),
     in p_first_name varchar(255),
-    in p_email varchar(255),
-    in p_password varchar(255)
+    in p_email varchar(255)
 ) as
 $$
 begin
@@ -339,8 +337,7 @@ begin
     update users
     set last_name  = coalesce(p_last_name, last_name),
         first_name = coalesce(p_first_name, first_name),
-        email      = coalesce(p_email, email),
-        password   = coalesce(p_password, password)
+        email      = coalesce(p_email, email)
     where users.user_id = p_user_id;
 end;
 $$ language plpgsql;
