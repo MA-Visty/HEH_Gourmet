@@ -1,4 +1,5 @@
 import axios from "axios";
+import API_URL from "../apiConfig";
 
 export function login(state, action) {
     //sessionStorage.setItem("creditential", JSON.stringify(creditential));
@@ -7,7 +8,7 @@ export function login(state, action) {
 
 export function logout(state) {
     axios
-        .post("http://localhost:3000/api/auth/logout", {
+        .post(`${API_URL}/api/auth/logout`, {
             refreshToken: state.token.refreshToken,
         })
         .then((response) => {

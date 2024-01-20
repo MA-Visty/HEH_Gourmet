@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {Offcanvas, Button, Row, Col, Form, ImputGroup, InputGroup} from 'react-bootstrap';
 import {useAppContext, useDispatchContext} from "../../store/AppContext";
 import axios from "axios";
+import API_URL from "../../apiConfig";
 
 function OffCanvasUser({ show, onHide, type, ...props }) {
     const { state } = useAppContext();
@@ -44,7 +45,7 @@ function UserLogin({switchLogRegist, switchLogAccount}) {
         } else {
             try {
                 const response = await axios
-                    .post("http://localhost:3000/api/auth/login", {
+                    .post(`${API_URL}/api/auth/login`, {
                         email: emailCheck,
                         password: pwdCheck
                     });
@@ -125,7 +126,7 @@ function UserRegister({switchLogRegist}) {
         } else {
             try {
                 const response = await axios
-                    .post("http://localhost:3000/api/auth/register", {
+                    .post(`${API_URL}/api/auth/register`, {
                         name: "",
                         username: "",
                         email: emailCheck,

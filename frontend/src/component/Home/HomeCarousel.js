@@ -6,6 +6,7 @@ import ProductItemFavorite from "../Product/ProductItemFavorite";
 import HomeCarouselItemFavorite from "./HomeCarouselItemFavorite";
 import products from "../Product/Products";
 import {useAppContext} from "../../store/AppContext";
+import API_URL from "../../apiConfig";
 
 function HomeCarousel() {
     const { state } = useAppContext();
@@ -15,7 +16,7 @@ function HomeCarousel() {
 
     useEffect(() => {
         axios
-            .get("http://localhost:3000/api/product")
+            .get(`${API_URL}/api/products`)
             .then((response) => {
                 response.data.products.map((product) => {
                     if(state.favorite.includes(product.id)) {
