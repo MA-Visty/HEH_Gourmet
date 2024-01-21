@@ -43,7 +43,7 @@ function Products() {
 						</Col>
 						<Col>
 							<Image style={{objectFit: 'contain', width: '100%', height: '250px'}}
-								   src={data.mainImage}/>
+								   src={data.imageUrl}/>
 
 							<Table striped bordered size="md">
 								<tbody>
@@ -51,15 +51,32 @@ function Products() {
 									<td>Nom</td>
 									<td>{data.name}</td>
 								</tr>
+                                <tr>
+                                    <td>Prix</td>
+                                    <td>{data.price} €</td>
+                                </tr>
+                                <tr>
+                                    <td>Type</td>
+                                    <td>{data.type}</td>
+                                </tr>
 								<tr>
 									<td>Description</td>
-									<td>
+									<td>{data.description}
 										<ol>{data.description.split('|').map((elem) => (
 											<li>{elem}</li>
 										))}
 										</ol>
 									</td>
 								</tr>
+                                <tr>
+                                    <td>Ingredients</td>
+                                    <td>
+                                        <ol>{data.ingredients.map((elem) => (
+                                            <li>{elem}</li>
+                                        ))}
+                                        </ol>
+                                    </td>
+                                </tr>
 								</tbody>
 							</Table>
 						</Col>
