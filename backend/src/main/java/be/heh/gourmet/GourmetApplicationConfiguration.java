@@ -1,5 +1,6 @@
 package be.heh.gourmet;
 
+import be.heh.gourmet.adapter.out.payment.StripePaymentAdapter;
 import be.heh.gourmet.adapter.out.persistence.CartAdapter;
 import be.heh.gourmet.adapter.out.persistence.CategoryAdapter;
 import be.heh.gourmet.adapter.out.persistence.ProductAdapter;
@@ -54,5 +55,10 @@ public class GourmetApplicationConfiguration {
     @Bean
     IManageOrderUseCase getManageOrderUseCase() {
         return new ManagerOrderImpl();
+    }
+
+    @Bean
+    IPaymentUseCase getPaymentUseCase() {
+        return new PaymentImpl();
     }
 }

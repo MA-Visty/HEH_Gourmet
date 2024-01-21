@@ -29,6 +29,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.stripe:stripe-java:24.11.0")
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")

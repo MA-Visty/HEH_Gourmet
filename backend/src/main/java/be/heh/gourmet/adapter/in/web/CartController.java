@@ -119,6 +119,9 @@ public class CartController {
                 throw new OrderException("Target date must be in the future", OrderException.Type.PREPARE_DATE_CANNOT_BE_IN_THE_PAST);
             }
 
+            // this will throw an exception if the payment fails (see src/main/java/be/heh/gourmet/adapter/out/payment/StripePaymentAdapter.java)
+            // at this stage the cart is not modified and the order is not placed
+            // only if this call succeeds, the cart is modified and the order is placed
             // TODO : paymentManager.charge(userID, cart, params);
             cartManager.placeOrder(userID, targetDate);
             return ResponseEntity.ok().build();
