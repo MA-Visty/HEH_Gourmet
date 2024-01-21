@@ -64,4 +64,4 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: "JAR_FILE=build/libs/*.jar"
+          build-args: "JAR_FILE=backend/build/libs/*.jar"
