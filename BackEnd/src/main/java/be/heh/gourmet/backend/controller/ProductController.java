@@ -34,9 +34,10 @@ public class ProductController {
         this.cloudinaryService = cloudinaryService;
     }
 
-    //TODO: Faire l'enregistrement d'image sur cloudinary (normalement correct mais à verif du coup)
+    //TODO: Faire si l'image est trop grande ou si différent de jpg
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> create(@RequestPart("product") Product product, @RequestPart("file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<String> create(@RequestPart("product") Product product,
+                                         @RequestPart("file") MultipartFile multipartFile) throws IOException {
         logger.debug("Product create controller called");
         BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
         if (bi == null) {
@@ -67,11 +68,26 @@ public class ProductController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> update(@PathVariable Long id,
+                                          @RequestPart("product") Product product,
+                                          @RequestPart(value = "file", required = false) MultipartFile multipartFile) throws IOException {
+        logger.debug("Product update controller called");
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
+            if (bi == null) {
+                return new ResponseEntity<>("Image not available!", HttpStatus.BAD_REQUEST);
+            }
+            logger.debug("Cloudinary upload service called for update");
+            Map result = cloudinaryService.upload(multipartFile);
+            product.setImageName((String) result.get("original_filename"));
+            product.setImageId((String) result.get("public_id"));
+            product.setImageUrl((String) result.get("url"));
+        }
+
         logger.debug("Product update controller called with id: {}", id);
-        Product productRes = productService.update(id, product);
-        return new ResponseEntity<>(productRes, HttpStatus.OK);
+        productService.update(id, product);
+        return new ResponseEntity<>("Product updated successfully !", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

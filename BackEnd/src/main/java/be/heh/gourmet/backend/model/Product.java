@@ -29,8 +29,8 @@ public class Product {
     private String imageId;
     @Column(name = "imageUrl")
     private String imageUrl;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "product_id")
+    @OneToMany
+    @JoinColumn(name = "ingredients")
     private List<Ingredient> ingredients;
 
     public Product() {
