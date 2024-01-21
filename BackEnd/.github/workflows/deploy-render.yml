@@ -5,9 +5,26 @@ on:
     branches: [springboot]
 
 jobs:
+  build:
+    name: Build with Gradle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Gradle Build
+        run: ./gradlew build
+
   deploy:
     name: DeployRender
-    needs: [test]
+    needs: [build]
     runs-on: ubuntu-latest
 
     steps:
