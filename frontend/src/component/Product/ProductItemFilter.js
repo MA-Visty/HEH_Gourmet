@@ -1,19 +1,26 @@
 import {useEffect, useRef, useState} from "react";
 import { Form, FormGroup, Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
+import axios from "axios";
+import API_URL from "../../apiConfig";
 
 export function ProductItemFilter({data, setDataFilter}) {
     const filter = useRef(null);
+    const [typeFilter, setTypeFilter] = useState([]);
     const [typeSelect, setTypeSelect] = useState("");
     useEffect(() => {handleSearch();}, [typeSelect]);
-    const typeFilter = [
-        "PC",
-        "PC1",
-        "PC2",
-        "PC3",
-        "PC4",
-        "Mac",
-        "Idea",
-        "JSP"]
+    const [isCrash, setCrash] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {axios
+        .get(`${API_URL}/api/typesProduct`)
+        .then((response) => {
+            setTypeFilter(response.data);
+            setLoading(false);
+        })
+        .catch((error) => {
+            setCrash(true);
+        });
+    }, []);
 
     const handleSearch = () => {
         if (filter.current.value !== "") {
