@@ -7,12 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +34,8 @@ public class ProductController {
         this.cloudinaryService = cloudinaryService;
     }
 
-    @PostMapping
+    //TODO: Faire l'enregistrement d'image sur cloudinary (normalement correct mais à verif du coup)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> create(@RequestPart("product") Product product, @RequestPart("file") MultipartFile multipartFile) throws IOException {
         logger.debug("Product create controller called");
         BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
@@ -49,7 +50,7 @@ public class ProductController {
 
         logger.debug("Product create service called");
         productService.create(product);
-        return new ResponseEntity<>("Product added successfully ! ", HttpStatus.OK);
+        return new ResponseEntity<>("Product create successfully ! ", HttpStatus.OK);
     }
 
     @GetMapping
@@ -77,6 +78,6 @@ public class ProductController {
     public ResponseEntity<String> delete(@PathVariable Long id) {
         logger.debug("Product delete controller called with id: {}", id);
         productService.delete(id);
-        return new ResponseEntity<>("Deleted product", HttpStatus.OK);
+        return new ResponseEntity<>("Product deleted successfully !", HttpStatus.OK);
     }
 }

@@ -14,8 +14,8 @@
     },
     "servers": [
         {
-            "description": "localhost dev server",
-            "url": "https:localhost:8080"
+            "description": "Render dev server",
+            "url": "https://heh-gourmet-api.onrender.com"
         }
     ],
     "tags": [

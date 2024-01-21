@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TypeProduct {
+    //TODO: Faire Repository ; Service ; Controller
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

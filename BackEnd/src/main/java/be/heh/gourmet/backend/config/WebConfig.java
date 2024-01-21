@@ -1,4 +1,4 @@
-package be.heh.gourmet.backend;
+package be.heh.gourmet.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
