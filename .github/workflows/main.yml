@@ -37,13 +37,7 @@ jobs:
       - name: Build with Gradle
         working-directory: ./backend
         run: ./gradlew build -x test
-
-  deploy:
-    name: Deploy
-    needs: [build-backend]
-    runs-on: ubuntu-latest
-
-    steps:
+        
       - name: Login to DockerHub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
