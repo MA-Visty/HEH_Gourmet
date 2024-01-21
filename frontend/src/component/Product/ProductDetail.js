@@ -61,12 +61,7 @@ function Products() {
                                 </tr>
 								<tr>
 									<td>Description</td>
-									<td>{data.description}
-										<ol>{data.description.split('|').map((elem) => (
-											<li>{elem}</li>
-										))}
-										</ol>
-									</td>
+									<td>{data.description}</td>
 								</tr>
                                 <tr>
                                     <td>Ingredients</td>
