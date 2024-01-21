@@ -92,3 +92,53 @@ tasks.register<DockerBuild>("docker-build") {
     dockerhubUser = System.getenv("DOCKERHUB_USER") ?: ""
     dependsOn("assemble")
 }
+
+abstract class DockerPush : DefaultTask() {
+    @Input
+    var dockerhubUser = ""
+
+    @Input
+    val imageName = project.name.lowercase()
+
+    @Input
+    val imageVersion = project.version
+
+    @TaskAction
+    fun dockerPush() {
+        if (this.dockerhubUser == "") {
+            pushImage(this.imageName + ":" + this.imageVersion)
+        } else {
+            pushImage(this.dockerhubUser + "/" + this.imageName + ":" + this.imageVersion)
+        }
+
+        ProcessBuilder("docker", "image", "prune", "--force").start().waitFor()
+    }
+
+    fun pushImage(name: String) {
+        val processBuilder = ProcessBuilder("docker", "push", name)
+        processBuilder.redirectErrorStream(true)
+        val process = processBuilder.start()
+        val future: Future<Int> = Executors.newSingleThreadExecutor().submit(Callable {
+            val inputStream: InputStream = process.inputStream
+            val inputStreamReader = InputStreamReader(inputStream)
+            val bufferedReader = BufferedReader(inputStreamReader)
+            var line: String?
+            while (bufferedReader.readLine().also { line = it } != null) {
+                println(line)
+            }
+            return@Callable 0
+        })
+        try {
+            future.get(5, TimeUnit.MINUTES)
+        } catch (e: Exception) {
+            println("Timeout")
+        }
+        process.waitFor()
+    }
+}
+
+tasks.register<DockerPush>("docker-push") {
+    dockerhubUser = System.getenv("DOCKERHUB_USER")
+            ?: throw GradleException("DOCKERHUB_USER environment variable is not set")
+    dependsOn("docker-build")
+}
