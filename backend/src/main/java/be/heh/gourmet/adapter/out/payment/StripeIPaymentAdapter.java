@@ -2,7 +2,7 @@ package be.heh.gourmet.adapter.out.payment;
 
 import be.heh.gourmet.adapter.out.payment.exception.PaymentException;
 import be.heh.gourmet.application.domain.model.User;
-import be.heh.gourmet.application.port.out.PaymentClient;
+import be.heh.gourmet.application.port.out.IPaymentClient;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
-public class StripePaymentAdapter implements PaymentClient {
+public class StripeIPaymentAdapter implements IPaymentClient {
     @Value("${STRIPE_SECRET_KEY}")
     private String secretKey;
 

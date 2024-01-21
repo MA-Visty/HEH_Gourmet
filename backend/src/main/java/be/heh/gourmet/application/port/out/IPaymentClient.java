@@ -4,7 +4,7 @@ import be.heh.gourmet.application.domain.model.User;
 
 import java.util.Map;
 
-public interface PaymentClient {
+public interface IPaymentClient {
     void charge(User user, Float amount, Map<String, Object> params);
 
     void charge(Float amount, Map<String, Object> params);
