@@ -31,7 +31,7 @@ public class GourmetApplicationConfiguration {
 
     // Client
     @Bean
-    public PaymentClient getPaymentClient() {
+    public IPaymentClient getPaymentClient() {
         return new StripePaymentAdapter();
     }
 

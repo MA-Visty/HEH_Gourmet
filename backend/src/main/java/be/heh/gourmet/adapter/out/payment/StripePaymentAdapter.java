@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
-public class StripeIPaymentAdapter implements IPaymentClient {
+public class StripePaymentAdapter implements IPaymentClient {
     @Value("${STRIPE_SECRET_KEY}")
     private String secretKey;
 

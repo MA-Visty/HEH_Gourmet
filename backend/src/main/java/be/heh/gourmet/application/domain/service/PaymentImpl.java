@@ -4,7 +4,7 @@ import be.heh.gourmet.application.domain.model.CartRow;
 import be.heh.gourmet.application.domain.model.User;
 import be.heh.gourmet.application.port.in.IPaymentUseCase;
 import be.heh.gourmet.application.port.out.IUserRepository;
-import be.heh.gourmet.application.port.out.PaymentClient;
+import be.heh.gourmet.application.port.out.IPaymentClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class PaymentImpl implements IPaymentUseCase {
     @Autowired
     @Qualifier("getPaymentClient")
-    private PaymentClient paymentClient;
+    private IPaymentClient paymentClient;
 
     @Autowired
     @Qualifier("getUserRepository")

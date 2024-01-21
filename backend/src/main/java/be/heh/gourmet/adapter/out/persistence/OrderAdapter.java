@@ -17,12 +17,12 @@ public class OrderAdapter implements IOrderRepository {
 
     @Override
     public void editStatus(int orderID, String status) {
-        orderRepository.editStatus(orderID, status);
+        //orderRepository.editStatus(orderID, status);
     }
 
     @Override
     public void editPrepareDate(int orderID, Date date) {
-        orderRepository.editPrepareDate(orderID, date);
+        //orderRepository.editPrepareDate(orderID, date);
     }
 
     @Override
