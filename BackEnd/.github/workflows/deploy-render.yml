@@ -3,6 +3,7 @@ name: DeployRender
 on:
   push:
     branches: [springboot]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,7 +15,7 @@ jobs:
         with:
           java-version: 17
           distribution: 'adopt'
-
+          cache: gradle
       - name: Gradle Build
         run: ./gradlew build
 
