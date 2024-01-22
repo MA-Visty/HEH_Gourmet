@@ -1,25 +1,21 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Form, FormGroup, Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import axios from "axios";
 import API_URL from "../../apiConfig";
+import Error from "../Error/Error";
+import Loader from "../Loader/Loader";
 
 export function ProductItemFilter({data, setDataFilter}) {
     const filter = useRef(null);
     const [typeFilter, setTypeFilter] = useState([]);
     const [typeSelect, setTypeSelect] = useState("");
     useEffect(() => {handleSearch();}, [typeSelect]);
-    const [isCrash, setCrash] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {axios
         .get(`${API_URL}/api/typesProduct`)
         .then((response) => {
             setTypeFilter(response.data);
-            setLoading(false);
         })
-        .catch((error) => {
-            setCrash(true);
-        });
     }, []);
 
     const handleSearch = () => {
