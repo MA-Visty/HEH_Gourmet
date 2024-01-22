@@ -28,21 +28,24 @@ function Products() {
 
     return (
         <Container style={{paddingTop: 15, paddingBottom: 15, background: "#FFF", minHeight: "100vh"}}>
-            <ProductItemFilter data={data} setDataFilter={setDataFilter} />
-            <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
-                {isCrash ?
-                    <Error />
-                    : loading ?
-                        <Loader/>
-                    : dataFilter.length === 0 ?
-                        <EmptyData/>
-                    : dataFilter.map((item) => (
-                        <Col sm>
-                            <ProductItem product={item} class="bg-primary"/>
-                        </Col>
-                    ))
-                }
-            </Row>
+            {isCrash ?
+                <Error />
+            : loading ?
+                <Loader/>
+            :
+                <>
+                    <ProductItemFilter loading={loading} data={data} setDataFilter={setDataFilter} />
+                    <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
+                        {dataFilter.length === 0 ?
+                            <EmptyData/>
+                        : dataFilter.map((item) => (
+                            <Col sm>
+                                <ProductItem product={item} class="bg-primary"/>
+                            </Col>
+                        ))}
+                    </Row>
+                </>
+            }
         </Container>
     );
 }
