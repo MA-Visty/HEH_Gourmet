@@ -9,7 +9,7 @@ function ListOrders({orders, setOrderSelct}) {
     return (
         <>
             {orders.map((order) => (
-                <Row onClick={setOrderSelct(order.id)}>
+                <Row onClick={setOrderSelct(order.id)} style={{border: "1px", borderColor: "#000"}}>
                     <Col>order.state</Col>
                     <Col>order.userId</Col>
                     <Col>order.price</Col>
