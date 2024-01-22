@@ -34,12 +34,12 @@ function WorkSpace() {
     }, []);
 
     return (
-        <Container>
+        <Container style={{paddingTop: 15, paddingBottom: 15, background: "#FFF", minHeight: "100vh"}}>
             <Row style={{margin: 0, padding: 0}}>
-                <Col style={{margin: 0, padding: 0}}>
+                <Col sm={4}>
                     <ListOrders orders={data} setOrderSelct={setOrderSelect}/>
                 </Col>
-                <Col style={{margin: 0, padding: 0}}>
+                <Col sm={8}>
                     <OrderZone orderSelect={data[orderSelect]}/>
                 </Col>
             </Row>
