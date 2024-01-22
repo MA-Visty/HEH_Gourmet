@@ -5,7 +5,7 @@ import Home from "./component/Home/Home";
 import Error from "./component/Error/Error";
 import Products from "./component/Product/Products";
 import ProductDetail from "./component/Product/ProductDetail";
-import WorkSpace from "./pages/WorkSpace";
+import WorkSpace from "./component/WorkSpace/WorkSpace";
 
 function App() {
     return (

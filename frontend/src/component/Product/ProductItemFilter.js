@@ -34,11 +34,14 @@ export function ProductItemFilter({data, setDataFilter}) {
             );
         } else if(typeSelect !== "") {
             setDataFilter(
-                data.filter((product) =>
-                    product.name
-                        .toLowerCase()
-                        .includes(typeSelect.toLowerCase())
-                )
+                data.filter((product) => {
+                    if(product.type !== null) {
+                        product.type.typeName
+                            .toLowerCase()
+                            .includes(typeSelect.toLowerCase())
+                        return product;
+                    }
+                })
             );
         } else {
             setDataFilter(data);
@@ -53,12 +56,12 @@ export function ProductItemFilter({data, setDataFilter}) {
     return (
         <ButtonToolbar className="justify-content-between" aria-label="Toolbar with Button groups" style={{marginBottom: "1rem"}}>
             <ButtonGroup aria-label="First group">
-                {typeFilter.map((type) => (
+                {typeFilter.map((elem) => (
                     <Button
-                        variant={typeSelect === type ? 'success' : 'outline-secondary'}
-                        onClick={() => hangleTypeSelect(type)}
+                        variant={typeSelect === elem.typeName ? 'success' : 'outline-secondary'}
+                        onClick={() => hangleTypeSelect(elem.typeName)}
                     >
-                        {type}
+                        {elem.typeName.charAt(0).toUpperCase() + elem.typeName.slice(1)}
                     </Button>
                 ))}
             </ButtonGroup>

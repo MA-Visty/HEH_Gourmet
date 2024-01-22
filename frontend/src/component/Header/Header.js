@@ -33,11 +33,12 @@ function Header() {
                             <LinkContainer to="/menu">
                                 <Nav.Link>Menu</Nav.Link>
                             </LinkContainer>
+                            <LinkContainer to="/workspace">
+                                <Nav.Link>Workspace</Nav.Link>
+                            </LinkContainer>
                             {state.user.role === "worker" ?
-                                <LinkContainer to="/workspace">
-                                    <Nav.Link>Workspace</Nav.Link>
-                                </LinkContainer>
-                                : <></>
+                                //TODO: Worker if not user
+                                <></> : <></>
                             }
                         </Nav>
                         <Row>
