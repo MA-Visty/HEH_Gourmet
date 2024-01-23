@@ -6,9 +6,10 @@ import {useParams} from "react-router-dom";
 import ProductItemFavorite from "./ProductItemFavorite";
 import Error from "../../component/Error/Error";
 import Loader from "../../component/Loader/Loader";
-import EmptyData from "../../component/Loader/EmptyData";
 import {useAppContext} from "../../store/AppContext";
 import API_URL from "../../apiConfig";
+import Trash from "../../assets/images/trash.svg";
+import Edit from "../../assets/images/edit.svg";
 
 function Products() {
     const { state } = useAppContext();
@@ -17,31 +18,48 @@ function Products() {
     const [loading, setLoading] = useState(true);
     const itemID = useParams().id;
 
-    useState(() =>
-        axios.get(`${API_URL}/api/products/${itemID}`)
-            .then(function (reponse) {
-                setData(reponse.data);
-                setLoading(false);
-            })
-            .catch(function (error) {
-                setCrash(true);
-            })
-    );
+    useState(() => {
+        if (itemID !== "newProduct") {
+            axios.get(`${API_URL}/api/products/${itemID}`)
+                .then(function (reponse) {
+                    setData(reponse.data);
+                    setLoading(false);
+                })
+                .catch(function (error) {
+                    setCrash(true);
+                });
+        } else {
+            setLoading(false);
+            setData({
+                id: "newProduct",
+                type: null,
+                name: "Ajouter un produit",
+                price: null,
+                description: null,
+                imageName: null,
+                imageId: null,
+                imageUrl: Edit,
+                ingredients: []
+            });
+        }
+    });
 
     return (
-        <Container style={{marginTop: 15}}>
-            <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
+        <Container style={{paddingTop: 15, paddingBottom: 15, background: "#FFF", minHeight: "100vh"}}>
+            <Row>
                 {isCrash ?
                     <Error/>
-                    : loading ?
+                : loading ?
 					<Loader/>
-					: <>
-						<Col>
+                : <>
+						<Col sm={2}>
 							<LinkContainer to="/Menu">
 								<Button as="input" type="reset" value="return"/>
 							</LinkContainer>
 						</Col>
-						<Col>
+						<Col sm={8} style={{position: "relative"}}>
+                            {state.user !== "" ? <ProductItemFavorite product={data} /> : <></> }
+                            <ProductItemFavorite product={data} />
 							<Image style={{objectFit: 'contain', width: '100%', height: '250px'}}
 								   src={data.imageUrl}/>
 
@@ -57,7 +75,7 @@ function Products() {
                                 </tr>
                                 <tr>
                                     <td>Type</td>
-                                    <td>{data.type}</td>
+                                    <td>{data.type !== null ? data.type.typeName : ""}</td>
                                 </tr>
 								<tr>
 									<td>Description</td>
@@ -75,8 +93,9 @@ function Products() {
 								</tbody>
 							</Table>
 						</Col>
-						<Col>
-                            {state.user !== "" ? <ProductItemFavorite product={data} /> : <></> }
+						<Col sm={2} style={{filter: "invert(16%) sepia(80%) saturate(7434%) hue-rotate(358deg) brightness(104%) contrast(111%)"}}>
+                            <Image style={{objectFit: 'contain', width: '100%', height: '250px', fill: "red"}}
+                                   src={Trash}/>
 						</Col>
 					</>
                 }
