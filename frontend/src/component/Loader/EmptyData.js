@@ -4,7 +4,7 @@ import {Button} from "react-bootstrap";
 function EmptyData() {
     return (
         <Button variant="secondary" disabled>
-            No results found.
+            Aucun résultat trouvé.
         </Button>
     );
 }

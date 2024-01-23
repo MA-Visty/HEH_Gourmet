@@ -9,15 +9,22 @@ function Cart() {
     const { dispatch } = useDispatchContext();
     return (
         <Table striped bordered hover>
-            <thead>
+            <thead align={"center"}>
                 <tr>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Prices</th>
-                    <th></th>
+                    <th>Nom</th>
+                    <th>Quantités</th>
+                    <th>Prix</th>
+                    <th>
+                        <img
+                            src={TrashImage}
+                            alt="error"
+                            width={20}
+                            onClick={() => dispatch({ type: "removeAll" })}
+                        ></img>
+                    </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody align={"center"}>
                 {state.cart.map((item) => (
                     <tr key={item.product.id}>
                         <td>{item.product.name}</td>
@@ -33,20 +40,6 @@ function Cart() {
                         </td>
                     </tr>
                 ))}
-
-            <tr>
-                <td>Total</td>
-                <td>{state.quantity}</td>
-                <td>{state.price} €</td>
-                <td>
-                    <img
-                        src={TrashImage}
-                        alt="error"
-                        width={20}
-                        onClick={() => dispatch({ type: "removeAll" })}
-                    ></img>
-                </td>
-            </tr>
             </tbody>
         </Table>
     );
