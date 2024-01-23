@@ -28,13 +28,13 @@ function Header() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <LinkContainer to="/">
-                                <Nav.Link>Home</Nav.Link>
+                                <Nav.Link>Accueil</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to="/menu">
                                 <Nav.Link>Menu</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to="/workspace">
-                                <Nav.Link>Workspace</Nav.Link>
+                                <Nav.Link>Commandes</Nav.Link>
                             </LinkContainer>
                             {state.user.role === "worker" ?
                                 //TODO: Worker if not user
