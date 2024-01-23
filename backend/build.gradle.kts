@@ -19,6 +19,9 @@ java {
 }
 
 configurations {
+    all {
+        exclude(group = "commons-logging", module = "commons-logging")
+    }
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
@@ -29,7 +32,13 @@ repositories {
 }
 
 dependencies {
+    // cloudinary dependencies
+    implementation("com.cloudinary:cloudinary-http45:1.29.0")
+
+    // stripe dependencies
     implementation("com.stripe:stripe-java:24.11.0")
+
+    // spring dependencies
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")

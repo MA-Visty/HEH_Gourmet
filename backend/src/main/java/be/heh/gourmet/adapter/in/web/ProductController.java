@@ -1,12 +1,12 @@
 package be.heh.gourmet.adapter.in.web;
 
 import be.heh.gourmet.adapter.in.web.exeption.InternalServerError;
-import be.heh.gourmet.application.port.in.exception.ProductException;
 import be.heh.gourmet.application.domain.model.Category;
 import be.heh.gourmet.application.domain.model.Product;
 import be.heh.gourmet.application.port.in.IManageCategoryUseCase;
 import be.heh.gourmet.application.port.in.IManageProductUseCase;
 import be.heh.gourmet.application.port.in.InputProduct;
+import be.heh.gourmet.application.port.in.exception.ProductException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +29,7 @@ public class ProductController {
     @Autowired
     @Qualifier("getManageCategoryUseCase")
     IManageCategoryUseCase categoryManager;
+
 
     @GetMapping("/products")
     public ResponseEntity<Object> getProducts(@RequestBody Optional<List<Integer>> ids) {

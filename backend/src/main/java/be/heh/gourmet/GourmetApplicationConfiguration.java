@@ -1,5 +1,6 @@
 package be.heh.gourmet;
 
+import be.heh.gourmet.adapter.out.image.CloudinaryClient;
 import be.heh.gourmet.adapter.out.payment.StripePaymentAdapter;
 import be.heh.gourmet.adapter.out.persistence.CartAdapter;
 import be.heh.gourmet.adapter.out.persistence.CategoryAdapter;
@@ -56,6 +57,11 @@ public class GourmetApplicationConfiguration {
     @Bean
     public IPaymentClient getPaymentClient() {
         return new StripePaymentAdapter();
+    }
+
+    @Bean
+    public IImageClient getImageClient() {
+        return new CloudinaryClient();
     }
 
     // Crud only use cases
