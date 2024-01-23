@@ -21,6 +21,7 @@ function Products() {
     const [loading, setLoading] = useState(true);
     const itemID = useParams().id;
     const [redirect, setRedirect] = useState(false)
+    const [editData, setEditData] = useState(false)
     const [newData, setNewData] = useState(false)
     const childRef = useRef();
     const [deleted, setDeleted] = useState(false)
@@ -42,12 +43,12 @@ function Products() {
                 setNewData(true);
                 setData({
                     ID: null,
-                    name: "Miam 1",
-                    description: "Miam Miam",
-                    price: 25.0,
-                    stock: 5,
+                    name: null,
+                    description: null,
+                    price: null,
+                    stock: null,
                     image: Edit,
-                    categoryID: 1
+                    categoryID: null
                 });
             } else {
                 setRedirect(true);
@@ -55,21 +56,27 @@ function Products() {
         }
     });
 
+    const handleEdit = () => {
+        setEditData(true);
+    }
     const handleDelete = async () => {
-        try {
-            const responseImage = await axios.delete(`${API_URL}/api/image?url=${encodeURIComponent(data.image)}`);
-            if (responseImage.status == 204) {
-                try {
-                    const response = await axios.delete(`${API_URL}/api/product/${data.ID}`);
-                    if(response.status == 204) {
-                        setDeleted(true);
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce produit ?");
+        if (confirmation) {
+            try {
+                const responseImage = await axios.delete(`${API_URL}/api/image?url=${encodeURIComponent(data.image)}`);
+                if (responseImage.status == 204) {
+                    try {
+                        const response = await axios.delete(`${API_URL}/api/product/${data.ID}`);
+                        if(response.status == 204) {
+                            setDeleted(true);
+                        }
+                    } catch (error) {
+                        console.log(error)
                     }
-                } catch (error) {
-                    console.log(error)
                 }
+            } catch (error) {
+                console.log(error)
             }
-        } catch (error) {
-            console.log(error)
         }
     }
 
@@ -88,11 +95,11 @@ function Products() {
                                 <LinkContainer to="/Menu">
                                     <Button as="input" type="reset" value="Retour"/>
                                 </LinkContainer>
-                                {newData ?
-                                    <Button as="input" type="reset" value="Ajouter" onClick={() => childRef.current.handleRegister()}/>
+                                {newData || editData ?
+                                    <Button as="input" type="reset" value={newData ? "Ajouter" : "Valider"} onClick={() => childRef.current.handleRegister()}/>
                                 :
                                     <>
-                                        <Button as="input" type="reset" value="Modifier"/>
+                                        <Button as="input" type="reset" value="Modifier" onClick={handleEdit}/>
                                         <Button variant="outline-secondary"
                                                 onClick={handleDelete}
                                                 style={{
@@ -109,8 +116,8 @@ function Products() {
                             </Stack>
 						</Col>
 						<Col sm={8}>
-                            {newData ?
-                                <ProductDetailNewTable data={data} childRef={childRef} />
+                            {newData || editData ?
+                                <ProductDetailNewTable data={data} childRef={childRef} type={newData ? "create" : "update"} />
                                 :
                                 <ProductDetailTable data={data}/>
                             }

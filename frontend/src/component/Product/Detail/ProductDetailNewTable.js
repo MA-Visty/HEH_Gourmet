@@ -5,7 +5,7 @@ import {Button, Container, Image, InputGroup, Table} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import {Navigate} from "react-router-dom";
 
-function ProductDetailNewTable({data, childRef}) {
+function ProductDetailNewTable({data, childRef, type}) {
     const [dataCategory, setDataCategory] = useState([]);
     const [isCrash, setCrash] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -47,9 +47,9 @@ function ProductDetailNewTable({data, childRef}) {
     };
 
     useImperativeHandle(childRef, () => ({
-        async handleRegister(event) {
+        handleRegister() {
             setInvalid({});
-            if (image.current.value === "") {
+            if (type === "create" && image.current.value === "") {
                 setInvalid((prevInvalid) => ({
                     ...prevInvalid,
                     image: `L'image est incorrecte`,
@@ -92,43 +92,72 @@ function ProductDetailNewTable({data, childRef}) {
                 setValidated(true);
                 return;
             } else {
-                try {
-                    const formData = new FormData();
-                    formData.append('image', image.current.files[0]);
-
-                    const response = await axios
-                        .post(`${API_URL}/api/image`, formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                            },
-                        });
-                    setImageUrl(response.data)
-                    setValidated(false);
-
-                    try {
-                        const response = await axios
-                            .post(`${API_URL}/api/product`, {
-                                name: name.current.value,
-                                description: description.current.value,
-                                price: price.current.value,
-                                stock: stock.current.value,
-                                image: imageUrl.url,
-                                categoryID: categoryID.current.value
-                            });
-                        setValidated(false);
-                        if (response.status == 201) {
-                            setSendValid(true);
-                        }
-                    } catch (error) {
-                        console.log(error)
-                    }
-                } catch (error) {
-                    console.log(error)
+                if(type === "create") {
+                    create()
+                } else {
+                    update()
                 }
+
                 return;
             }
         }
     }));
+
+    const create = async (event) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', image.current.files[0]);
+
+            const response = await axios
+                .post(`${API_URL}/api/image`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+            setImageUrl(response.data)
+            setValidated(false);
+
+            try {
+                const response = await axios
+                    .post(`${API_URL}/api/product`, {
+                        name: name.current.value,
+                        description: description.current.value,
+                        price: price.current.value,
+                        stock: stock.current.value,
+                        image: imageUrl.url,
+                        categoryID: categoryID.current.value
+                    });
+                setValidated(false);
+                if (response.status == 201) {
+                    setSendValid(true);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const update = async (event) => {
+        try {
+            const response = await axios
+                .put(`${API_URL}/api/product/${data.ID}`, {
+                    name: name.current.value,
+                    description: description.current.value,
+                    price: price.current.value,
+                    stock: stock.current.value,
+                    image: data.image,
+                    categoryID: categoryID.current.value
+                });
+            setValidated(false);
+            if (response.status == 200) {
+                setSendValid(true);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <Container style={{position: "relative"}}>
@@ -153,7 +182,7 @@ function ProductDetailNewTable({data, childRef}) {
                             ref={name}
                             type="text"
                             placeholder="Entrer le nom du produit"
-                            defaultValue=""
+                            defaultValue={data.name !== null ? data.name: ""}
                             isInvalid={!!invalid.name}
                         />
                         <Form.Control.Feedback type="invalid">
@@ -169,7 +198,7 @@ function ProductDetailNewTable({data, childRef}) {
                         ref={description}
                         type="text"
                         placeholder="Entrer la description du produit"
-                        defaultValue=""
+                        defaultValue={data.description !== null ? data.description: ""}
                         as="textarea"
                         rows={3} />
                 </Form.Group>
@@ -183,7 +212,7 @@ function ProductDetailNewTable({data, childRef}) {
                             type="number"
                             step="0.01"
                             placeholder="Entrer le prix du produit"
-                            defaultValue=""
+                            defaultValue={data.price !== null ? data.price: ""}
                             min="0"
                             aria-label="Recipient's username"
                             aria-describedby="basic-addon2"
@@ -204,7 +233,7 @@ function ProductDetailNewTable({data, childRef}) {
                             ref={stock}
                             type="number"
                             placeholder="Entrer le nombre de produit dans le stockage"
-                            defaultValue=""
+                            defaultValue={data.stock !== null ? data.stock: ""}
                             min="0"
                             aria-label="Recipient's username"
                             aria-describedby="basic-addon2"
@@ -221,7 +250,7 @@ function ProductDetailNewTable({data, childRef}) {
                     <Form.Select aria-label="Default select example" ref={categoryID}>
                         <option>Selectionné une catégorie</option>
                         {dataCategory.map((category) =>
-                            <option value={category.ID}>{category.name}</option>
+                            <option value={category.ID} selected={data.categoryID === category.ID ? true : false}>{category.name}</option>
                         )}
                     </Form.Select>
                 </Form.Group>
