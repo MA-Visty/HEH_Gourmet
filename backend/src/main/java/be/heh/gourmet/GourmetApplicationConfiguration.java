@@ -16,8 +16,11 @@ import be.heh.gourmet.application.port.out.IUserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 
@@ -25,6 +28,37 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJdbcRepositories
 public class GourmetApplicationConfiguration {
+    // Cross origin config
+    @Bean
+    @Profile("dev")
+    public WebMvcConfigurer corsConfigurerDev() {
+        // only in dev profile
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("*")
+                        .allowedHeaders("*");
+            }
+        };
+    }
+
+    @Bean
+    @Profile("production")
+    public WebMvcConfigurer corsConfigurerProd() {
+        // only in dev profile
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("*")
+                        .allowedHeaders("*");
+            }
+        };
+    }
+
     // Data sources
     @Value("${DB_URL}")
     private String DB_URL;
