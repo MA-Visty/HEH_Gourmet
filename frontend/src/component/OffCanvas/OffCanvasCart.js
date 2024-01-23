@@ -11,7 +11,7 @@ function OffCanvasCart({ show, onHide, ...props }) {
     return (
         <Offcanvas show={show} onHide={onHide} placement={'end'} {...props}>
             <Offcanvas.Header closeButton>
-                <Offcanvas.Title>Cart</Offcanvas.Title>
+                <Offcanvas.Title>Panier</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
                 <Stack align="end">
@@ -22,7 +22,16 @@ function OffCanvasCart({ show, onHide, ...props }) {
                     <Button variant={state.quantity > 0 ? "primary" : "outline-primary"}
                             disabled={state.quantity === 0}
                             size="lg">
-                        Pay
+                        <strong style={{position: "relative"}}>Payer</strong>
+                        {state.price > 0 ?
+                            <span style={{
+                                fontSize: "0.75em",
+                                fontStyle: "oblique",
+                                position: "absolute",
+                                translate: "5px 6px"
+                            }}>({state.price}€)</span>
+                            : ""
+                        }
                     </Button>
                 </Stack>
             </Offcanvas.Body>
