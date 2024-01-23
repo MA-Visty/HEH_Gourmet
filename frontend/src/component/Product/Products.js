@@ -1,13 +1,13 @@
 import axios from "axios";
 import { Row, Col, Container } from "react-bootstrap";
 import React, {useEffect, useState} from "react";
-import ProductItem from "../../component/Product/ProductItem";
+import ProductItem from "./Item/ProductItem";
 import Error from "../../component/Error/Error";
 import Loader from "../../component/Loader/Loader";
 import EmptyData from "../../component/Loader/EmptyData";
-import ProductItemFilter from "./ProductItemFilter";
+import ProductItemFilter from "./Filter/ProductItemFilter";
 import API_URL from "../../apiConfig";
-import ProductNewItem from "./ProductNewItem";
+import ProductNewItem from "./Item/ProductNewItem";
 
 function Products() {
     const [data, setData] = useState([]);

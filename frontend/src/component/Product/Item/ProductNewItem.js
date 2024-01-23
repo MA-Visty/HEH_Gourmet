@@ -1,21 +1,19 @@
 import { NavLink } from "react-router-dom";
 import React, {useState} from "react";
 import { Card, Row, Col } from 'react-bootstrap';
-import {useAppContext} from "../../store/AppContext";
-import Edit from "../../assets/images/edit.svg";
+import {useAppContext} from "../../../store/AppContext";
+import Add from "../../../assets/images/add.svg";
 
 function ProductNewItem() {
 	const { state } = useAppContext();
 	const product = {
-		id: "newProduct",
-		type: null,
+		ID: "newProduct",
 		name: "Ajouter un produit",
-		price: null,
 		description: null,
-		imageName: null,
-		imageId: null,
-		imageUrl: Edit,
-		ingredients: []
+		price: null,
+		stock: 5,
+		image: Add,
+		categoryID: 1
 	};
 
 	return (
@@ -28,8 +26,8 @@ function ProductNewItem() {
 				WebkitUserSelect: "none",
 				msUserSelect: "none"
 		}}>
-			<NavLink to={`/product/${product.id}`}>
-				<Card.Img style={{ objectFit: 'cover', height: '250px', borderBottom: '1px solid #dee2e6'}} variant="top" src={product.imageUrl} />
+			<NavLink to={`/product/${product.ID}`}>
+				<Card.Img style={{ objectFit: 'cover', height: '250px', borderBottom: '1px solid #dee2e6'}} variant="top" src={product.image} />
 				<Card.Body>
 					<Row className="justify-content-between" style={{color: "black", textDecoration: "none"}}>
 						<Col >

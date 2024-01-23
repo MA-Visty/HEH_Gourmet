@@ -1,9 +1,8 @@
 import React, {useEffect, useRef, useState} from "react";
 import { Form, FormGroup, Button, ButtonGroup, ButtonToolbar } from "react-bootstrap";
 import axios from "axios";
-import API_URL from "../../apiConfig";
-import Error from "../Error/Error";
-import Loader from "../Loader/Loader";
+import API_URL from "../../../apiConfig";
+import ButtonNewItemFilter from "./ButtonNewItemFilter";
 
 export function ProductItemFilter({data, setDataFilter}) {
     const filter = useRef(null);
@@ -12,7 +11,7 @@ export function ProductItemFilter({data, setDataFilter}) {
     useEffect(() => {handleSearch();}, [typeSelect]);
 
     useEffect(() => {axios
-        .get(`${API_URL}/api/typesProduct`)
+        .get(`${API_URL}/api/categories`)
         .then((response) => {
             setTypeFilter(response.data);
         })
@@ -31,10 +30,7 @@ export function ProductItemFilter({data, setDataFilter}) {
         } else if(typeSelect !== "") {
             setDataFilter(
                 data.filter((product) => {
-                    if(product.type !== null) {
-                        product.type.typeName
-                            .toLowerCase()
-                            .includes(typeSelect.toLowerCase())
+                    if(product.categoryID !== null && product.categoryID === typeSelect.ID) {
                         return product;
                     }
                 })
@@ -52,12 +48,13 @@ export function ProductItemFilter({data, setDataFilter}) {
     return (
         <ButtonToolbar className="justify-content-between" aria-label="Toolbar with Button groups" style={{marginBottom: "1rem"}}>
             <ButtonGroup aria-label="First group">
+                <ButtonNewItemFilter/>
                 {typeFilter.map((elem) => (
                     <Button
-                        variant={typeSelect === elem.typeName ? 'success' : 'outline-secondary'}
-                        onClick={() => hangleTypeSelect(elem.typeName)}
+                        variant={typeSelect === elem ? 'success' : 'outline-secondary'}
+                        onClick={() => hangleTypeSelect(elem)}
                     >
-                        {elem.typeName.charAt(0).toUpperCase() + elem.typeName.slice(1)}
+                        {elem.name.charAt(0).toUpperCase() + elem.name.slice(1)}
                     </Button>
                 ))}
             </ButtonGroup>

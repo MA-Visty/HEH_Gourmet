@@ -1,3 +1,3 @@
-const API_URL = "https://heh-gourmet-api.onrender.com";
+const API_URL = "https://gourmet-iso4.onrender.com";
 
 export default API_URL;

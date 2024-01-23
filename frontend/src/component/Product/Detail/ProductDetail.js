@@ -3,16 +3,16 @@ import axios from "axios";
 import {LinkContainer} from "react-router-bootstrap";
 import {Container, Row, Col, Button, Table, Image} from 'react-bootstrap';
 import {useParams} from "react-router-dom";
-import ProductItemFavorite from "./ProductItemFavorite";
-import Error from "../../component/Error/Error";
-import Loader from "../../component/Loader/Loader";
-import {useAppContext} from "../../store/AppContext";
-import API_URL from "../../apiConfig";
-import Trash from "../../assets/images/trash.svg";
-import Edit from "../../assets/images/edit.svg";
+import ProductItemFavorite from "../Item/ProductItemFavorite";
+import Error from "../../Error/Error";
+import Loader from "../../Loader/Loader";
+import {useAppContext} from "../../../store/AppContext";
+import API_URL from "../../../apiConfig";
+import Trash from "../../../assets/images/trash.svg";
+import Edit from "../../../assets/images/edit.svg";
+import ProductDetailTable from "./ProductDetailTable";
 
 function Products() {
-    const { state } = useAppContext();
     const [data, setData] = useState([]);
     const [isCrash, setCrash] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ function Products() {
 
     useState(() => {
         if (itemID !== "newProduct") {
-            axios.get(`${API_URL}/api/products/${itemID}`)
+            axios.get(`${API_URL}/api/product/${itemID}`)
                 .then(function (reponse) {
                     setData(reponse.data);
                     setLoading(false);
@@ -57,41 +57,8 @@ function Products() {
 								<Button as="input" type="reset" value="return"/>
 							</LinkContainer>
 						</Col>
-						<Col sm={8} style={{position: "relative"}}>
-                            {state.user !== "" ? <ProductItemFavorite product={data} /> : <></> }
-                            <ProductItemFavorite product={data} />
-							<Image style={{objectFit: 'contain', width: '100%', height: '250px'}}
-								   src={data.imageUrl}/>
-
-							<Table striped bordered size="md">
-								<tbody>
-								<tr>
-									<td>Nom</td>
-									<td>{data.name}</td>
-								</tr>
-                                <tr>
-                                    <td>Prix</td>
-                                    <td>{data.price} €</td>
-                                </tr>
-                                <tr>
-                                    <td>Type</td>
-                                    <td>{data.type !== null ? data.type.typeName : ""}</td>
-                                </tr>
-								<tr>
-									<td>Description</td>
-									<td>{data.description}</td>
-								</tr>
-                                <tr>
-                                    <td>Ingredients</td>
-                                    <td>
-                                        <ol>{data.ingredients.map((elem) => (
-                                            <li>{elem}</li>
-                                        ))}
-                                        </ol>
-                                    </td>
-                                </tr>
-								</tbody>
-							</Table>
+						<Col sm={8}>
+                            <ProductDetailTable data={data}/>
 						</Col>
 						<Col sm={2} style={{filter: "invert(16%) sepia(80%) saturate(7434%) hue-rotate(358deg) brightness(104%) contrast(111%)"}}>
                             <Image style={{objectFit: 'contain', width: '100%', height: '250px', fill: "red"}}

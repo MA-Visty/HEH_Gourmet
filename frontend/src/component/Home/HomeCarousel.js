@@ -2,7 +2,7 @@ import {Carousel, Row} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import HomeCarouselForm from "./HomeCarouselForm";
-import ProductItemFavorite from "../Product/ProductItemFavorite";
+import ProductItemFavorite from "../Product/Item/ProductItemFavorite";
 import HomeCarouselItemFavorite from "./HomeCarouselItemFavorite";
 import products from "../Product/Products";
 import {useAppContext} from "../../store/AppContext";
