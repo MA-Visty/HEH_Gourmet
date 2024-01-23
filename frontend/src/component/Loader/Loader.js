@@ -6,7 +6,7 @@ function Loader() {
         <Button variant="primary" disabled>
             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/>
             {' '}
-            Loading...
+            Chargement...
         </Button>
     );
 }
