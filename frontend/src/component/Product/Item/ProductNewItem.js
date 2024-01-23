@@ -19,7 +19,7 @@ function ProductNewItem() {
 	return (
 		<Card
 			style={{margin: 5}}
-			id={product.id}
+			id={product.ID}
 			onDragStart={(e) => {e.preventDefault();}}
 			style={{
 				MozUserSelect: "none",
