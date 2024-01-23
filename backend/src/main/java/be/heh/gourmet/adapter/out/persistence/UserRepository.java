@@ -1,12 +1,17 @@
 package be.heh.gourmet.adapter.out.persistence;
 
 import be.heh.gourmet.adapter.out.persistence.mapper.UserRowMapper;
+import be.heh.gourmet.application.domain.model.Role;
 import be.heh.gourmet.application.domain.model.User;
+import be.heh.gourmet.application.port.in.InputUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -18,13 +23,26 @@ public class UserRepository {
         this.jdbc = jdbcTemplate;
     }
 
-    public void add(User user) {
-        jdbc.update("INSERT INTO users (first_name,last_name, email, role) VALUES (?, ?, ?, ?)",
-                user.firstname(), user.lastname(), user.email(), user.role().getValue());
+    public int add(InputUser user, Role role) {
+        GeneratedKeyHolder holder = new GeneratedKeyHolder();
+        jdbc.update(
+                con -> {
+                    PreparedStatement statement = con.prepareStatement("INSERT INTO users (first_name,last_name, email, role) VALUES (?, ?, ?, ?)", new String[]{"user_id"});
+                    statement.setString(1, user.firstname());
+                    statement.setString(2, user.lastname());
+                    statement.setString(3, user.email());
+                    statement.setInt(4, role.getValue());
+                    return statement;
+                }, holder);
+        return Objects.requireNonNull(holder.getKey()).intValue();
     }
 
-    public User findByEmail(String email) {
-        return jdbc.query("SELECT * FROM users WHERE email = ? LIMIT 1", new UserRowMapper(), email).get(0);
+    public Optional<User> getByEmail(String email) {
+        List<User> res = jdbc.query("SELECT * FROM users WHERE email = ? LIMIT 1", new UserRowMapper(), email);
+        if (res.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(res.get(0));
     }
 
     public Optional<User> get(int userId) {

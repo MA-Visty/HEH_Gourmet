@@ -3,7 +3,7 @@ package be.heh.gourmet.application.domain.service;
 import be.heh.gourmet.application.domain.model.CartRow;
 import be.heh.gourmet.application.domain.model.User;
 import be.heh.gourmet.application.port.in.IPaymentUseCase;
-import be.heh.gourmet.application.port.out.IUserRepository;
+import be.heh.gourmet.application.port.in.IManageUserUseCase;
 import be.heh.gourmet.application.port.out.IPaymentClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +21,7 @@ public class PaymentImpl implements IPaymentUseCase {
 
     @Autowired
     @Qualifier("getUserRepository")
-    private IUserRepository userManagement;
+    private IManageUserUseCase userManagement;
 
     @Override
     public void charge(int userId, List<CartRow> cart, Map<String, Object> params) {

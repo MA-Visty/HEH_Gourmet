@@ -12,7 +12,7 @@ import be.heh.gourmet.application.domain.service.PaymentImpl;
 import be.heh.gourmet.application.port.in.*;
 import be.heh.gourmet.application.port.out.ICartRepository;
 import be.heh.gourmet.application.port.out.IPaymentClient;
-import be.heh.gourmet.application.port.out.IUserRepository;
+import be.heh.gourmet.application.port.in.IManageUserUseCase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,7 +83,7 @@ public class GourmetApplicationConfiguration {
     }
 
     @Bean
-    public IUserRepository getUserRepository() {
+    public IManageUserUseCase getUserRepository() {
         return new UserAdapter();
     }
 
@@ -107,6 +107,11 @@ public class GourmetApplicationConfiguration {
     @Bean
     IManageCategoryUseCase getManageCategoryUseCase() {
         return new CategoryAdapter();
+    }
+
+    @Bean
+    IManageUserUseCase getManageUserUseCase() {
+        return new UserAdapter();
     }
 
     // Use cases with business logic
