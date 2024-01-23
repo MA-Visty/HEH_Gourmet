@@ -4,6 +4,9 @@ import {useAppContext, useDispatchContext} from "../../store/AppContext";
 import axios from "axios";
 import API_URL from "../../apiConfig";
 
+// TODO: French UI
+// TODO: Simplify code
+
 function OffCanvasUser({ show, onHide, type, ...props }) {
     const { state } = useAppContext();
     const [title, setTitle] = useState(state.user !== "" ? "Account" : "Login");
@@ -120,7 +123,7 @@ function UserRegister({switchLogRegist}) {
         let pwd1Check = password.current.value;
         let pwd2Check = confirmpassword.current.value;
 
-        if(emailCheck === "" || pwd1Check === "" || pwd2Check === "" || pwd1Check !== pwd2Check) {
+        if(emailCheck !== "" || pwd1Check !== "" || pwd2Check !== "" || pwd1Check !== pwd2Check) {
             setValidated(true);
             return;
         } else {
