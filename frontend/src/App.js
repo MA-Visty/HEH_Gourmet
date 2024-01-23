@@ -4,7 +4,7 @@ import {Route, Routes} from "react-router-dom";
 import Home from "./component/Home/Home";
 import Error from "./component/Error/Error";
 import Products from "./component/Product/Products";
-import ProductDetail from "./component/Product/ProductDetail";
+import ProductDetail from "./component/Product/Detail/ProductDetail";
 import WorkSpace from "./component/WorkSpace/WorkSpace";
 
 function App() {
