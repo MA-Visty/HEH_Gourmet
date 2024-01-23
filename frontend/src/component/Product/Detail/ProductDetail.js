@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import axios from "axios";
 import {LinkContainer} from "react-router-bootstrap";
-import {Container, Row, Col, Button, Table, Image} from 'react-bootstrap';
+import {Container, Row, Col, Button, Table, Image, Stack} from 'react-bootstrap';
 import {Navigate, useParams} from "react-router-dom";
 import ProductItemFavorite from "../Item/ProductItemFavorite";
 import Error from "../../Error/Error";
@@ -12,6 +12,7 @@ import Trash from "../../../assets/images/trash.svg";
 import Edit from "../../../assets/images/edit.svg";
 import ProductDetailTable from "./ProductDetailTable";
 import ProductDetailNewTable from "./ProductDetailNewTable";
+import Add from "../../../assets/images/add.svg";
 
 function Products() {
     const { state } = useAppContext();
@@ -21,6 +22,8 @@ function Products() {
     const itemID = useParams().id;
     const [redirect, setRedirect] = useState(false)
     const [newData, setNewData] = useState(false)
+    const childRef = useRef();
+    const [deleted, setDeleted] = useState(false)
 
     useState(() => {
         if (itemID !== "newProduct") {
@@ -52,31 +55,65 @@ function Products() {
         }
     });
 
+    const handleDelete = async () => {
+        try {
+            const responseImage = await axios.delete(`${API_URL}/api/image?url=${encodeURIComponent(data.image)}`);
+            if (responseImage.status == 204) {
+                try {
+                    const response = await axios.delete(`${API_URL}/api/product/${data.ID}`);
+                    if(response.status == 204) {
+                        setDeleted(true);
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <Container style={{paddingTop: 15, paddingBottom: 15, background: "#FFF", minHeight: "100vh"}}>
             <Row>
-                { redirect ?
+                { redirect || deleted ?
                     <Navigate to="/Menu" />
                 : isCrash ?
                     <Error/>
                 : loading ?
 					<Loader/>
                 : <>
-						<Col sm={2}>
-							<LinkContainer to="/Menu">
-								<Button as="input" type="reset" value="return"/>
-							</LinkContainer>
+						<Col sm={2} style={{position: "relative"}}>
+                            <Stack gap={3} style={{position: "fixed"}}>
+                                <LinkContainer to="/Menu">
+                                    <Button as="input" type="reset" value="Retour"/>
+                                </LinkContainer>
+                                {newData ?
+                                    <Button as="input" type="reset" value="Ajouter" onClick={() => childRef.current.handleRegister()}/>
+                                :
+                                    <>
+                                        <Button as="input" type="reset" value="Modifier"/>
+                                        <Button variant="outline-secondary"
+                                                onClick={handleDelete}
+                                                style={{
+                                                    filter: "invert(16%) sepia(80%) saturate(7434%) hue-rotate(358deg) brightness(104%) contrast(111%)",
+                                                    backgroundImage: `url(${Trash})`,
+                                                    backgroundPosition: "center",
+                                                    backgroundSize: "contain",
+                                                    backgroundRepeat: "no-repeat",
+                                                    width: "auto",
+                                                    height: "40px"
+                                                }}/>
+                                    </>
+                                }
+                            </Stack>
 						</Col>
 						<Col sm={8}>
                             {newData ?
-                                <ProductDetailNewTable data={data} />
+                                <ProductDetailNewTable data={data} childRef={childRef} />
                                 :
                                 <ProductDetailTable data={data}/>
                             }
-						</Col>
-						<Col sm={2} style={{filter: "invert(16%) sepia(80%) saturate(7434%) hue-rotate(358deg) brightness(104%) contrast(111%)"}}>
-                            <Image style={{objectFit: 'contain', width: '100%', height: '250px', fill: "red"}}
-                                   src={Trash}/>
 						</Col>
 					</>
                 }
