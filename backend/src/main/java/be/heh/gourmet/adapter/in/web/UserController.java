@@ -7,6 +7,8 @@ import be.heh.gourmet.application.domain.model.Role;
 import be.heh.gourmet.application.domain.model.User;
 import be.heh.gourmet.application.port.in.IManageUserUseCase;
 import be.heh.gourmet.application.port.in.InputUser;
+import be.heh.gourmet.application.port.in.exception.ProductException;
+import be.heh.gourmet.application.port.in.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,11 +32,11 @@ public class UserController {
         try {
             Optional<User> user = userManager.getByEmail(mail);
             if (user.isEmpty()) {
-                // TODO : create user exception
-                CustomException exception = new CustomException("USER_NOT_FOUND", HttpStatus.NOT_FOUND);
-                return ResponseEntity.status(exception.httpStatus()).body(exception.toResponse());
+                throw new UserException("User not found", UserException.Type.USER_NOT_FOUND);
             }
             return ResponseEntity.ok(user.get());
+        } catch (UserException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().body(InternalServerError.response());
@@ -46,6 +48,8 @@ public class UserController {
         try {
             User res = userManager.save(user, Role.CUSTOMER);
             return new ResponseEntity<>(res, null, HttpStatus.CREATED);
+        } catch (UserException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().body(InternalServerError.response());
@@ -56,6 +60,8 @@ public class UserController {
     public ResponseEntity<Object> promote(@PathVariable int id, @RequestBody Role role) {
         try {
             throw new UnsupportedOperationException("Not implemented yet");
+        } catch (UserException e) {
+            return new ResponseEntity<>(e.toResponse(), null, e.httpStatus());
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().body(InternalServerError.response());
