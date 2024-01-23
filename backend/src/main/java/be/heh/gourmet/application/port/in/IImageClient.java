@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface IImageClient {
     URL addImage(Optional<String> name, MultipartFile image) throws IOException;
 
-    void deleteImage(String name) throws IOException;
+    void deleteImage(String name) throws Exception;
 
     void deleteImage(URL url) throws Exception;
 

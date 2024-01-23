@@ -42,14 +42,14 @@ public class CloudinaryClient implements IImageClient {
     }
 
     @Override
-    public void deleteImage(String name) throws IOException {
-        cloudinary.uploader().destroy(name, ObjectUtils.emptyMap());
+    public void deleteImage(String name) throws Exception {
+        cloudinary.api().deleteResources(List.of(name), ObjectUtils.emptyMap());
     }
 
     @Override
     public void deleteImage(URL url) throws Exception {
         String urlPath = url.getPath();
-        String publicId = urlPath.substring(urlPath.lastIndexOf("upload/v") + 19 , urlPath.lastIndexOf("."));
+        String publicId = urlPath.substring(urlPath.lastIndexOf("upload/v") + 19, urlPath.lastIndexOf("."));
         Logger logger = org.slf4j.LoggerFactory.getLogger(CloudinaryClient.class);
         logger.info("publicId: " + publicId);
         cloudinary.api().deleteResources(List.of(publicId), ObjectUtils.emptyMap());
@@ -57,6 +57,7 @@ public class CloudinaryClient implements IImageClient {
 
     @Override
     public URL get(String name) throws MalformedURLException {
+        // TODO: test with name that is not hosted on cloudinary
         return new URL(cloudinary.url().generate(name));
     }
 }
