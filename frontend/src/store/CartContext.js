@@ -21,7 +21,7 @@ export function add2cart(state, action) {
     // find product index by id
     // if index is -1 by javascript standard it's not in the array
     const index = cart.findIndex((x) => {
-        return x.product.id === add_product.id;
+        return x.product.ID === add_product.ID;
     });
     // add product to cart or update its quantity
     if (index === -1) {
