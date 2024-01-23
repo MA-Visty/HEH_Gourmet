@@ -7,6 +7,7 @@ import Loader from "../../component/Loader/Loader";
 import EmptyData from "../../component/Loader/EmptyData";
 import ProductItemFilter from "./ProductItemFilter";
 import API_URL from "../../apiConfig";
+import ProductNewItem from "./ProductNewItem";
 
 function Products() {
     const [data, setData] = useState([]);
@@ -36,6 +37,10 @@ function Products() {
                 <>
                     <ProductItemFilter loading={loading} data={data} setDataFilter={setDataFilter} />
                     <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
+                        <Col sm>
+                            <ProductNewItem class="bg-primary"/>
+                        </Col>
+
                         {dataFilter.length === 0 ?
                             <EmptyData/>
                         : dataFilter.map((item) => (
