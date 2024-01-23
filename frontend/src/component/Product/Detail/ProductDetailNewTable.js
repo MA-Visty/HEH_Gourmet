@@ -3,6 +3,7 @@ import axios from "axios";
 import API_URL from "../../../apiConfig";
 import {Button, Container, Image, InputGroup, Table} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
+import {Navigate} from "react-router-dom";
 
 function ProductDetailNewTable({data}) {
     const [dataCategory, setDataCategory] = useState([]);
@@ -18,6 +19,7 @@ function ProductDetailNewTable({data}) {
     const [imageSrc, setImageSrc] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
     const categoryID = useRef(data.categoryID);
+    const [sendValid, setSendValid] = useState(false);
 
     useState(() => {
         axios.get(`${API_URL}/api/categories`)
@@ -56,6 +58,12 @@ function ProductDetailNewTable({data}) {
             setInvalid((prevInvalid) => ({
                 ...prevInvalid,
                 name: `Le nom est incorrect`,
+            }));
+        }
+        if (description.current.value === "") {
+            setInvalid((prevInvalid) => ({
+                ...prevInvalid,
+                description: `La description est incorrect`,
             }));
         }
         if (price.current.value === "" || price.current.value <= 0) {
@@ -107,21 +115,22 @@ function ProductDetailNewTable({data}) {
                             categoryID: categoryID.current.value
                         });
                     setValidated(false);
+                    if (response.status == 201) {
+                        setSendValid(true);
+                    }
                 } catch (error) {
                     console.log(error)
                 }
             } catch (error) {
                 console.log(error)
             }
-
-            //TODO: If success navig -> /Menu
-            //return <Navigate to="/Menu" />;
             return;
         }
     }
 
     return (
         <Container style={{position: "relative"}}>
+            {sendValid ? <Navigate to="/Menu" /> : <></>}
             <Image style={{objectFit: 'contain', width: '100%', height: '250px'}}
                    src={imageSrc !== null ? imageSrc : data.image}/>
             <Form noValidate validated={validated}>
@@ -154,6 +163,7 @@ function ProductDetailNewTable({data}) {
                 <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                     <Form.Label>Description</Form.Label>
                     <Form.Control
+                        required
                         ref={description}
                         type="text"
                         placeholder="Entrer la description du produit"
