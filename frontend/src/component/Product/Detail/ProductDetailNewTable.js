@@ -1,11 +1,11 @@
-import React, {useRef, useState} from "react";
+import React, {useImperativeHandle, useRef, useState} from "react";
 import axios from "axios";
 import API_URL from "../../../apiConfig";
 import {Button, Container, Image, InputGroup, Table} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import {Navigate} from "react-router-dom";
 
-function ProductDetailNewTable({data}) {
+function ProductDetailNewTable({data, childRef}) {
     const [dataCategory, setDataCategory] = useState([]);
     const [isCrash, setCrash] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -46,87 +46,89 @@ function ProductDetailNewTable({data}) {
         }
     };
 
-    const handleRegister = async (event) => {
-        setInvalid({});
-        if (image.current.value === "") {
-            setInvalid((prevInvalid) => ({
-                ...prevInvalid,
-                image: `L'image est incorrecte`,
-            }));
-        }
-        if (name.current.value === "") {
-            setInvalid((prevInvalid) => ({
-                ...prevInvalid,
-                name: `Le nom est incorrect`,
-            }));
-        }
-        if (description.current.value === "") {
-            setInvalid((prevInvalid) => ({
-                ...prevInvalid,
-                description: `La description est incorrect`,
-            }));
-        }
-        if (price.current.value === "" || price.current.value <= 0) {
-            setInvalid((prevInvalid) => ({
-                ...prevInvalid,
-                price: `Le prix est incorrect`,
-            }));
-        }
-        if (stock.current.value === "") {
-            setInvalid((prevInvalid) => ({
-                ...prevInvalid,
-                stock: `Le stock est incorrect`,
-            }));
-        }
-        if (
-            categoryID.current.value === "Selectionné une catégorie" ||
-            categoryID.current.value === ""
-        ) {
-            setInvalid((prevInvalid) => ({
-                ...prevInvalid,
-                category: `La catégorie est incorrecte`,
-            }));
-        }
-        if(Object.keys(invalid).length !== 0) {
-            setValidated(true);
-            return;
-        } else {
-            try {
-                const formData = new FormData();
-                formData.append('image', image.current.files[0]);
-
-                const response = await axios
-                .post(`${API_URL}/api/image`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                setImageUrl(response.data)
-                setValidated(false);
-
+    useImperativeHandle(childRef, () => ({
+        async handleRegister(event) {
+            setInvalid({});
+            if (image.current.value === "") {
+                setInvalid((prevInvalid) => ({
+                    ...prevInvalid,
+                    image: `L'image est incorrecte`,
+                }));
+            }
+            if (name.current.value === "") {
+                setInvalid((prevInvalid) => ({
+                    ...prevInvalid,
+                    name: `Le nom est incorrect`,
+                }));
+            }
+            if (description.current.value === "") {
+                setInvalid((prevInvalid) => ({
+                    ...prevInvalid,
+                    description: `La description est incorrect`,
+                }));
+            }
+            if (price.current.value === "" || price.current.value <= 0) {
+                setInvalid((prevInvalid) => ({
+                    ...prevInvalid,
+                    price: `Le prix est incorrect`,
+                }));
+            }
+            if (stock.current.value === "") {
+                setInvalid((prevInvalid) => ({
+                    ...prevInvalid,
+                    stock: `Le stock est incorrect`,
+                }));
+            }
+            if (
+                categoryID.current.value === "Selectionné une catégorie" ||
+                categoryID.current.value === ""
+            ) {
+                setInvalid((prevInvalid) => ({
+                    ...prevInvalid,
+                    category: `La catégorie est incorrecte`,
+                }));
+            }
+            if (Object.keys(invalid).length !== 0) {
+                setValidated(true);
+                return;
+            } else {
                 try {
+                    const formData = new FormData();
+                    formData.append('image', image.current.files[0]);
+
                     const response = await axios
-                        .post(`${API_URL}/api/product`, {
-                            name: name.current.value,
-                            description: description.current.value,
-                            price: price.current.value,
-                            stock: stock.current.value,
-                            image: imageUrl.url,
-                            categoryID: categoryID.current.value
+                        .post(`${API_URL}/api/image`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
                         });
+                    setImageUrl(response.data)
                     setValidated(false);
-                    if (response.status == 201) {
-                        setSendValid(true);
+
+                    try {
+                        const response = await axios
+                            .post(`${API_URL}/api/product`, {
+                                name: name.current.value,
+                                description: description.current.value,
+                                price: price.current.value,
+                                stock: stock.current.value,
+                                image: imageUrl.url,
+                                categoryID: categoryID.current.value
+                            });
+                        setValidated(false);
+                        if (response.status == 201) {
+                            setSendValid(true);
+                        }
+                    } catch (error) {
+                        console.log(error)
                     }
                 } catch (error) {
                     console.log(error)
                 }
-            } catch (error) {
-                console.log(error)
+                return;
             }
-            return;
         }
-    }
+    }));
 
     return (
         <Container style={{position: "relative"}}>
@@ -224,10 +226,6 @@ function ProductDetailNewTable({data}) {
                     </Form.Select>
                 </Form.Group>
             </Form>
-
-            <Button variant="primary" onClick={handleRegister}>
-                Ajouter
-            </Button>
         </Container>
     );
 }
