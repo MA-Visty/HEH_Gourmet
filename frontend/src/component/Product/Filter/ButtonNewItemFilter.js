@@ -7,6 +7,7 @@ import {useDispatchContext} from "../../../store/AppContext";
 import axios from "axios";
 import API_URL from "../../../apiConfig";
 import emptyData from "../../Loader/EmptyData";
+import {Navigate} from "react-router-dom";
 
 function ButtonNewItemFilter() {
     const { dispatch } = useDispatchContext();
@@ -37,7 +38,8 @@ function ButtonNewItemFilter() {
                 });
             }
             handleClose()
-            return;
+
+            return <Navigate to="/Menu" />;
         }
     }
 
