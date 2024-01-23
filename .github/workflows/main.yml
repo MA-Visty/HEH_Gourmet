@@ -45,3 +45,5 @@ jobs:
           DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
         working-directory: ./backend
         run: ./gradlew docker-push -x test
+      - name: Trigger Render deploy
+        run: curl -X GET --location "${{ secrets.RENDER_DEPLOY }}"
