@@ -67,11 +67,17 @@ abstract class DockerBuild : DefaultTask() {
     @TaskAction
     fun dockerBuild() {
         val name: String = if (this.dockerhubUser == "") {
-            this.imageName + ":" + this.imageVersion
+            this.imageName
         } else {
-            this.dockerhubUser + "/" + this.imageName + ":" + this.imageVersion
+            this.dockerhubUser + "/" + this.imageName
         }
+        buildImage(name + ":" + this.imageVersion)
+        buildImage("$name:main")
 
+        ProcessBuilder("docker", "image", "prune", "--force").start().waitFor()
+    }
+
+    fun buildImage(name: String) {
         val processBuilder = ProcessBuilder("docker", "build", "--build-arg", "JAR_FILE=build/libs/"
                 + project.name + "-" + project.version + ".jar", "--label", this.imageName, "-t", name, ".")
         processBuilder.redirectErrorStream(true)
@@ -92,8 +98,6 @@ abstract class DockerBuild : DefaultTask() {
             println("Timeout")
         }
         process.waitFor()
-
-        ProcessBuilder("docker", "image", "prune", "--force").start().waitFor()
     }
 }
 
@@ -114,11 +118,13 @@ abstract class DockerPush : DefaultTask() {
 
     @TaskAction
     fun dockerPush() {
-        if (this.dockerhubUser == "") {
-            pushImage(this.imageName + ":" + this.imageVersion)
+        val name: String = if (this.dockerhubUser == "") {
+            this.imageName
         } else {
-            pushImage(this.dockerhubUser + "/" + this.imageName + ":" + this.imageVersion)
+            this.dockerhubUser + "/" + this.imageName
         }
+        pushImage(name + ":" + this.imageVersion)
+        pushImage("$name:main")
 
         ProcessBuilder("docker", "image", "prune", "--force").start().waitFor()
     }
