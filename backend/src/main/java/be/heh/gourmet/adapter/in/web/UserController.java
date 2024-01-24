@@ -31,7 +31,7 @@ public class UserController {
     public record LoginRequest(String email) {
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest mail) {
         try {
             Optional<User> user = userManager.getByEmail(mail.email);
