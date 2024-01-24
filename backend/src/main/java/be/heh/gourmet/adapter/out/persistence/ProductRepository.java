@@ -103,7 +103,7 @@ public class ProductRepository {
     }
 
     public void update(int ID, InputProduct product) {
-        int affectedRows = jdbc.update(updateSql, product.name(), product.description(), product.price(), product.stock(), product.image(), product.categoryID(), ID);
+        int affectedRows = jdbc.update(updateSql, product.name(), product.description(), product.price(), product.stock(), product.image().toString(), product.categoryID(), ID);
         if (affectedRows == 0) {
             throw new ProductException("Error while updating product", ProductException.Type.PRODUCT_NOT_UPDATED);
         }
