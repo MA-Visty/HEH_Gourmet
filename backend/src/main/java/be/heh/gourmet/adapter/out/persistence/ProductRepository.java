@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -118,8 +119,10 @@ public class ProductRepository {
     }
 
     // TODO: 2021-05-04 use Optional instead of null
-    public List<Product> batchGet(List<Integer> ID) {
-        return jdbc.query("SELECT * FROM products WHERE product_id IN (?)", new ProductRowMapper(), ID);
+    public List<Product> batchGet(List<Integer> ids) {
+        String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
+        return jdbc.query(String.format("SELECT * FROM products WHERE product_id IN (%s)", inSql)
+                , new ProductRowMapper(), ids.toArray());
     }
 
     public List<Product> getAll() {
