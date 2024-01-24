@@ -109,7 +109,6 @@ public class ProductRepository {
         }
     }
 
-    // TODO: 2021-05-04 use Optional instead of null
     public Optional<Product> get(int ID) {
         List<Product> products = jdbc.query("SELECT * FROM products WHERE product_id = ? LIMIT 1", new ProductRowMapper(), ID);
         if (products.isEmpty()) {
@@ -118,7 +117,6 @@ public class ProductRepository {
         return Optional.of(products.get(0));
     }
 
-    // TODO: 2021-05-04 use Optional instead of null
     public List<Product> batchGet(List<Integer> ids) {
         String inSql = String.join(",", Collections.nCopies(ids.size(), "?"));
         return jdbc.query(String.format("SELECT * FROM products WHERE product_id IN (%s)", inSql)
