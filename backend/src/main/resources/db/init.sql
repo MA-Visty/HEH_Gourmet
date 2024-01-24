@@ -105,8 +105,7 @@ create table if not exists orders
 create table if not exists orders_products
 (
     order_id     bigint       not null,
-    product_name varchar(255) not null
-        unique,
+    product_name varchar(255) not null,
     description  text         not null,
     quantity     int          not null default 1,
     price        decimal      not null,
@@ -171,8 +170,8 @@ EXECUTE PROCEDURE remove_user_from_carts_favorites_and_orders();
 CREATE OR REPLACE FUNCTION populate_orders_products_and_empty_cart() RETURNS TRIGGER AS
 $$
 BEGIN
-    INSERT INTO orders_products (order_id, product_name, description, price)
-    SELECT NEW.order_id, products.name, products.description, products.price
+    INSERT INTO orders_products (order_id, product_name, description, price, quantity)
+    SELECT NEW.order_id, products.name, products.description, products.price, carts.quantity
     FROM carts
              INNER JOIN products ON carts.product_id = products.product_id
     WHERE carts.user_id = NEW.user_id;

@@ -101,20 +101,22 @@ public class CartController {
         }
     }
 
+    public record CheckoutBody(Date targetDate, Map<String, Object> params) {
+    }
+
     @PostMapping("/cart/{userID}/checkout")
-    @CrossOrigin("*")
-    public ResponseEntity<Object> checkout(@PathVariable int userID, @RequestBody @NotNull Map<String, Object> params) {
+    public ResponseEntity<Object> checkout(@PathVariable int userID, @RequestBody @NotNull CheckoutBody body) {
         try {
             List<CartRow> cart = cartManager.get(userID);
             if (cart == null || cart.isEmpty()) {
                 throw new OrderException("Cart is empty", OrderException.Type.CART_IS_EMPTY);
             }
 
-            if (!params.containsKey("targetDate") || params.get("targetDate") == null) {
+            if (body.targetDate == null) {
                 CustomException e = new CustomException("Missing targetDate parameter", HttpStatus.BAD_REQUEST);
                 return ResponseEntity.status(e.httpStatus()).body(e.toResponse());
             }
-            Date targetDate = Date.valueOf(params.get("targetDate").toString());
+            Date targetDate = body.targetDate;
             if (targetDate.before(new Date(System.currentTimeMillis()))) {
                 throw new OrderException("Target date must be in the future", OrderException.Type.PREPARE_DATE_CANNOT_BE_IN_THE_PAST);
             }
