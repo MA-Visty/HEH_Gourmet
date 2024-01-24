@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class CategoryController {
 
     @PostMapping("/categories")
     @ResponseStatus(HttpStatus.CREATED)
-    public void batchAddCategory(@RequestBody List<InputCategory> categories) {
+    public void batchAddCategory(@Validated @RequestBody List<InputCategory> categories) {
         categoryManager.batchAdd(categories);
     }
 
@@ -68,7 +69,7 @@ public class CategoryController {
     }
 
     @PostMapping("/category")
-    public ResponseEntity<Object> addCategory(@RequestBody InputCategory category) {
+    public ResponseEntity<Object> addCategory(@Validated @RequestBody InputCategory category) {
         try {
             Category response = categoryManager.add(category);
             if (response == null) {
@@ -101,7 +102,7 @@ public class CategoryController {
     }
 
     @PostMapping("/category/{id}")
-    public ResponseEntity<Object> updateCategory(@PathVariable int id, @RequestBody InputCategory category) {
+    public ResponseEntity<Object> updateCategory(@PathVariable int id, @Validated @RequestBody InputCategory category) {
         try {
             categoryManager.update(id, category);
             return ResponseEntity.noContent().build();

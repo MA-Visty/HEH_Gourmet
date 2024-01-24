@@ -9,12 +9,14 @@ import be.heh.gourmet.application.port.in.IManageUserUseCase;
 import be.heh.gourmet.application.port.in.InputUser;
 import be.heh.gourmet.application.port.in.exception.ProductException;
 import be.heh.gourmet.application.port.in.exception.UserException;
+import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -28,11 +30,11 @@ public class UserController {
     private IManageUserUseCase userManager;
 
 
-    public record LoginRequest(String email) {
+    public record LoginRequest(@Email String email) {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody LoginRequest mail) {
+    public ResponseEntity<Object> login(@Validated @RequestBody LoginRequest mail) {
         try {
             Optional<User> user = userManager.getByEmail(mail.email);
             if (user.isEmpty()) {
@@ -48,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody InputUser user) {
+    public ResponseEntity<Object> register(@Validated @RequestBody InputUser user) {
         try {
             User res = userManager.save(user, Role.CUSTOMER);
             return new ResponseEntity<>(res, null, HttpStatus.CREATED);

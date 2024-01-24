@@ -88,7 +88,7 @@ public class ProductController {
 
     @PostMapping("/products")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> batchAddProducts(@RequestBody List<InputProduct> products) {
+    public ResponseEntity<Object> batchAddProducts(@Validated @RequestBody List<InputProduct> products) {
         try {
             for (InputProduct product : products) {
                 if (categoryManager.get(product.categoryID()).isEmpty()) {
