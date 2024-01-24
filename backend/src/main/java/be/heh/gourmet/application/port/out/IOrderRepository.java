@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IOrderRepository {
-    void editStatus(int orderID, String status);
+    void editStatus(int orderID, OrderStatus status);
 
     void editPrepareDate(int orderID, java.sql.Date date);
 

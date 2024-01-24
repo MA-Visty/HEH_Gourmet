@@ -16,43 +16,42 @@ public class OrderAdapter implements IOrderRepository {
     private OrderRepository orderRepository;
 
     @Override
-    public void editStatus(int orderID, String status) {
-        //orderRepository.editStatus(orderID, status);
+    public void editStatus(int orderID, OrderStatus status) {
+        orderRepository.editStatus(orderID, status);
     }
 
     @Override
     public void editPrepareDate(int orderID, Date date) {
-        //orderRepository.editPrepareDate(orderID, date);
+        orderRepository.editPrepareDate(orderID, date);
     }
 
     @Override
     public List<OrderRow> list() {
-        throw new UnsupportedOperationException("Not implemented yet");
-
+        return orderRepository.list();
     }
 
     @Override
     public List<OrderRow> list(OrderStatus status) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return orderRepository.list(status);
     }
 
     @Override
     public List<OrderRow> list(int userID) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return orderRepository.list(userID);
     }
 
     @Override
     public List<OrderRow> list(int userID, OrderStatus status) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return orderRepository.list(userID, status);
     }
 
     @Override
     public Optional<OrderRow> get(int orderID) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return orderRepository.get(orderID);
     }
 
     @Override
     public Optional<OrderRow> get(int orderID, int userID) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return orderRepository.get(orderID, userID);
     }
 }

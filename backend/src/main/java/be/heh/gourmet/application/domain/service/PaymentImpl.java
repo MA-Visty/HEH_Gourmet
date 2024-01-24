@@ -20,7 +20,7 @@ public class PaymentImpl implements IPaymentUseCase {
     private IPaymentClient paymentClient;
 
     @Autowired
-    @Qualifier("getUserRepository")
+    @Qualifier("getUserUseCase")
     private IManageUserUseCase userManagement;
 
     @Override

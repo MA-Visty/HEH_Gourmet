@@ -2,15 +2,13 @@ package be.heh.gourmet;
 
 import be.heh.gourmet.adapter.out.image.CloudinaryClient;
 import be.heh.gourmet.adapter.out.payment.StripePaymentAdapter;
-import be.heh.gourmet.adapter.out.persistence.CartAdapter;
-import be.heh.gourmet.adapter.out.persistence.CategoryAdapter;
-import be.heh.gourmet.adapter.out.persistence.ProductAdapter;
-import be.heh.gourmet.adapter.out.persistence.UserAdapter;
+import be.heh.gourmet.adapter.out.persistence.*;
 import be.heh.gourmet.application.domain.service.ManageCartImpl;
 import be.heh.gourmet.application.domain.service.ManagerOrderImpl;
 import be.heh.gourmet.application.domain.service.PaymentImpl;
 import be.heh.gourmet.application.port.in.*;
 import be.heh.gourmet.application.port.out.ICartRepository;
+import be.heh.gourmet.application.port.out.IOrderRepository;
 import be.heh.gourmet.application.port.out.IPaymentClient;
 import be.heh.gourmet.application.port.in.IManageUserUseCase;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,14 +75,15 @@ public class GourmetApplicationConfiguration {
     }
 
     // Repositories
+
     @Bean
     public ICartRepository getCartRepository() {
         return new CartAdapter();
     }
 
     @Bean
-    public IManageUserUseCase getUserRepository() {
-        return new UserAdapter();
+    public IOrderRepository getOrderRepository() {
+        return new OrderAdapter();
     }
 
     // Client
@@ -99,6 +98,12 @@ public class GourmetApplicationConfiguration {
     }
 
     // Crud only use cases
+
+    @Bean
+    public IManageUserUseCase getUserUseCase() {
+        return new UserAdapter();
+    }
+
     @Bean
     public IManageProductUseCase getManageProductUseCase() {
         return new ProductAdapter();
