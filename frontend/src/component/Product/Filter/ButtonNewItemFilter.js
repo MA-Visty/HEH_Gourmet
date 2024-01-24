@@ -12,6 +12,7 @@ import {Navigate} from "react-router-dom";
 function ButtonNewItemFilter() {
     const { dispatch } = useDispatchContext();
     const [validated, setValidated] = useState(false);
+    const [sendValid, setSendValid] = useState(false);
     const category = useRef("");
     const description = useRef("");
     const [invalid, setInvalid] = useState({})
@@ -31,19 +32,22 @@ function ButtonNewItemFilter() {
                         description: description.current.value
                     });
                 setValidated(false);
+                if (response.status === 201) {
+                    setSendValid(true);
+                }
             } catch (error) {
                 setInvalid({
                     category: `Impossible d'ajouter la categorie : ${category}`
                 });
             }
             handleClose()
-
-            return <Navigate to="/Menu" />;
         }
     }
 
     return (
         <>
+            {sendValid ? <Navigate to="/Menu" /> : <></>}
+
             <Button variant="outline-secondary" style={{backgroundImage:`url(${Add})`, backgroundSize:"cover", width:"40px", height:"40px"}} onClick={handleShow} />
 
             <Modal centered show={show} onHide={handleClose}>

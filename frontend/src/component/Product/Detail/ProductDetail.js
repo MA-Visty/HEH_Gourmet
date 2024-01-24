@@ -12,8 +12,6 @@ import Trash from "../../../assets/images/trash.svg";
 import Edit from "../../../assets/images/edit.svg";
 import ProductDetailTable from "./ProductDetailTable";
 import ProductDetailNewTable from "./ProductDetailNewTable";
-import Add from "../../../assets/images/add.svg";
-import ProductItemForm from "../Item/ProductItemForm";
 
 function Products() {
     const { state } = useAppContext();
@@ -122,27 +120,43 @@ function Products() {
                         </LinkContainer>
                     </div>
                     <Stack direction="horizontal" gap={2}>
-                        {newData || editData ?
-                            <Button as="input" type="reset" value={newData ? "Ajouter" : "Valider"} onClick={() => childRef.current.handleRegister()}/>
-                            :
+                        {state.user.role === "ADMIN" ?
                             <>
-                                <Button as="input" type="reset" value="Modifier" onClick={handleEdit}/>
-                                <InputGroup>
-                                    <Form.Control ref={quantity} required isInvalid={invalid} type="number" min="0" max={data.stock} aria-label="Recipient's username" aria-describedby="basic-addon2" />
-                                    <Button style={{width: "50%"}} variant="primary" id="button-addon2" onClick={AddCart}>Add</Button>
-                                </InputGroup>
-                                <Button variant="outline-secondary"
-                                        onClick={handleDelete}
-                                        style={{
-                                            filter: "invert(16%) sepia(80%) saturate(7434%) hue-rotate(358deg) brightness(104%) contrast(111%)",
-                                            backgroundImage: `url(${Trash})`,
-                                            backgroundPosition: "center",
-                                            backgroundSize: "contain",
-                                            backgroundRepeat: "no-repeat",
-                                            width: "auto",
-                                            height: "40px"
-                                        }}/>
+                                {editData || newData ?
+                                    <Button as="input" type="reset" value={newData ? "Ajouter" : "Valider"} onClick={() => childRef.current.handleRegister()}/>
+                                :
+                                    <></>
+                                }
+                                {!editData && !newData ?
+                                    <Button as="input" type="reset" value="Modifier" onClick={handleEdit}/>
+                                    :
+                                    <></>
+                                }
                             </>
+                        :
+                            <></>
+                        }
+                        {state.user !== "" ?
+                            <InputGroup>
+                                <Form.Control ref={quantity} required isInvalid={invalid} type="number" min="0" max={data.stock} aria-label="Recipient's username" aria-describedby="basic-addon2" />
+                                <Button style={{width: "50%"}} variant="primary" id="button-addon2" onClick={AddCart}>Add</Button>
+                            </InputGroup>
+                        :
+                            <></>
+                        }
+                        {state.user.role === "ADMIN" ?
+                            <Button variant="outline-secondary"
+                                    onClick={handleDelete}
+                                    style={{
+                                        filter: "invert(16%) sepia(80%) saturate(7434%) hue-rotate(358deg) brightness(104%) contrast(111%)",
+                                        backgroundImage: `url(${Trash})`,
+                                        backgroundPosition: "center",
+                                        backgroundSize: "contain",
+                                        backgroundRepeat: "no-repeat",
+                                        width: "auto",
+                                        height: "40px"
+                                    }}/>
+                            : <></>
                         }
                     </Stack>
                 </>

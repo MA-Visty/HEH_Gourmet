@@ -19,16 +19,13 @@ function ProductDetailTable({data}) {
                 setLoading(false);
             })
             .catch(function (error) {
-                //setCrash(true);
+                setCrash(true);
             });
     }, []);
-
-    // TODO : handle crash
 
     return (
         <Container style={{position: "relative"}}>
             {state.user !== "" ? <ProductItemFavorite product={data} /> : <></> }
-            <ProductItemFavorite product={data} />
             <Image style={{objectFit: 'contain', width: '100%', height: '250px'}}
                    src={data.image}/>
 

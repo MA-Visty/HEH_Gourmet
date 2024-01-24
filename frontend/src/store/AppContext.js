@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
 import { login, logout } from "./UserContext";
 import { loadCart, add2cart, remove2cart, removecart } from "./CartContext";
-import { addfav, removefav} from "./FavoriteContext";
+import { loadFav, addfav, removefav} from "./FavoriteContext";
 
 export const AppContext = createContext();
 export const dispatchContext = createContext();
@@ -26,7 +26,12 @@ function appContextReducer(state = initialState, action) {
 
         case "login":
             let tempoState = login(state, action);
-            return loadCart(tempoState, action);
+            tempoState =  loadCart(tempoState, action);
+            try{
+                return loadFav(tempoState, action);
+            } catch (error) {
+                return tempoState;
+            }
         case "logout":
             return logout(state);
         default:

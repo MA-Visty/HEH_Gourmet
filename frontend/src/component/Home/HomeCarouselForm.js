@@ -8,13 +8,14 @@ function ProductItemForm({product}) {
     const { dispatch } = useDispatchContext();
     const quantity = useRef();
     const [invalid, setInvalid] = useState(false);
+
     const AddCart = (element) => {
         let num = quantity.current.value;
-        if (num === null || !Number.isInteger(parseInt(num)) || num < 1 || Number.isNaN(parseInt(num))) {
+        if (num === "") {
+            quantity.current.value = 1;
+        } else if (!Number.isInteger(parseInt(num)) || num < 1 || Number.isNaN(parseInt(num))) {
             setInvalid(true);
             return;
-        } else {
-            setInvalid(false);
         }
         dispatch({
             type: "add",
@@ -33,7 +34,15 @@ function ProductItemForm({product}) {
             </Button>
             <InputGroup>
                 <Form.Control ref={quantity} required isInvalid={invalid} type="number" min="0" max={product.quantity} aria-label="Recipient's username" aria-describedby="basic-addon2" />
-                <Button style={{width: "50%"}} variant="primary" id="button-addon2" onClick={AddCart}>Add ( {product.price} €)</Button>
+                <Button style={{width: "50%"}} variant="primary" id="button-addon2" onClick={AddCart}>
+                    Add
+                    <span style={{
+                        fontSize: "0.75em",
+                        fontStyle: "oblique",
+                        position: "absolute",
+                        translate: "5px 3px"
+                    }}>({product.price.toFixed(2)}€)</span>
+                </Button>
             </InputGroup>
         </Stack>
     );

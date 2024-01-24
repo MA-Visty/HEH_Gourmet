@@ -14,12 +14,16 @@ function OffCanvasCart({ show, onHide, ...props }) {
     const order = async (event) => {
         try {
             const currentDate = new Date();
-            const formattedDate = currentDate.toISOString();
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()+1).padStart(2, '0');
+
+            const formattedDate = `${year}-${month}-${day}`;
             const response = await axios
                 .post(`${API_URL}/api/cart/${state.user.id}/checkout`, {
-                    orderDate: formattedDate,
+                    targetDate: formattedDate,
                 });
-            if(response.status === 201) {
+            if(response.status === 200) {
                 dispatch({ type: "removeAll" })
             }
         } catch (error) {
