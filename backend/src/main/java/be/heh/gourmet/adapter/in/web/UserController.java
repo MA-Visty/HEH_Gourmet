@@ -56,7 +56,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/promote/{id}")
+    @PostMapping("/promote/{id}")
     public ResponseEntity<Object> promote(@PathVariable int id, @RequestBody Role role) {
         try {
             throw new UnsupportedOperationException("Not implemented yet");
