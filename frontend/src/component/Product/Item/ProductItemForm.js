@@ -10,15 +10,11 @@ function ProductItemForm({product}) {
     const [invalid, setInvalid] = useState(false);
     const AddCart = (element) => {
         let num = quantity.current.value;
-        console.log(num)
         if (num === "") {
-            setInvalid(false);
             quantity.current.value = 1;
         } else if (!Number.isInteger(parseInt(num)) || num < 1 || Number.isNaN(parseInt(num))) {
             setInvalid(true);
             return;
-        } else {
-            setInvalid(false);
         }
         dispatch({
             type: "add",

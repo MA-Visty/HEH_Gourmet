@@ -10,15 +10,15 @@ function ProductItemFavorite({product}) {
     const [isEnter, setEnter] = useState(false);
 
     const handleClickFav = (event) => {
-        if(state.favorite.includes(product.id)) {
+        if(state.favorite.includes(product.ID)) {
             dispatch({
                 type: "removefav",
-                product: product.id
+                product: product.ID
             });
         } else {
             dispatch({
                 type: "addfav",
-                product: product.id
+                product: product.ID
             });
         }
     }
@@ -26,7 +26,7 @@ function ProductItemFavorite({product}) {
     return (
         <Badge bg="" pill style={{position: 'absolute', top: 5, right: 5, zIndex: 1}}>
             <img
-                src={state.favorite.includes(product.id) ? StarCompletImage : StarImage}
+                src={state.favorite.includes(product.ID) ? StarCompletImage : StarImage}
                 alt="error"
                 width={35}
                 onClick={handleClickFav}

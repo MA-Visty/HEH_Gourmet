@@ -1,14 +1,12 @@
-import React, {useImperativeHandle, useRef, useState} from "react";
+import React, {useEffect, useImperativeHandle, useRef, useState} from "react";
 import axios from "axios";
 import API_URL from "../../../apiConfig";
-import {Button, Container, Image, InputGroup, Table} from "react-bootstrap";
+import {Container, Image, InputGroup} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import {Navigate} from "react-router-dom";
+import Loader from "../../Loader/Loader";
 
 function ProductDetailNewTable({data, childRef, type}) {
-    const [dataCategory, setDataCategory] = useState([]);
-    const [isCrash, setCrash] = useState(false);
-    const [loading, setLoading] = useState(true);
     const [validated, setValidated] = useState(false);
     const [invalid, setInvalid] = useState({})
     const name = useRef(data.name);
@@ -20,17 +18,20 @@ function ProductDetailNewTable({data, childRef, type}) {
     const [imageUrl, setImageUrl] = useState(null);
     const categoryID = useRef(data.categoryID);
     const [sendValid, setSendValid] = useState(false);
+    const [dataCategory, setDataCategory] = useState([]);
+    const [isCrash, setCrash] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    useState(() => {
+    useEffect(() => {
         axios.get(`${API_URL}/api/categories`)
-            .then(function (reponse) {
-                setDataCategory(reponse.data);
+            .then(function (response) {
+                setDataCategory(response.data);
                 setLoading(false);
             })
             .catch(function (error) {
                 setCrash(true);
             });
-    });
+    }, []);
 
     const handleImageChange = () => {
         const file = image.current.files[0];
@@ -89,16 +90,13 @@ function ProductDetailNewTable({data, childRef, type}) {
                 }));
             }
             if (Object.keys(invalid).length !== 0) {
-                setValidated(true);
-                return;
+                setValidated(true);;
             } else {
                 if(type === "create") {
                     create()
                 } else {
                     update()
                 }
-
-                return;
             }
         }
     }));
@@ -128,7 +126,7 @@ function ProductDetailNewTable({data, childRef, type}) {
                         categoryID: categoryID.current.value
                     });
                 setValidated(false);
-                if (response.status == 201) {
+                if (response.status === 201) {
                     setSendValid(true);
                 }
             } catch (error) {
@@ -142,7 +140,7 @@ function ProductDetailNewTable({data, childRef, type}) {
     const update = async (event) => {
         try {
             const response = await axios
-                .put(`${API_URL}/api/product/${data.ID}`, {
+                .post(`${API_URL}/api/product/${data.ID}`, {
                     name: name.current.value,
                     description: description.current.value,
                     price: price.current.value,
@@ -151,13 +149,15 @@ function ProductDetailNewTable({data, childRef, type}) {
                     categoryID: categoryID.current.value
                 });
             setValidated(false);
-            if (response.status == 200) {
+            if (response.status === 201) {
                 setSendValid(true);
             }
         } catch (error) {
             console.log(error)
         }
     }
+
+    // TODO : handle crash
 
     return (
         <Container style={{position: "relative"}}>
@@ -245,15 +245,17 @@ function ProductDetailNewTable({data, childRef, type}) {
                     </InputGroup>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                    <Form.Label>Catégorie</Form.Label>
-                    <Form.Select aria-label="Default select example" ref={categoryID}>
-                        <option>Selectionné une catégorie</option>
-                        {dataCategory.map((category) =>
-                            <option value={category.ID} selected={data.categoryID === category.ID ? true : false}>{category.name}</option>
-                        )}
-                    </Form.Select>
-                </Form.Group>
+                {loading ? <Loader />:
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label>Catégorie</Form.Label>
+                        <Form.Select aria-label="Default select example" ref={categoryID}>
+                            <option>Selectionné une catégorie</option>
+                            {dataCategory.map((category) =>
+                                <option value={category.ID} selected={data.categoryID === category.ID}>{category.name}</option>
+                            )}
+                        </Form.Select>
+                    </Form.Group>
+                }
             </Form>
         </Container>
     );

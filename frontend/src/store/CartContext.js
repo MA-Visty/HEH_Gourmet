@@ -1,4 +1,8 @@
-export function add2cart(state, action) {
+import axios from "axios";
+import API_URL from "../apiConfig";
+import products from "../component/Product/Products";
+
+export function pushCart(state, action) {
     // set local variable with easier name
     let cart = structuredClone(state.cart);
     let add_product = action.product;
@@ -38,11 +42,37 @@ export function add2cart(state, action) {
     const new_quantity = add_quantity + quantity;
     // update total price
     const new_price = add_price * add_quantity + price;
-    return { user: state.user, token: state.token, cart: cart, quantity: new_quantity, price: new_price, favorite: state.favorite };
+
+    return { user: state.user, cart: cart, quantity: new_quantity, price: new_price, favorite: state.favorite };
 }
 
-export function updatecart(state, action) {
-    return { user: state.user, token: state.token, cart: state.cart, quantity: state.quantity, price: state.price, favorite: state.favorite };
+export function loadCart(state, action) {
+    let tempoState = state
+
+    action.response.data.map((product) => {
+        tempoState = pushCart(tempoState, {
+            product: product,
+            quantity: product.quantity,
+            color: "red",
+            size: "M",
+        });
+    })
+
+    return { user: tempoState.user, cart: tempoState.cart, quantity: tempoState.quantity, price: tempoState.price, favorite: tempoState.favorite };
+}
+
+export function add2cart(state, action) {
+    const handleAdd = async (event) => {
+        try {
+            const response = await axios
+                .post(`${API_URL}/api/cart/${state.user.id}?productID=${action.product.ID}&quantity=${action.quantity}`);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    handleAdd()
+
+    return pushCart(state, action);
 }
 
 export function remove2cart(state, action) {
@@ -55,7 +85,7 @@ export function remove2cart(state, action) {
 
     // update cart , quantity and price
     let new_cart = cart.filter((x) => {
-        if (x.product.id === action.id) {
+        if (x.product.ID === action.id) {
             new_price = new_price - x.product.price * x.quantity;
             new_quantity = new_quantity - x.quantity;
             return false;
@@ -64,9 +94,31 @@ export function remove2cart(state, action) {
         }
     });
 
-    return { user: state.user, token: state.token, cart: new_cart, quantity: new_quantity, price: new_price, favorite: state.favorite };
+    const handleRemove = async (event) => {
+        try {
+            const response = await axios
+                .delete(`${API_URL}/api/cart/${state.user.id}?productID=${action.id}`);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    handleRemove()
+
+    return { user: state.user, cart: new_cart, quantity: new_quantity, price: new_price, favorite: state.favorite };
 }
 
 export function removecart(state, action) {
-    return { user: state.user, token: state.token, cart: [], quantity: 0, price: 0, favorite: state.favorite}
+    const handleRemove = async (user, product) => {
+        try {
+            const response = await axios
+                .delete(`${API_URL}/api/cart/${user}?productID=${product}`);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    state.cart.map((product) => {
+        handleRemove(state.user.id, product.product.ID)
+    })
+
+    return { user: state.user, cart: [], quantity: 0, price: 0, favorite: state.favorite}
 }

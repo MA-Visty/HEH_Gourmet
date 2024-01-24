@@ -1,5 +1,3 @@
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import TrashImage from '../../assets/images/trash.svg';
 import { useAppContext, useDispatchContext } from "../../store/AppContext";
@@ -7,6 +5,7 @@ import { useAppContext, useDispatchContext } from "../../store/AppContext";
 function Cart() {
     const { state } = useAppContext();
     const { dispatch } = useDispatchContext();
+
     return (
         <Table striped bordered hover>
             <thead align={"center"}>
@@ -26,7 +25,7 @@ function Cart() {
             </thead>
             <tbody align={"center"}>
                 {state.cart.map((item) => (
-                    <tr key={item.product.id}>
+                    <tr key={item.product.ID}>
                         <td>{item.product.name}</td>
                         <td>{item.quantity}</td>
                         <td>{item.product.price} €</td>
@@ -35,7 +34,7 @@ function Cart() {
                                 src={TrashImage}
                                 alt="error"
                                 width={20}
-                                onClick={() => dispatch({ type: "remove", id: item.product.id })}
+                                onClick={() => dispatch({ type: "remove", id: item.product.ID })}
                             ></img>
                         </td>
                     </tr>

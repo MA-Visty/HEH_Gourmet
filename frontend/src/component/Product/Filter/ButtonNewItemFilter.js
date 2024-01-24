@@ -21,9 +21,8 @@ function ButtonNewItemFilter() {
     const handleShow = () => setShow(true);
 
     const handleRegister = async (event) => {
-        if(category.current.value == "") {
+        if(category.current.value === "") {
             setValidated(true);
-            return;
         } else {
             try {
                 const response = await axios
