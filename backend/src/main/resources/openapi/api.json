@@ -3,7 +3,7 @@
     "info": {
         "title": "HEH Gourmet",
         "description": "API for the HEH cafeteria online project",
-        "version": "1.0.0",
+        "version": "0.0.1",
         "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
@@ -16,6 +16,10 @@
         {
             "description": "localhost dev server",
             "url": "https:localhost:8080"
+        },
+        {
+            "description": "Production server",
+            "url": "https://gourmet-iso4.onrender.com"
         }
     ],
     "tags": [
@@ -47,54 +51,16 @@
             }
         },
         "responses": {
-            "UnauthorizedError": {
-                "description": "Unauthorized access",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/GeneralError"
-                        },
-                        "example": {
-                            "message": "Unauthorized access",
-                            "code": 401
-                        }
-                    }
-                }
-            },
-            "InvalidParameters": {
-                "description": "Invalid parameter supplied",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/GeneralError"
-                        },
-                        "example": {
-                            "message": "Invalid parameter supplied",
-                            "code": 400
-                        }
-                    }
-                }
-            },
-            "ItemNotFound": {
-                "description": "Product not found",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "$ref": "#/components/schemas/GeneralError"
-                        },
-                        "example": {
-                            "message": "Item not found",
-                            "code": 404
-                        }
-                    }
-                }
-            }
         },
         "schemas": {
             "GeneralError": {
                 "type": "object",
                 "properties": {
-                    "message": {
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "error": {
                         "type": "string"
                     },
                     "code": {
@@ -102,12 +68,36 @@
                     }
                 }
             },
+            "Category": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "descriptor": {
+                        "type": "string"
+                    }
+                }
+            },
+            "InputCategory": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "descriptor": {
+                        "type": "string"
+                    }
+                }
+            },
             "Product": {
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "integer",
-                        "format": "int64"
+                        "type": "integer"
                     },
                     "name": {
                         "type": "string"
@@ -116,26 +106,72 @@
                         "type": "string"
                     },
                     "price": {
-                        "type": "number",
-                        "format": "double"
+                        "type": "float"
                     },
-                    "category": {
-                        "type": "integer",
-                        "format": "int64"
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "image": {
+                        "type": "url"
+                    },
+                    "categoryID": {
+                        "type": "integer"
                     }
                 }
             },
-            "Category": {
+            "InputProduct": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
                     "name": {
                         "type": "string"
                     },
                     "description": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "float"
+                    },
+                    "stock": {
+                        "type": "integer"
+                    },
+                    "image": {
+                        "type": "url"
+                    },
+                    "categoryID": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string"
+                    }
+                }
+            },
+            "InputUser": {
+                "type": "object",
+                "properties": {
+                    "lastname": {
+                        "type": "string"
+                    },
+                    "firstname": {
+                        "type": "string"
+                    },
+                    "email": {
                         "type": "string"
                     }
                 }
@@ -143,48 +179,353 @@
         }
     },
     "paths": {
-        "/api/product/{productID}": {
+        "/api/categories": {
             "get": {
                 "tags": [
-                    "Product"
+                    "Category"
                 ],
-                "summary": "Get a product",
-                "description": "Get a product",
+                "summary": "Get all categories",
+                "operationId": "getCategories",
+                "responses": {
+                    "200": {
+                        "description": "A list of category.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Category"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Create a category in bulk",
+                "operationId": "createCategories",
+                "requestBody": {
+                    "description": "Category to create",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/InputCategory"
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Products created"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Delete all categories",
+                "operationId": "deleteCategories",
+                "responses": {
+                    "200": {
+                        "description": "All categories deleted"
+                    }
+                },
+                "requestBody": {
+                    "description": "Category to delete",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/categories/{id}": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get a category by id",
+                "operationId": "getCategoryById",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "id of the product to return",
+                        "description": "ID of the category",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "format": "int64"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "successful operation",
+                        "description": "A category.",
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "$ref": "#/components/schemas/Category"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Update a category",
+                "operationId": "updateCategory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Category to update",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InputCategory"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "summary": "Delete a category",
+                "operationId": "deleteCategory",
+                "responses": {
+                    "200": {
+                        "description": "Category deleted"
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get all products",
+                "operationId": "getProducts",
+                "requestBody": {
+                    "description": "Category to get products from",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "required": false
+                },
+                "responses": {
+                    "200": {
+                        "description": "A list of product.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Product"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Batch add of product",
+                "requestBody": {
+                    "description": "Products to add",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
                                     "$ref": "#/components/schemas/Product"
-                                },
-                                "example": {
-                                    "id": 6576854156684,
-                                    "name": "foobar",
-                                    "description": "foobar",
-                                    "price": 12.5,
-                                    "category": 1
                                 }
                             }
                         }
                     },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Batch delete of product",
+                "responses": {
+                    "204": {
+                        "description": "Products deleted"
+                    }
+                }
+            }
+        },
+        "/api/products/{category_id}": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get all product from a category",
+                "parameters": [
+                    {
+                        "name": "category_id",
+                        "in": "path",
+                        "description": "ID of the category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All product from a category",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Product"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/product": {
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Add a product",
+                "requestBody": {
+                    "description": "Product to add",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InputProduct"
+                            }
+                        }
                     },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created"
+                    }
+                }
+            }
+        },
+        "/api/product/{id}": {
+            "get": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Get a product by id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A product.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update a product",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Product to update",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InputProduct"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product updated"
                     }
                 }
             },
@@ -193,115 +534,137 @@
                     "Product"
                 ],
                 "summary": "Delete a product",
-                "description": "Delete a product",
-                "security": [
-                    {
-                        "OAuth": [
-                            "write"
-                        ]
-                    }
-                ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "id of the product to delete",
-                        "required": true,
                         "schema": {
-                            "type": "integer",
-                            "format": "int64"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/UnauthorizedError"
+                    "200": {
+                        "description": "Product deleted"
                     }
                 }
-            },
+            }
+        },
+        "/api/user/login": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user data from email",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Get User Data including ID , last name , first name , etc",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/register": {
             "post": {
                 "tags": [
-                    "Product"
+                    "User"
                 ],
-                "summary": "Add a product",
-                "description": "Add a product",
-                "security": [
+                "summary": "Register new user",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InputUser"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/promote/{id}": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Promote user from customer to another Role ex: Admin , Employee, etc",
+                "parameters": [
                     {
-                        "OAuth": [
-                            "admin"
-                        ]
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "requestBody": {
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Product"
-                            },
-                            "example": {
-                                "name": "foobar5",
-                                "description": "foobar5",
-                                "price": 12.5,
-                                "category": 1
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Product"
-                                },
-                                "example": {
-                                    "id": 6576854153384,
-                                    "name": "foobar5",
-                                    "description": "foobar5",
-                                    "price": 12.5,
-                                    "category": 1
+                                "type": "object",
+                                "properties": {
+                                    "role": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ADMIN",
+                                            "EMPLOYEE",
+                                            "CUSTOMER"
+                                        ]
+                                    }
                                 }
                             }
                         }
                     },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "User promoted"
                     }
                 }
             }
         },
-        "/api/products/{categoryID}": {
+        "/api/cart/{userID}": {
             "get": {
                 "tags": [
-                    "Product"
+                    "Cart"
                 ],
-                "summary": "Get all products",
-                "description": "Get all products",
+                "summary": "Get all products from a cart",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "userID",
                         "in": "path",
-                        "description": "category id of the products to return",
-                        "required": false,
+                        "description": "ID of the user",
+                        "required": true,
                         "schema": {
-                            "type": "integer",
-                            "format": "int64"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "successful operation",
+                        "description": "All products from a cart",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -309,245 +672,49 @@
                                     "items": {
                                         "$ref": "#/components/schemas/Product"
                                     }
-                                },
-                                "example": [
-                                    {
-                                        "id": 6576854156684,
-                                        "name": "foobar",
-                                        "description": "foobar",
-                                        "price": 12.5,
-                                        "category": 1
-                                    },
-                                    {
-                                        "id": 6576856156684,
-                                        "name": "foo",
-                                        "description": "foo",
-                                        "price": 14.5,
-                                        "category": 1
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    }
-                }
-            }
-        },
-        "/api/category/{categoryID}": {
-            "get": {
-                "tags": [
-                    "Category"
-                ],
-                "summary": "Get a category",
-                "description": "Get a category",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "id of the category to return",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Category"
-                                },
-                                "example": {
-                                    "id": 6576854156684,
-                                    "name": "foobar",
-                                    "description": "foobar"
                                 }
                             }
                         }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "Category"
-                ],
-                "summary": "Delete a category",
-                "description": "Delete a category",
-                "security": [
-                    {
-                        "OAuth": [
-                            "write"
-                        ]
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "id of the category to delete",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/UnauthorizedError"
                     }
                 }
             },
             "post": {
                 "tags": [
-                    "Category"
-                ],
-                "summary": "Add a category",
-                "description": "Add a category",
-                "security": [
-                    {
-                        "OAuth": [
-                            "admin"
-                        ]
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Category"
-                            },
-                            "example": {
-                                "name": "foobar5",
-                                "description": "foobar5"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Category"
-                                },
-                                "example": {
-                                    "id": 6576854153384,
-                                    "name": "foobar5",
-                                    "description": "foobar5"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
-                    }
-                }
-            }
-        },
-        "/api/categories": {
-            "get": {
-                "tags": [
-                    "Category"
-                ],
-                "summary": "Get all categories",
-                "description": "Get all categories",
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Category"
-                                    }
-                                },
-                                "example": {
-                                    "id": 1,
-                                    "name": "foobar category",
-                                    "description": "foobar category"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    }
-                }
-            }
-        },
-        "/api/cart": {
-            "get": {
-                "tags": [
                     "Cart"
                 ],
-                "summary": "Get a cart",
-                "description": "Get a cart",
-                "security": [
+                "summary": "Add a product to a cart",
+                "parameters": [
                     {
-                        "OAuth": [
-                            "write"
-                        ]
+                        "name": "userID",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "productID",
+                        "in": "query",
+                        "description": "ID of the product to add",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "quantity",
+                        "in": "query",
+                        "description": "Quantity of the product to add",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Category"
-                                },
-                                "example": [
-                                    {
-                                        "id": 6576854156738,
-                                        "name": "foo",
-                                        "description": "foo",
-                                        "quantity": 4
-                                    },
-                                    {
-                                        "id": 6576854156684,
-                                        "name": "bar",
-                                        "description": "bar",
-                                        "quantity": 1
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/UnauthorizedError"
+                    "201": {
+                        "description": "Product put in cart"
                     }
                 }
             },
@@ -555,78 +722,65 @@
                 "tags": [
                     "Cart"
                 ],
-                "summary": "Delete a cart",
-                "description": "Delete a cart",
-                "security": [
-                    {
-                        "OAuth": [
-                            "write"
-                        ]
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "successful operation"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/UnauthorizedError"
-                    }
-                }
-            }
-        },
-        "/api/cart/{productID}": {
-            "delete": {
-                "tags": [
-                    "Cart"
-                ],
-                "summary": "Delete a cart by ID",
-                "description": "Delete a cart",
+                "summary": "Delete a product from a cart",
                 "parameters": [
                     {
-                        "name": "productID",
+                        "name": "userID",
                         "in": "path",
-                        "description": "Product id to delete",
+                        "description": "ID of the user",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "format": "int64"
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "productID",
+                        "in": "query",
+                        "description": "ID of the product to add",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     },
                     {
                         "name": "quantity",
                         "in": "query",
-                        "description": "quantity of the product for reduce of cart",
-                        "required": false,
+                        "description": "Quantity of the product to add",
+                        "required": true,
                         "schema": {
-                            "type": "integer",
-                            "format": "int64"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "204": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "$ref": "#/components/responses/InvalidParameters"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ItemNotFound"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/UnauthorizedError"
+                        "description": "Product deleted from cart"
                     }
-                },
-                "security": [
+                }
+            }
+        },
+        "/api/cart/{userID}/checkout": {
+            "post": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Checkout a cart",
+                "parameters": [
                     {
-                        "OAuth": [
-                            "write"
-                        ]
+                        "name": "userID",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cart checked out"
+                    }
+                }
             }
         }
     }
