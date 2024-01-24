@@ -8,12 +8,15 @@ import {useAppContext} from "../../../store/AppContext";
 function ProductItem({product}) {
 	const { state } = useAppContext();
 
+	console.debug(state.user.role === "CUSTOMER")
+	console.debug(state.user)
+
 	return (
 		<Card
-			style={{margin: 5}}
 			id={product.ID}
 			onDragStart={(e) => {e.preventDefault();}}
 			style={{
+				margin: 5,
 				MozUserSelect: "none",
 				WebkitUserSelect: "none",
 				msUserSelect: "none"
@@ -33,9 +36,13 @@ function ProductItem({product}) {
 					</Row>
 				</Card.Body>
 			</NavLink>
-			<Card.Footer className="text-muted">
-				<ProductItemForm product={product}/>
-			</Card.Footer>
+			{state.user !== "" ?
+				<Card.Footer className="text-muted">
+					<ProductItemForm product={product}/>
+				</Card.Footer>
+			:
+				<></>
+			}
 		</Card>
 	);
 }

@@ -35,7 +35,7 @@ function Products() {
                 <Loader/>
             :
                 <>
-                    <ProductItemFilter loading={loading} data={data} setDataFilter={setDataFilter} />
+                    <ProductItemFilter data={data} setDataFilter={setDataFilter} />
                     <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
                         <Col sm>
                             <ProductNewItem class="bg-primary"/>

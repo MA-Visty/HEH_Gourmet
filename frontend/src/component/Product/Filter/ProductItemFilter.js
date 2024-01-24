@@ -3,17 +3,20 @@ import { Form, FormGroup, Button, ButtonGroup, ButtonToolbar } from "react-boots
 import axios from "axios";
 import API_URL from "../../../apiConfig";
 import ButtonNewItemFilter from "./ButtonNewItemFilter";
+import Loader from "../../Loader/Loader";
 
 export function ProductItemFilter({data, setDataFilter}) {
     const filter = useRef(null);
     const [typeFilter, setTypeFilter] = useState([]);
     const [typeSelect, setTypeSelect] = useState("");
+    const [loading, setLoading] = useState(true);
     useEffect(() => {handleSearch();}, [typeSelect]);
 
     useEffect(() => {axios
         .get(`${API_URL}/api/categories`)
         .then((response) => {
             setTypeFilter(response.data);
+            setLoading(false);
         })
     }, []);
 
@@ -40,7 +43,7 @@ export function ProductItemFilter({data, setDataFilter}) {
         }
     };
 
-    const hangleTypeSelect = (type) => {
+    const handleTypeSelect = (type) => {
         filter.current.value = ""
         setTypeSelect((prevType) => (prevType === type ? "" : type));
     };
@@ -49,10 +52,12 @@ export function ProductItemFilter({data, setDataFilter}) {
         <ButtonToolbar className="justify-content-between" aria-label="Toolbar with Button groups" style={{marginBottom: "1rem"}}>
             <ButtonGroup aria-label="First group">
                 <ButtonNewItemFilter/>
-                {typeFilter.map((elem) => (
+                {loading ?
+                    <Loader/>
+                :typeFilter.map((elem) => (
                     <Button
                         variant={typeSelect === elem ? 'success' : 'outline-secondary'}
-                        onClick={() => hangleTypeSelect(elem)}
+                        onClick={() => handleTypeSelect(elem)}
                     >
                         {elem.name.charAt(0).toUpperCase() + elem.name.slice(1)}
                     </Button>

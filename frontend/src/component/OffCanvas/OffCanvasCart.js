@@ -2,12 +2,31 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import Cart from "../Cart/Cart";
 import Button from "react-bootstrap/Button";
 import {Stack} from "react-bootstrap";
-import {useAppContext} from "../../store/AppContext";
-import Loader from "../Loader/Loader";
+import {useAppContext, useDispatchContext} from "../../store/AppContext";
 import EmptyData from "../Loader/EmptyData";
+import axios from "axios";
+import API_URL from "../../apiConfig";
 
 function OffCanvasCart({ show, onHide, ...props }) {
     const { state } = useAppContext();
+    const { dispatch } = useDispatchContext();
+
+    const order = async (event) => {
+        try {
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString();
+            const response = await axios
+                .post(`${API_URL}/api/cart/${state.user.id}/checkout`, {
+                    orderDate: formattedDate,
+                });
+            if(response.status === 201) {
+                dispatch({ type: "removeAll" })
+            }
+        } catch (error) {
+            console.debug(error)
+        }
+    }
+
     return (
         <Offcanvas show={show} onHide={onHide} placement={'end'} {...props}>
             <Offcanvas.Header closeButton>
@@ -16,10 +35,12 @@ function OffCanvasCart({ show, onHide, ...props }) {
             <Offcanvas.Body>
                 <Stack align="end">
                     {state.quantity > 0 ?
-                        <Cart />
-                        : <EmptyData />
+                            <Cart />
+                    :
+                            <EmptyData />
                     }
-                    <Button variant={state.quantity > 0 ? "primary" : "outline-primary"}
+                    <Button onClick={order}
+                            variant={state.quantity > 0 ? "primary" : "outline-primary"}
                             disabled={state.quantity === 0}
                             size="lg">
                         <strong style={{position: "relative"}}>Payer</strong>
@@ -29,7 +50,7 @@ function OffCanvasCart({ show, onHide, ...props }) {
                                 fontStyle: "oblique",
                                 position: "absolute",
                                 translate: "5px 6px"
-                            }}>({state.price}€)</span>
+                            }}>({state.price.toFixed(2)}€)</span>
                             : ""
                         }
                     </Button>

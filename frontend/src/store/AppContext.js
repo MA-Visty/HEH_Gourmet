@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
 import { login, logout } from "./UserContext";
-import { add2cart, updatecart, remove2cart, removecart } from "./CartContext";
-import {addfav, removefav, updatefav} from "./FavoriteContext";
+import { loadCart, add2cart, remove2cart, removecart } from "./CartContext";
+import { addfav, removefav} from "./FavoriteContext";
 
 export const AppContext = createContext();
 export const dispatchContext = createContext();
@@ -10,10 +10,10 @@ const initialState = { user: "", token: "", cart: [], quantity: 0, price: 0, fav
 
 function appContextReducer(state = initialState, action) {
     switch (action.type) {
+        case "loadCart":
+            return loadCart(state);
         case "add":
             return add2cart(state, action);
-        case "update":
-            return updatecart(state, action);
         case "remove":
             return remove2cart(state, action);
         case "removeAll":
@@ -25,7 +25,8 @@ function appContextReducer(state = initialState, action) {
             return removefav(state, action);
 
         case "login":
-            return login(state, action);
+            let tempoState = login(state, action);
+            return loadCart(tempoState, action);
         case "logout":
             return logout(state);
         default:

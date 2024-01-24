@@ -3,6 +3,8 @@ import {Offcanvas, Button, Row, Col, Form, ImputGroup, InputGroup} from 'react-b
 import {useAppContext, useDispatchContext} from "../../store/AppContext";
 import axios from "axios";
 import API_URL from "../../apiConfig";
+import {Navigate} from "react-router-dom";
+import {pushCart} from "../../store/CartContext";
 
 // TODO: French UI
 // TODO: Simplify code
@@ -14,6 +16,7 @@ function OffCanvasUser({ show, onHide, type, ...props }) {
         setTitle((title) => (title === 'Login' ? 'Register' : 'Login'));
     };
     const switchLogAccount = () => {
+
         setTitle((title) => (title === 'Login' ? 'Account' : 'Login'));
     };
 
@@ -36,31 +39,40 @@ function UserLogin({switchLogRegist, switchLogAccount}) {
     const { dispatch } = useDispatchContext();
     const [validated, setValidated] = useState(false);
     const email = useRef();
-    const password = useRef();
     const handleLogin = async (event) => {
         event.preventDefault();
         let emailCheck = email.current.value;
-        let pwdCheck = password.current.value;
 
-        if(emailCheck === "" || pwdCheck === "") {
+        if(emailCheck === "") {
             setValidated(true);
             return;
-        } else {
-            try {
-                const response = await axios
-                    .post(`${API_URL}/api/auth/login`, {
-                        email: emailCheck,
-                        password: pwdCheck
+        }
+        try {
+            const response = await axios
+                .post(`${API_URL}/api/user/login`, {
+                    email: emailCheck
+                });
+            if(response.status === 200) {
+                const responseData = await axios
+                    .get(`${API_URL}/api/cart/${response.data.id}`)
+                    .then((response) => {
+                        return response.data;
+                    })
+                    .catch((error) => {
+                        console.log(error)
                     });
+
                 dispatch({
                     type: "login",
-                    response: response.data
+                    response: {
+                        user: response,
+                        data: responseData
+                    }
                 });
                 switchLogAccount()
-            } catch (except) {
-                alert('nop');
             }
-            return;
+        } catch (error) {
+            console.log(error)
         }
     };
 
@@ -75,7 +87,7 @@ function UserLogin({switchLogRegist, switchLogAccount}) {
                             required
                             ref={email}
                             type="text"
-                            placeholder="Entrer your email"
+                            placeholder="Entrer votre email"
                             defaultValue=""
                         />
                         <Form.Control.Feedback type="invalid">
@@ -83,27 +95,11 @@ function UserLogin({switchLogRegist, switchLogAccount}) {
                         </Form.Control.Feedback>
                     </InputGroup>
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>Password</Form.Label>
-                    <InputGroup hasValidation>
-                        <InputGroup.Text id="inputGroupPrepend">#</InputGroup.Text>
-                        <Form.Control
-                            required
-                            ref={password}
-                            type="password"
-                            placeholder="Entrer your password"
-                            aria-describedby="passwordHelpBlock"
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            Please enter a valide password.
-                        </Form.Control.Feedback>
-                    </InputGroup>
-                </Form.Group>
             </Row>
 
             <div className="d-grid gap-2">
-                <Button variant="primary" size="lg" onClick={handleLogin}>Login</Button>
-                <Button variant="secondary" size="lg" onClick={switchLogRegist}>Register</Button>
+                <Button variant="primary" size="lg" onClick={handleLogin}>Connexion</Button>
+                <Button variant="secondary" size="lg" onClick={switchLogRegist}>Créer un compte</Button>
             </div>
         </Form>
     );
@@ -112,63 +108,88 @@ function UserLogin({switchLogRegist, switchLogAccount}) {
 function UserRegister({switchLogRegist}) {
     const { dispatch } = useDispatchContext();
     const [validated, setValidated] = useState(false);
+    const lastname = useRef();
+    const firstname = useRef();
     const email = useRef();
-    const password = useRef();
-    const confirmpassword = useRef();
     const [invalid, setInvalid] = useState({})
 
     const handleRegister = async (event) => {
         event.preventDefault();
+        let lastnameCheck = lastname.current.value;
+        let firstnameCheck = firstname.current.value;
         let emailCheck = email.current.value;
-        let pwd1Check = password.current.value;
-        let pwd2Check = confirmpassword.current.value;
 
-        if(emailCheck !== "" || pwd1Check !== "" || pwd2Check !== "" || pwd1Check !== pwd2Check) {
+        if(emailCheck === "" || lastnameCheck === "" || firstnameCheck === "") {
             setValidated(true);
             return;
-        } else {
-            try {
-                const response = await axios
-                    .post(`${API_URL}/api/auth/register`, {
-                        name: "",
-                        username: "",
-                        email: emailCheck,
-                        password: pwd1Check,
-                        passwordConfirmation: pwd2Check,
-                        role: "user",
-                        phone: "",
-                        address: "",
-                        companyName: "",
-                        image: ""
-                    });
-                setValidated(false);
-            } catch (error) {
-                console.error('Registration error:', error);
-                alert('nop');
-                if (error.response && error.response.status === 422) {
-                    // La validation côté serveur a échoué
-                    const errors = error.response.data.errors;
-                    setInvalid({
-                        email: errors && errors.email ? "Invalid email" : null,
-                        pwd1: errors && errors.password ? "Invalid password" : null,
-                        pwd2: errors && errors.passwordConfirmation ? "Invalid password confirmation" : null
-                    });
-                } else {
-                    // Une autre erreur s'est produite (ex: serveur non disponible)
-                    setInvalid({
-                        email: "Registration failed. Please try again later.",
-                        pwd1: null,
-                        pwd2: null
-                    });
-                }
+        }
+
+        try {
+            const response = await axios
+                .post(`${API_URL}/api/user/register`, {
+                    lastname: lastnameCheck,
+                    firstname: firstnameCheck,
+                    email: emailCheck
+                });
+            setValidated(false);
+            if(response.status === 201) {
+                switchLogRegist()
             }
-            return;
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                const errors = error.response.data.errors;
+                setInvalid({
+                    lastname: "USER_ALREADY_EXIST",
+                    firstname: "USER_ALREADY_EXIST",
+                    email: "USER_ALREADY_EXIST"
+                });
+            } else {
+                setInvalid({
+                    email: "Registration failed. Please try again later.",
+                    pwd1: null,
+                    pwd2: null
+                });
+            }
         }
     }
 
     return (
         <Form noValidate validated={validated}>
             <Row className="mb-3">
+                <Form.Group>
+                    <Form.Label>Nom</Form.Label>
+                    <InputGroup hasValidation>
+                        <InputGroup.Text id="inputGroupPrepend">#</InputGroup.Text>
+                        <Form.Control
+                            required
+                            ref={lastname}
+                            type="text"
+                            placeholder="Entrer votre nom"
+                            defaultValue=""
+                            isInvalid={!!invalid.lastname}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {invalid.lastname}
+                        </Form.Control.Feedback>
+                    </InputGroup>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Prénom</Form.Label>
+                    <InputGroup hasValidation>
+                        <InputGroup.Text id="inputGroupPrepend">#</InputGroup.Text>
+                        <Form.Control
+                            required
+                            ref={firstname}
+                            type="text"
+                            placeholder="Entrer votre prénom"
+                            defaultValue=""
+                            isInvalid={!!invalid.firstname}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            {invalid.firstname}
+                        </Form.Control.Feedback>
+                    </InputGroup>
+                </Form.Group>
                 <Form.Group>
                     <Form.Label>Email</Form.Label>
                     <InputGroup hasValidation>
@@ -177,7 +198,7 @@ function UserRegister({switchLogRegist}) {
                             required
                             ref={email}
                             type="text"
-                            placeholder="Entrer your email"
+                            placeholder="Entrer votre email"
                             defaultValue=""
                             isInvalid={!!invalid.email}
                         />
@@ -186,42 +207,11 @@ function UserRegister({switchLogRegist}) {
                         </Form.Control.Feedback>
                     </InputGroup>
                 </Form.Group>
-                <Form.Group>
-                    <Form.Label>Password</Form.Label>
-                    <InputGroup hasValidation>
-                        <InputGroup.Text id="inputGroupPrepend">#</InputGroup.Text>
-                        <Form.Control
-                            required
-                            ref={password}
-                            type="password"
-                            placeholder="Entrer your password"
-                            aria-describedby="passwordHelpBlock"
-                            isInvalid={!!invalid.pwd1}
-                        />
-                    </InputGroup>
-                </Form.Group>
-                <Form.Group>
-                    <InputGroup hasValidation>
-                        <InputGroup.Text id="inputGroupPrepend">#</InputGroup.Text>
-                        <Form.Control
-                            required
-                            ref={confirmpassword}
-                            type="password"
-                            placeholder="Confirm your password"
-                            aria-describedby="passwordHelpBlock"
-                            isInvalid={!!invalid.pwd2}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {invalid.pwd1}
-                            {invalid.pwd2}
-                        </Form.Control.Feedback>
-                    </InputGroup>
-                </Form.Group>
             </Row>
 
             <div className="d-grid gap-2">
-                <Button variant="primary" size="lg" onClick={handleRegister}>Confirm</Button>
-                <Button variant="secondary" size="lg" onClick={switchLogRegist}>Cancel</Button>
+                <Button variant="primary" size="lg" onClick={handleRegister}>Confirmer</Button>
+                <Button variant="secondary" size="lg" onClick={switchLogRegist}>Annuler</Button>
             </div>
         </Form>
     );
