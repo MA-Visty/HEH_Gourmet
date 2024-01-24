@@ -119,6 +119,11 @@ public class GourmetApplicationConfiguration {
         return new UserAdapter();
     }
 
+    @Bean
+    IManageFavUseCase getManageFavUseCase() {
+        return new FavAdapterUseCase();
+    }
+
     // Use cases with business logic
     @Bean
     public IManageCartUseCase getManageCartUseCase() {
