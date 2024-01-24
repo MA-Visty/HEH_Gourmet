@@ -27,10 +27,14 @@ public class UserController {
     @Qualifier("getManageUserUseCase")
     private IManageUserUseCase userManager;
 
+
+    public record LoginRequest(String email) {
+    }
+
     @GetMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody String mail) {
+    public ResponseEntity<Object> login(@RequestBody LoginRequest mail) {
         try {
-            Optional<User> user = userManager.getByEmail(mail);
+            Optional<User> user = userManager.getByEmail(mail.email);
             if (user.isEmpty()) {
                 throw new UserException("User not found", UserException.Type.USER_NOT_FOUND);
             }
@@ -56,8 +60,11 @@ public class UserController {
         }
     }
 
+    public record PromoteRequest(Role role) {
+    }
+
     @PostMapping("/promote/{id}")
-    public ResponseEntity<Object> promote(@PathVariable int id, @RequestBody Role role) {
+    public ResponseEntity<Object> promote(@PathVariable int id, @RequestBody PromoteRequest role) {
         try {
             throw new UnsupportedOperationException("Not implemented yet");
         } catch (UserException e) {
