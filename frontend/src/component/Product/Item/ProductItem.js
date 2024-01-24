@@ -8,9 +8,6 @@ import {useAppContext} from "../../../store/AppContext";
 function ProductItem({product}) {
 	const { state } = useAppContext();
 
-	console.debug(state.user.role === "CUSTOMER")
-	console.debug(state.user)
-
 	return (
 		<Card
 			id={product.ID}

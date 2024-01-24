@@ -8,8 +8,10 @@ import EmptyData from "../../component/Loader/EmptyData";
 import ProductItemFilter from "./Filter/ProductItemFilter";
 import API_URL from "../../apiConfig";
 import ProductNewItem from "./Item/ProductNewItem";
+import {useAppContext} from "../../store/AppContext";
 
 function Products() {
+    const { state } = useAppContext();
     const [data, setData] = useState([]);
     const [dataFilter, setDataFilter] = useState([]);
     const [isCrash, setCrash] = useState(false);
@@ -37,9 +39,13 @@ function Products() {
                 <>
                     <ProductItemFilter data={data} setDataFilter={setDataFilter} />
                     <Row sm={1} md={2} lg={3} xl={4} className="g-4 justify-content-md-center">
-                        <Col sm>
-                            <ProductNewItem class="bg-primary"/>
-                        </Col>
+                        {state.user.role === "ADMIN" ?
+                            <Col sm>
+                                <ProductNewItem class="bg-primary"/>
+                            </Col>
+                        :
+                            <></>
+                        }
 
                         {dataFilter.length === 0 ?
                             <EmptyData/>

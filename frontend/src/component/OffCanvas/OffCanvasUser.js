@@ -3,21 +3,19 @@ import {Offcanvas, Button, Row, Col, Form, ImputGroup, InputGroup} from 'react-b
 import {useAppContext, useDispatchContext} from "../../store/AppContext";
 import axios from "axios";
 import API_URL from "../../apiConfig";
-import {Navigate} from "react-router-dom";
-import {pushCart} from "../../store/CartContext";
 
 // TODO: French UI
 // TODO: Simplify code
 
 function OffCanvasUser({ show, onHide, type, ...props }) {
     const { state } = useAppContext();
-    const [title, setTitle] = useState(state.user !== "" ? "Account" : "Login");
+    const [title, setTitle] = useState(state.user !== "" ? "Compte" : "Se connecter");
     const switchLogRegist = () => {
-        setTitle((title) => (title === 'Login' ? 'Register' : 'Login'));
+        setTitle((title) => (title === 'Se connecter' ? "S'enregistrer" : 'Se connecter'));
     };
     const switchLogAccount = () => {
 
-        setTitle((title) => (title === 'Login' ? 'Account' : 'Login'));
+        setTitle((title) => (title === 'Se connecter' ? 'Compte' : 'Se connecter'));
     };
 
     return (
@@ -26,8 +24,8 @@ function OffCanvasUser({ show, onHide, type, ...props }) {
                 <Offcanvas.Title>{title}</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-            {title === "Account" ? <UserAccount switchLogAccount={switchLogAccount}/>
-                : title === "Register" ? <UserRegister switchLogRegist={switchLogRegist}/>
+            {title === "Compte" ? <UserAccount switchLogAccount={switchLogAccount}/>
+                : title === "S'enregistrer" ? <UserRegister switchLogRegist={switchLogRegist}/>
                 : <UserLogin switchLogRegist={switchLogRegist} switchLogAccount={switchLogAccount}/>
             }
             </Offcanvas.Body>
@@ -38,6 +36,7 @@ function OffCanvasUser({ show, onHide, type, ...props }) {
 function UserLogin({switchLogRegist, switchLogAccount}) {
     const { dispatch } = useDispatchContext();
     const [validated, setValidated] = useState(false);
+    const [invalid, setInvalid] = useState({})
     const email = useRef();
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -61,15 +60,31 @@ function UserLogin({switchLogRegist, switchLogAccount}) {
                     .catch((error) => {
                         console.log(error)
                     });
-
+                let responseFab = ""
+                try {
+                    responseFab = await axios
+                        .get(`${API_URL}/api/user/${response.data.id}/fav`)
+                        .then((response) => {
+                            return response.data;
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        });
+                } catch (error) {}
                 dispatch({
                     type: "login",
                     response: {
                         user: response,
-                        data: responseData
+                        data: responseData,
+                        fav: responseFab
                     }
                 });
                 switchLogAccount()
+            } else {
+                setInvalid({
+                    email: "Email invalid"
+                });
+                setValidated(true);
             }
         } catch (error) {
             console.log(error)
@@ -89,6 +104,7 @@ function UserLogin({switchLogRegist, switchLogAccount}) {
                             type="text"
                             placeholder="Entrer votre email"
                             defaultValue=""
+                            isInvalid={!!invalid.email}
                         />
                         <Form.Control.Feedback type="invalid">
                             Please enter a valide email.

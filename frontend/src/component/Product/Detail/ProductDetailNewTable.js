@@ -5,8 +5,10 @@ import {Container, Image, InputGroup} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import {Navigate} from "react-router-dom";
 import Loader from "../../Loader/Loader";
+import {useAppContext} from "../../../store/AppContext";
 
 function ProductDetailNewTable({data, childRef, type}) {
+    const { state } = useAppContext();
     const [validated, setValidated] = useState(false);
     const [invalid, setInvalid] = useState({})
     const name = useRef(data.name);
@@ -157,11 +159,10 @@ function ProductDetailNewTable({data, childRef, type}) {
         }
     }
 
-    // TODO : handle crash
-
     return (
         <Container style={{position: "relative"}}>
-            {sendValid ? <Navigate to="/Menu" /> : <></>}
+            {state.user === "" || state.user.role !== "ADMIN" ? <Navigate to="/" />
+            : sendValid ? <Navigate to={"/Menu"} /> : <></>}
             <Image style={{objectFit: 'contain', width: '100%', height: '250px'}}
                    src={imageSrc !== null ? imageSrc : data.image}/>
             <Form noValidate validated={validated}>

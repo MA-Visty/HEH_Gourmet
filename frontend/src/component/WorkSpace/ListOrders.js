@@ -5,15 +5,14 @@ import {Col, Row} from "react-bootstrap";
 
 function ListOrders({orders, setOrderSelct}) {
 
-
     return (
         <>
             {orders.map((order) => (
-                <Row onClick={setOrderSelct(order.id)} style={{border: "1px", borderColor: "#000"}}>
-                    <Col>order.state</Col>
-                    <Col>order.userId</Col>
-                    <Col>order.price</Col>
-                    <Col>order.date</Col>
+                <Row onClick={setOrderSelct(order.ID)} style={{border: "1px", borderColor: "#000"}}>
+                    <Col>{order.orderDate}</Col>
+                    <Col>{order.prepareDate}</Col>
+                    <Col>{order.status}</Col>
+                    <Col>{order.totalPrice}</Col>
                 </Row>
             ))}
         </>
