@@ -113,27 +113,24 @@ function ProductDetailNewTable({data, childRef, type}) {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
-                });
-            setImageUrl(response.data)
-            setValidated(false);
+                }).then((response) => {
+                    setImageUrl(response.data);
+                    setValidated(false);
 
-            try {
-                const response = await axios
-                    .post(`${API_URL}/api/product`, {
-                        name: name.current.value,
-                        description: description.current.value,
-                        price: price.current.value,
-                        stock: stock.current.value,
-                        image: imageUrl.url,
-                        categoryID: categoryID.current.value
-                    });
-                setValidated(false);
-                if (response.status === 201) {
-                    setSendValid(true);
-                }
-            } catch (error) {
-                console.log(error)
-            }
+                    const responseProduct = axios
+                        .post(`${API_URL}/api/product`, {
+                            name: name.current.value,
+                            description: description.current.value,
+                            price: price.current.value,
+                            stock: stock.current.value,
+                            image: response.data.url,
+                            categoryID: categoryID.current.value
+                        }).then((responseProduct) => {
+                            setSendValid(true);
+                        })
+                    setValidated(false);
+                });
+
         } catch (error) {
             console.log(error)
         }
