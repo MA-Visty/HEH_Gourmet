@@ -29,7 +29,7 @@ function ProductItemForm({product}) {
 
     return (
         <Stack direction="horizontal" gap={2}>
-            <Button variant="outline-secondary" as={Link} to={`/product/${product.id}`}>
+            <Button variant="outline-secondary" as={Link} to={`/product/${product.ID}`}>
                 <img style={{objectFit:'cover', display:"flex", height:"1.5rem", width:"auto"}} src={MenuImage} alt="error" />
             </Button>
             <InputGroup>
