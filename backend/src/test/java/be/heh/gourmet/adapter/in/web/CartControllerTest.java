@@ -150,9 +150,10 @@ class CartControllerTest {
 
 
         // Act and Assert
+        // TODO : investigated bad response code
         mockMvc.perform(MockMvcRequestBuilders.post("/api/cart/1/checkout")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(params)))
+                        .content(new CartController.CheckoutBody(targetDate, Map.of()).toString()))
                 .andExpect(status().isUnprocessableEntity());
     }
 
