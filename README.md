@@ -72,6 +72,8 @@ Ci-dessous , vous retrouverez les différents schema realisé dans le cadre de l
 - SPRING boot ( + jakarta + lombok )
 
 ### Problèmes 🤡️ et solutions 😎️
+Certaine divergence d'opinions nous a posé des problémes d'organisation. 
+
 #### Frontend
 Manque de temps et de communication mais réussi à dévelloper un ensemble de fonctionnalité en s'organisant.
 
