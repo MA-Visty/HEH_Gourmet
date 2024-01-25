@@ -4,8 +4,12 @@ import { useAppContext } from "../../store/AppContext";
 import { LinkContainer } from "react-router-bootstrap";
 import OffCanvasUser from "../OffCanvas/OffCanvasUser";
 import OffCanvasCart from "../OffCanvas/OffCanvasCart";
+import CartImage from '../../assets/images/cart.svg';
+import UserImage from '../../assets/images/user.svg';
+import UserLogImage from '../../assets/images/userComplet.svg';
 
 function Header() {
+    const { state } = useAppContext();
     const [showUser, setShowUser] = useState(false);
     const [showCart, setShowCart] = useState(false);
     const handleUserClose = () => setShowUser(false);
@@ -13,12 +17,9 @@ function Header() {
     const handleUserShow = () => setShowUser(true);
     const handleCartShow = () => setShowCart(true);
 
-    const [userLog, setUserLog] = useState(false);
-    const [cartContain, setCartContain] = useState(false);
-
     return (
         <>
-            <Navbar bg="light" expand="lg">
+            <Navbar bg="light" expand="lg" sticky={"top"}>
                 <Container>
                     <LinkContainer to="/">
                         <Navbar.Brand>HEH-Gourmet</Navbar.Brand>
@@ -27,28 +28,35 @@ function Header() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <LinkContainer to="/">
-                                <Nav.Link>Home</Nav.Link>
+                                <Nav.Link>Accueil</Nav.Link>
                             </LinkContainer>
-                            <LinkContainer to="/Menu">
+                            <LinkContainer to="/menu">
                                 <Nav.Link>Menu</Nav.Link>
                             </LinkContainer>
+                            {state.user.role === "ADMIN" ?
+                                <LinkContainer to="/workspace">
+                                    <Nav.Link>Commandes</Nav.Link>
+                                </LinkContainer>
+                                :
+                                <></>
+                            }
                         </Nav>
                         <Row>
-                            <Col xs="auto">
-                                <img src={cartContain ? "/cartComplet.svg" : "/cart.svg"} alt="error" width={25} onClick={handleCartShow} />
-                                <Badge bg="primary" pill>
-                                    14
-                                </Badge>
+                            <Col xs="auto" style={{ position: "relative"}}>
+                                <img src={CartImage} alt="error" width={30} onClick={handleCartShow} />
+                                <div style={{ fontSize:"10px", position: "absolute", left: "50%", top: "55%", transform: "translate(-50%, -50%)", pointerEvents: "none"}}>
+                                    {state.quantity}
+                                </div>
                             </Col>
                             <Col xs="auto">
-                                <img src={userLog ? "/userComplet.svg" : "/user.svg"} alt="error" width={25} onClick={handleUserShow} />
+                                <img src={state.user !== "" ? UserLogImage : UserImage} alt="error" width={30} onClick={handleUserShow} />
                             </Col>
                         </Row>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            <OffCanvasCart show={showCart} onHide={handleCartClose} type={cartContain}/>
-            <OffCanvasUser show={showUser} onHide={handleUserClose} type={""}/>
+            <OffCanvasCart show={showCart} onHide={handleCartClose} />
+            <OffCanvasUser show={showUser} onHide={handleUserClose}/>
         </>
     );
 }
